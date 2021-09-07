@@ -13,6 +13,8 @@ import com.sangupta.redefine.ast.Statement;
 
 public class TypescriptUtils {
 	
+	public static final String UNKNOWN = "$unknown";
+	
 	public static String getNodeType(AstNode node) {
 		switch(node.kind) {
 			case 253:
@@ -146,4 +148,57 @@ public class TypescriptUtils {
 		return false;
 	}
 
+	public static boolean isNumberKeyword(AstNode node) {
+		return node.kind == 144;
+	}
+	
+	public static boolean isStringKeyword(AstNode node) {
+		return node.kind == 147;
+	}
+	
+	public static boolean isBooleanKeyword(AstNode node) {
+		return node.kind == 131;
+	}
+	
+	public static boolean isVoidKeyword(AstNode node) {
+		return node.kind == 113;
+	}
+	
+	public static boolean isAnyKeyword(AstNode node) {
+		return node.kind == 128;
+	}
+	
+	public static boolean isFunctionType(AstNode node) {
+		return node.kind == 175;
+	}
+
+	public static String getType(AstNode node) {
+		if(node == null) {
+			return null;
+		}
+		
+		switch(node.kind) {
+			case 144:
+				return "number";
+			case 147:
+				return "string";
+			case 131:
+				return "boolean";
+			case 113:
+				return "void";
+			case 175:
+				return "Function";
+			case 128:
+				return "any";
+			case 192:
+				return "null";
+			case 150:
+				return "undefined";
+			case 141:
+				return "never";
+		}
+		
+		return UNKNOWN;
+	}
+	
 }

@@ -5,11 +5,13 @@ import java.util.List;
 
 import com.sangupta.redefine.ComponentUtils.ComponentTypeWrapper;
 import com.sangupta.redefine.ast.Member;
+import com.sangupta.redefine.ast.Parameter;
 import com.sangupta.redefine.ast.SourceFile;
 import com.sangupta.redefine.ast.Statement;
 import com.sangupta.redefine.ast.TypeReference;
 import com.sangupta.redefine.model.ComponentDef;
 import com.sangupta.redefine.model.ComponentType;
+import com.sangupta.redefine.model.ParamDef;
 import com.sangupta.redefine.model.PropDef;
 
 public class ComponentExtractor {
@@ -124,12 +126,28 @@ public class ComponentExtractor {
 		
 		def.name = member.name.escapedText;
 		
+		System.out.println(member.type);
+		
 		if(member.type.typeName != null) {
 			def.type = member.type.typeName.escapedText;
 		} else {
-			if(TypescriptUtils.isUnionType(member.type)) {
-				def.type = "$enum";
+			String memberType = TypescriptUtils.getType(member.type);
+			if(!TypescriptUtils.UNKNOWN.equals(memberType) && !TypescriptUtils.isFunctionType(member.type)) {
+				def.type = memberType;
+			} else {
+				if(TypescriptUtils.isUnionType(member.type)) {
+					def.type = "$enum";
+				} else if(TypescriptUtils.isFunctionType(member.type)) {
+					def.type = "$function";
+					
+					// build the type using definitions
+					for(Parameter param: member.type.parameters) {
+						def.params.add(new ParamDef(param.name.escapedText, TypescriptUtils.getType(param.type)));
+					}
+					def.returnType = TypescriptUtils.getType(member.type.type);
+				}
 			}
+
 		}
 		
 		if(member.questionToken != null) {
