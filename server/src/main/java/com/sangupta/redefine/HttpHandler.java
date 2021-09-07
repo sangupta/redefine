@@ -27,6 +27,11 @@ public class HttpHandler extends AbstractHandler {
 		// Jetty adds its own headers
 		response.addHeader("Server", "redefine");
 		
+		// cors headers
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Methods", "GET");
+		response.addHeader("Access-Control-Max-Age", "86400");
+
 		handleIncomingRequest(request, response);
 		baseRequest.setHandled(true);
 	}
@@ -49,9 +54,10 @@ public class HttpHandler extends AbstractHandler {
 		
 		String json = GSON.toJson(components);
 		byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+
 		response.setContentType(HttpMimeType.JSON);
 		response.setContentLengthLong(bytes.length);
-		response.getOutputStream().write(bytes, 0, bytes.length);
+		response.getOutputStream().write(bytes, 0, bytes.length);		
 	}
 
 }
