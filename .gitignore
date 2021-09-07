@@ -4,3 +4,9 @@ target/*
 .settings/*
 */.gitignore
 */.settings/*
+
+**/node_modules/*
+**/dist/*
+yarn.lock
+package-lock.json
+**/.parcel-cache/*
