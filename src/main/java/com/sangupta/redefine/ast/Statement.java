@@ -13,6 +13,10 @@ public class Statement extends AstNode {
 	
 	public AstObject name;
 	
+	public Block body;
+	
+	public Expression expression;
+	
 	public final List<HeritageClause> heritageClauses = new ArrayList<>();
 
 	public final List<AstObject> modifiers = new ArrayList<>();

@@ -16,6 +16,13 @@ import com.sangupta.jerry.util.AssertUtils;
 import com.sangupta.jerry.util.ReflectionUtils;
 import com.sangupta.redefine.ast.SourceFile;
 
+/**
+ * Class that extracts the AST of the code by using the Typescript Compiler executing
+ * it inside a J2V8 environment. 
+ * 
+ * @author sangupta
+ *
+ */
 public class AstExtractor {
 
 	final NodeJS nodeJS;

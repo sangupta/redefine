@@ -38,7 +38,7 @@ public class RedefineMain {
 		}
 		
 		long end = System.currentTimeMillis();
-		System.out.println("Total time: " + (end - start) + " millis.");
+		System.out.println("\n\nTotal time: " + (end - start) + " millis.");
 	}
 	
 	private static void build(RedefineConfig config) throws IOException {
@@ -54,7 +54,7 @@ public class RedefineMain {
 		long start = System.currentTimeMillis();
 		parseAst(extractor, files, config);
 		long end = System.currentTimeMillis();
-		System.out.println("Total time in parsing: " + (end - start));
+		System.out.println("Total time in parsing: " + (end - start) + "\n");
 
 		// extract components from each parsed file
 		final List<ComponentDef> components = new ArrayList<>();

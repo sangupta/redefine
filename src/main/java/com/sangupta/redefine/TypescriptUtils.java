@@ -6,6 +6,8 @@ import com.sangupta.jerry.util.AssertUtils;
 import com.sangupta.jerry.util.StringUtils;
 import com.sangupta.redefine.ast.AstNode;
 import com.sangupta.redefine.ast.AstObject;
+import com.sangupta.redefine.ast.Block;
+import com.sangupta.redefine.ast.Expression;
 import com.sangupta.redefine.ast.Member;
 import com.sangupta.redefine.ast.Statement;
 
@@ -15,6 +17,8 @@ public class TypescriptUtils {
 		switch(node.kind) {
 			case 253:
 				return "ClassDeclaration";
+			case 252:
+				return "FunctionDeclaration";
 			case 254:
 				return "InterfaceDeclaration";
 			case 262:
@@ -22,6 +26,10 @@ public class TypescriptUtils {
 		}
 		
 		return "Unknown";
+	}
+	
+	private static boolean isReturnStatement(AstNode node) {
+		return node.kind == 243;
 	}
 	
 	public static boolean isClassDeclaration(AstNode node) {
@@ -64,6 +72,10 @@ public class TypescriptUtils {
 		return node.kind == 183;
 	}
 
+	public static boolean isFunctionDeclaration(AstNode node) {
+		return node.kind == 252;
+	}
+
 	public static boolean hasMethod(Statement statement, String methodName) {
 		if(!isClassDeclaration(statement)) {
 			return false;
@@ -96,5 +108,42 @@ public class TypescriptUtils {
 		return builder.toString();
 	}
 
-	
+	public static boolean returnsJsxFragement(Block body) {
+		for(Statement statement : body.statements) {
+			if(isReturnStatement(statement) && isJsxElement(statement.expression)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	/**
+	 * Check if given expression returns a JsxElement or a JsxFragment.
+	 * 
+	 * @param expression
+	 * @return
+	 */
+	private static boolean isJsxElement(Expression expression) {
+		if(expression == null) {
+			return false;
+		}
+		
+		// direct JsxElement - return <component> ... </component>
+		if(expression.kind == 274) {
+			return true;
+		}
+		
+		// jsx-frgament - multiple nodes - return <> ... </>
+		if(expression.kind == 278) {
+			return true;
+		}
+		
+		// inside a paranthesis - return ( <> ... </>)
+		if(expression.kind == 208 && isJsxElement(expression.expression)) {
+			return true;
+		}
+		return false;
+	}
+
 }
