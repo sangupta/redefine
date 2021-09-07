@@ -26,6 +26,8 @@ import com.sangupta.redefine.model.ComponentDef;
 public class RedefineMain {
 
 	private static final Map<File, SourceFile> AST = new HashMap<>();
+	
+	public static final Map<String, ComponentDef> COMPONENT_MAP = new HashMap<>();
 
 	public static void main(String[] args) throws Exception {
 		final RedefineConfig config = new RedefineConfig();
@@ -60,10 +62,18 @@ public class RedefineMain {
 		final List<ComponentDef> components = new ArrayList<>();
 		extractComponents(baseFolder, components, config);
 		
-		// print a list of all components
+		// generate component map
 		for(ComponentDef def : components) {
-			System.out.println(def);
+			COMPONENT_MAP.put(def.sourcePath + "$" + def.name, def);
 		}
+		
+		// run the server
+		HttpServer.start();
+		
+//		// print a list of all components
+//		for(ComponentDef def : components) {
+//			System.out.println(def);
+//		}
 	}
 
 	private static void extractComponents(File baseFolder, List<ComponentDef> components, RedefineConfig config) {
