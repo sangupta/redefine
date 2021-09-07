@@ -25,6 +25,8 @@ public class Statement extends AstNode {
 	
 	public final List<AstObject> jsDoc = new ArrayList<>();
 	
+	public final List<Parameter> parameters = new ArrayList<>();
+	
 	public String getClassName() {
 		if(!TypescriptUtils.isClassDeclaration(this)) {
 			throw new RuntimeException("Expected a class declaration");

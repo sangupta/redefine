@@ -74,7 +74,7 @@ public class SourceFile extends AstNode {
 		
 		for(Statement statement : this.statements) {
 			if(TypescriptUtils.isInterfaceDeclaration(statement)) {
-				if(typeName.equals(statement.name.escapedText)) {
+				if(statement.name != null && typeName.equals(statement.name.escapedText)) {
 					return statement.members;
 				}
 			}

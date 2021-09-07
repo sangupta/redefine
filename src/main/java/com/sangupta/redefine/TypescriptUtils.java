@@ -15,6 +15,31 @@ public class TypescriptUtils {
 	
 	public static final String UNKNOWN = "$unknown";
 	
+	private static final int KIND_VOID_KEYWORD = 113;
+	private static final int KIND_ANY_KEYWORD = 128;
+	private static final int KIND_BOOLEAN_KEYWORD = 131;
+	private static final int KIND_NEVER_KEYWORD = 141;
+	private static final int KIND_NUMBER_KEYWORD = 144;
+	private static final int KIND_STRING_KEYWORD = 147;
+	private static final int KIND_UNDEFINED_KEYWORD = 150;
+	private static final int KIND_ARROW_METHOD = 164;
+	private static final int KIND_SIMPLE_METHOD = 166;
+	private static final int KIND_FUNCTION_TYPE = 175;
+	private static final int KIND_UNION_TYPE = 183;
+	private static final int KIND_NULL_KEYWORD = 192;
+	private static final int KIND_PROPERTY_ACCESS_EXPR = 198;
+	private static final int KIND_PARANTHESIS_EXPR = 208;	
+	private static final int KIND_EXPR_WITH_TYPE_ARGS = 224;
+	private static final int KIND_RETURN_STATEMENT = 243;
+	private static final int KIND_CLASS_DECL = 253;	
+	private static final int KIND_FUNCTION_DECL = 252;
+	private static final int KIND_INTERFACE_DECL = 254;
+	private static final int KIND_IMPORT_DECL = 262;
+	private static final int KIND_JSX_ELEMENT = 274;
+	private static final int KIND_JSX_FRAGMENT = 278;
+	private static final int KIND_HERITAGE_CLAUSE = 287;
+	
+	
 	public static String getNodeType(AstNode node) {
 		switch(node.kind) {
 			case 253:
@@ -31,11 +56,11 @@ public class TypescriptUtils {
 	}
 	
 	private static boolean isReturnStatement(AstNode node) {
-		return node.kind == 243;
+		return node.kind == KIND_RETURN_STATEMENT;
 	}
 	
 	public static boolean isClassDeclaration(AstNode node) {
-		return node.kind == 253;
+		return node.kind == KIND_CLASS_DECL;
 	}
 	
 	public static boolean isMethodDeclaration(AstNode node) {
@@ -43,39 +68,39 @@ public class TypescriptUtils {
 	}
 
 	public static boolean isArrowMethodDeclaration(AstNode node) {
-		return node.kind == 164;
+		return node.kind == KIND_ARROW_METHOD;
 	}
 	
 	public static boolean isSimpleMethodDeclaration(AstNode node) {
-		return node.kind == 166;
+		return node.kind == KIND_SIMPLE_METHOD;
 	}
 
 	public static boolean isInterfaceDeclaration(AstNode node) {
-		return node.kind == 254;
+		return node.kind == KIND_INTERFACE_DECL;
 	}
 
 	public static boolean isImportDeclaration(AstNode node) {
-		return node.kind == 262;
+		return node.kind == KIND_IMPORT_DECL;
 	}
 
 	public static boolean isPropertyAccessExpression(AstNode node) {
-		return node.kind == 198;
+		return node.kind == KIND_PROPERTY_ACCESS_EXPR;
 	}
 
 	public static boolean isExpressionWithTypeArguments(AstNode node) {
-		return node.kind == 224;
+		return node.kind == KIND_EXPR_WITH_TYPE_ARGS;
 	}
 
 	public static boolean isHeritageClause(AstNode node) {
-		return node.kind == 287;
+		return node.kind == KIND_HERITAGE_CLAUSE;
 	}
 	
 	public static boolean isUnionType(AstNode node) {
-		return node.kind == 183;
+		return node.kind == KIND_UNION_TYPE;
 	}
 
 	public static boolean isFunctionDeclaration(AstNode node) {
-		return node.kind == 252;
+		return node.kind == KIND_FUNCTION_DECL;
 	}
 
 	public static boolean hasMethod(Statement statement, String methodName) {
@@ -132,44 +157,24 @@ public class TypescriptUtils {
 		}
 		
 		// direct JsxElement - return <component> ... </component>
-		if(expression.kind == 274) {
+		if(expression.kind == KIND_JSX_ELEMENT) {
 			return true;
 		}
 		
 		// jsx-frgament - multiple nodes - return <> ... </>
-		if(expression.kind == 278) {
+		if(expression.kind == KIND_JSX_FRAGMENT) {
 			return true;
 		}
 		
 		// inside a paranthesis - return ( <> ... </>)
-		if(expression.kind == 208 && isJsxElement(expression.expression)) {
+		if(expression.kind == KIND_PARANTHESIS_EXPR && isJsxElement(expression.expression)) {
 			return true;
 		}
 		return false;
 	}
 
-	public static boolean isNumberKeyword(AstNode node) {
-		return node.kind == 144;
-	}
-	
-	public static boolean isStringKeyword(AstNode node) {
-		return node.kind == 147;
-	}
-	
-	public static boolean isBooleanKeyword(AstNode node) {
-		return node.kind == 131;
-	}
-	
-	public static boolean isVoidKeyword(AstNode node) {
-		return node.kind == 113;
-	}
-	
-	public static boolean isAnyKeyword(AstNode node) {
-		return node.kind == 128;
-	}
-	
 	public static boolean isFunctionType(AstNode node) {
-		return node.kind == 175;
+		return node.kind == KIND_FUNCTION_TYPE;
 	}
 
 	public static String getType(AstNode node) {
@@ -178,23 +183,23 @@ public class TypescriptUtils {
 		}
 		
 		switch(node.kind) {
-			case 144:
+			case KIND_NUMBER_KEYWORD:
 				return "number";
-			case 147:
+			case KIND_STRING_KEYWORD:
 				return "string";
-			case 131:
+			case KIND_BOOLEAN_KEYWORD:
 				return "boolean";
-			case 113:
+			case KIND_VOID_KEYWORD:
 				return "void";
-			case 175:
+			case KIND_FUNCTION_TYPE:
 				return "Function";
-			case 128:
+			case KIND_ANY_KEYWORD:
 				return "any";
-			case 192:
+			case KIND_NULL_KEYWORD:
 				return "null";
-			case 150:
+			case KIND_UNDEFINED_KEYWORD:
 				return "undefined";
-			case 141:
+			case KIND_NEVER_KEYWORD:
 				return "never";
 		}
 		

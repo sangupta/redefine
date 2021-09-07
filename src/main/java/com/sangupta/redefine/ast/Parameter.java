@@ -4,6 +4,6 @@ public class Parameter extends AstNode {
 	
 	public AstObject name;
 	
-	public AstObject type;
+	public TypeReference type;
 
 }

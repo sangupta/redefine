@@ -18,6 +18,14 @@ public class ComponentExtractor {
 	
 //	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+	/**
+	 * Extract components, both function and class components.
+	 * 
+	 * @param name
+	 * @param path
+	 * @param ast
+	 * @return
+	 */
 	public static List<ComponentDef> extactComponents(String name, String path, SourceFile ast) {
 		final List<ComponentDef> components = new ArrayList<>();
 		
@@ -64,7 +72,28 @@ public class ComponentExtractor {
 			return null;
 		}
 		
+		// create component
 		ComponentDef def = new ComponentDef(statement.name.escapedText, path, ComponentType.REACT_FUNCTION_COMPONENT);
+		
+		// see if there is a function argument that implements any interface
+		if(statement.parameters.size() == 1) {
+			// this may be a props parameter
+			// check if it implements a type
+			Parameter param = statement.parameters.get(0);
+			TypeReference type = param.type;
+			
+			if(type != null) {
+				// find all members of the interface from the source file
+				List<Member> members = ast.getMembersOfType(type.typeName.escapedText);
+				
+				// document all the members as this components props
+				if(members != null) {
+					for(Member member : members) {
+						def.props.add(getComponentProp(member));
+					}
+				}
+			}
+		}
 		
 		return def;
 	}
@@ -125,8 +154,6 @@ public class ComponentExtractor {
 		PropDef def = new PropDef();
 		
 		def.name = member.name.escapedText;
-		
-		System.out.println(member.type);
 		
 		if(member.type.typeName != null) {
 			def.type = member.type.typeName.escapedText;
