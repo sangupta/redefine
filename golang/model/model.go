@@ -19,11 +19,19 @@ import (
 	"sangupta.com/redefine/ast"
 )
 
+var Syntax *ast.SyntaxKind
+
 /**
  * Get a map of all components against the file that they
- * are present in.
+ * are present in. This uses the `SourceFile` instance and
+ * scans for all classes/functions to figure out candidate
+ * components.
  */
-func GetComponents(astMap map[string]ast.SourceFile) []Component {
+func GetComponents(astMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxKind) []Component {
+	// setup syntax so anyone can use it
+	Syntax = syntaxKind
+
+	// start timing
 	start := time.Now()
 
 	// create component list
@@ -60,7 +68,7 @@ func extractComponents(name string, path string, sourceFile ast.SourceFile) []Co
 
 	for _, statement := range sourceFile.Statements {
 		// detect class based components
-		if ast.IsClassDeclaration(&statement) {
+		if Syntax.IsClassDeclaration(&statement) {
 			component := extractClassBasedComponents(path, sourceFile, statement)
 			if component != nil {
 				cl = append(cl, *component)
@@ -69,7 +77,7 @@ func extractComponents(name string, path string, sourceFile ast.SourceFile) []Co
 		}
 
 		// detect function based components
-		if ast.IsFunctionDeclaration(&statement) {
+		if Syntax.IsFunctionDeclaration(&statement) {
 			component := extractFunctionBasedComponent(path, sourceFile, statement)
 			if component != nil {
 				cl = append(cl, *component)
@@ -116,7 +124,7 @@ func extractClassBasedComponents(path string, source ast.SourceFile, st ast.Stat
 
 	// case 1: has export keyword, and extend react.component or just component from both react library
 	// the class must have a method called "render" to be a component
-	if !ast.HasMethodOfName(st, "render") {
+	if !Syntax.HasMethodOfName(st, "render") {
 		return nil
 	}
 

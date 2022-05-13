@@ -21,6 +21,17 @@ import (
 	"github.com/quickjs-go/quickjs-go"
 )
 
+/**
+ * The value is assigned once the Typescript code is initialized
+ * in QuickJS runtime. Any usage before initialization will throw
+ * a `nil` error.
+ */
+var Syntax *SyntaxKind
+
+/**
+ * A `struct` to store and pass various QuickJS runtime objects
+ * down the function chain.
+ */
 type tsParser struct {
 	runtime          *quickjs.Runtime
 	context          *quickjs.Context
@@ -28,13 +39,12 @@ type tsParser struct {
 	codeParser       *quickjs.Value
 	stringify        *quickjs.Value
 	circularReplacer *quickjs.Value
-	syntaxKind       *SyntaxKind
 }
 
 /**
  * Create a map of AST's by parsing each file
  */
-func BuildAstForFiles(files []string) map[string]SourceFile {
+func BuildAstForFiles(files []string) (map[string]SourceFile, *SyntaxKind) {
 	start := time.Now()
 	astMap := make(map[string]SourceFile, len(files))
 
@@ -55,7 +65,7 @@ func BuildAstForFiles(files []string) map[string]SourceFile {
 	// remove OS thread lock
 	stdruntime.UnlockOSThread()
 
-	return astMap
+	return astMap, Syntax
 }
 
 func doWork(files []string, parser *tsParser, astMap map[string]SourceFile) {
@@ -109,8 +119,8 @@ func parseSingleFile(file string, parser *tsParser) *SourceFile {
 
 	json.Unmarshal([]byte(sourceFileAsString), &sourceFile)
 
-	bytes, err := json.MarshalIndent(sourceFile, "", "  ")
-	fmt.Println(string(bytes))
+	_, err = json.MarshalIndent(sourceFile, "", "  ")
+	// fmt.Println(string(bytes))
 	return &sourceFile
 }
 
@@ -176,7 +186,7 @@ func (parser *tsParser) init() {
 		_ = json.Unmarshal([]byte(syntaxKindJson.String()), &syntaxKind)
 	}
 
-	parser.syntaxKind = &syntaxKind
+	Syntax = &syntaxKind
 
 	// read script target
 	scriptTarget := ts.Get("ScriptTarget")

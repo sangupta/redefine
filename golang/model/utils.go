@@ -43,7 +43,7 @@ func detectComponentType(ast ast.SourceFile, st ast.Statement) *ComponentTypeWra
 
 func isReactImport(sourceFile ast.SourceFile, name string) bool {
 	for _, st := range sourceFile.Statements {
-		if !ast.IsImportDeclaration(&st) {
+		if !Syntax.IsImportDeclaration(&st) {
 			continue
 		}
 

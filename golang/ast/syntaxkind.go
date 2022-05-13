@@ -1,5 +1,7 @@
 package ast
 
+import "strings"
+
 type SyntaxKind struct {
 	FirstToken                                   int
 	EndOfFileToken                               int
@@ -355,4 +357,165 @@ type SyntaxKind struct {
 	EndOfDeclarationMarker                       int
 	SyntheticReferenceExpression                 int
 	Count                                        int
+}
+
+func (sk *SyntaxKind) getNodeType(node AstNode) string {
+	switch node.GetKind() {
+	case sk.ClassDeclaration:
+		return "ClassDeclaration"
+	case sk.FunctionDeclaration:
+		return "FunctionDeclaration"
+	case sk.InterfaceDeclaration:
+		return "InterfaceDeclaration"
+	case sk.ImportDeclaration:
+		return "ImportDeclaration"
+	}
+
+	return "Unknown"
+}
+
+func (sk *SyntaxKind) IsReturnStatement(node AstNode) bool {
+	return node.GetKind() == sk.ReturnStatement
+}
+
+func (sk *SyntaxKind) IsClassDeclaration(node AstNode) bool {
+	return node.GetKind() == sk.ClassDeclaration
+}
+
+func (sk *SyntaxKind) IsArrowMethodDeclaration(node AstNode) bool {
+	return node.GetKind() == sk.ArrowFunction
+}
+
+func (sk *SyntaxKind) IsSimpleMethodDeclaration(node AstNode) bool {
+	return node.GetKind() == sk.MethodDeclaration
+}
+
+func (sk *SyntaxKind) IsInterfaceDeclaration(node AstNode) bool {
+	return node.GetKind() == sk.InterfaceDeclaration
+}
+
+func (sk *SyntaxKind) IsImportDeclaration(node AstNode) bool {
+	return node.GetKind() == sk.ImportDeclaration
+}
+
+func (sk *SyntaxKind) IsPropertyAccessExpression(node AstNode) bool {
+	return node.GetKind() == sk.PropertyAccessExpression
+}
+
+func (sk *SyntaxKind) IsExpressionWithTypeArguments(node AstNode) bool {
+	return node.GetKind() == sk.ExpressionWithTypeArguments
+}
+
+func (sk *SyntaxKind) IsHeritageClause(node AstNode) bool {
+	return node.GetKind() == sk.HeritageClause
+}
+
+func (sk *SyntaxKind) IsUnionType(node AstNode) bool {
+	return node.GetKind() == sk.UnionType
+}
+
+func (sk *SyntaxKind) IsFunctionDeclaration(node AstNode) bool {
+	return node.GetKind() == sk.FunctionDeclaration
+}
+
+func (sk *SyntaxKind) IsMethodDeclaration(node AstNode) bool {
+	return sk.IsSimpleMethodDeclaration(node) || sk.IsArrowMethodDeclaration(node)
+}
+
+func (sk *SyntaxKind) IsFunctionType(node AstNode) bool {
+	return node.GetKind() == sk.FunctionType
+}
+
+func (sk *SyntaxKind) HasMethodOfName(statement Statement, methodName string) bool {
+	if sk.IsClassDeclaration(&statement) {
+		return false
+	}
+
+	for _, member := range statement.Members {
+		if sk.IsMethodDeclaration(&member) && member.Name.EscapedText == methodName {
+			return true
+		}
+	}
+
+	return false
+}
+
+func GetJsDoc(jsDoc []AstObject) string {
+	if len(jsDoc) == 0 {
+		return ""
+	}
+
+	if len(jsDoc) == 1 {
+		return jsDoc[0].Comment
+	}
+
+	var sb strings.Builder
+	for _, doc := range jsDoc {
+		sb.WriteString(doc.Comment)
+		sb.WriteRune('\n')
+	}
+
+	return sb.String()
+}
+
+func (sk *SyntaxKind) DoesMethodReturnsJsxFragement(body Block) bool {
+	if len(body.Statements) == 0 {
+		return false
+	}
+
+	for _, st := range body.Statements {
+		if sk.IsReturnStatement(&st) && sk.IsJsxElement(st.Expression) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (sk *SyntaxKind) IsJsxElement(expr *Expression) bool {
+	if expr == nil {
+		return false
+	}
+
+	// direct JsxElement - return <component> ... </component>
+	if expr.Kind == sk.JsxElement {
+		return true
+	}
+
+	// jsx-frgament - multiple nodes - return <> ... </>
+	if expr.Kind == sk.JsxFragment {
+		return true
+	}
+
+	// inside a paranthesis - return ( <> ... </>)
+	if expr.Kind == sk.ParenthesizedExpression && sk.IsJsxElement(expr.Expression) {
+		return true
+	}
+
+	return false
+}
+
+func (sk *SyntaxKind) GetType(node AstNode) string {
+	switch node.GetKind() {
+	case sk.NumberKeyword:
+		return "number"
+	// case KIND_STRING_KEYWORD:
+	// 	return "string"
+	case sk.BooleanKeyword:
+		return "boolean"
+	case sk.VoidKeyword:
+		return "void"
+	case sk.FunctionType:
+		return "Function"
+	case sk.AnyKeyword:
+		return "any"
+	case sk.NullKeyword:
+		return "null"
+	case sk.UndefinedKeyword:
+		return "undefined"
+	case sk.NeverKeyword:
+		return "never"
+	}
+
+	return "$unknown"
 }

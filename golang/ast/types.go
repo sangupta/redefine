@@ -10,7 +10,9 @@
 
 package ast
 
-// MAIN TYPES
+// This file contains all the types
+// that are used to convert parsed AST
+// into a strongly-typed Go structure.
 
 type AstNode interface {
 	GetKind() int
@@ -218,7 +220,7 @@ func (ast *TypeReference) GetKind() int {
 // convenience methods
 
 func (st *Statement) GetClassName() string {
-	if !IsClassDeclaration(st) {
+	if !Syntax.IsClassDeclaration(st) {
 		panic("Expected a class declaration")
 	}
 
@@ -263,7 +265,7 @@ func (sf *SourceFile) resolveImports() {
 	}
 
 	for _, st := range sf.Statements {
-		if !IsImportDeclaration(&st) {
+		if !Syntax.IsImportDeclaration(&st) {
 			continue
 		}
 
@@ -289,7 +291,7 @@ func (sf *SourceFile) resolveImports() {
 
 func (sf *SourceFile) HasClassDeclaration() bool {
 	for _, statement := range sf.Statements {
-		if IsClassDeclaration(&statement) {
+		if Syntax.IsClassDeclaration(&statement) {
 			return true
 		}
 	}
@@ -305,7 +307,7 @@ func (sf *SourceFile) GetMembersOfType(typeName string) []Member {
 	}
 
 	for _, statement := range sf.Statements {
-		if IsInterfaceDeclaration(&statement) {
+		if Syntax.IsInterfaceDeclaration(&statement) {
 			if statement.Name != nil && typeName == statement.Name.EscapedText {
 				return statement.Members
 			}

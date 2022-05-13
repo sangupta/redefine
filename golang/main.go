@@ -21,18 +21,19 @@ import (
 	"sangupta.com/redefine/model"
 )
 
+/**
+ * The user provided configuration as to where
+ * to look for code.
+ */
 type RedefineConfig struct {
 	baseFolder string
 	includes   []string
 }
 
+/**
+ * The main entry point to the application.
+ */
 func main() {
-	ts := "/Users/sangupta/git/sangupta/bedrock/src/components/asset/AssetBrowser.tsx"
-	list := []string{ts}
-	ast.BuildAstForFiles(list)
-}
-
-func main1() {
 	config := RedefineConfig{
 		baseFolder: "/Users/sangupta/git/sangupta/bedrock/src",
 		includes:   []string{"*.ts", "*.tsx"},
@@ -46,16 +47,16 @@ func main1() {
 	}
 
 	// parse AST for each file
-	astMap := ast.BuildAstForFiles(files)
+	astMap, syntaxKind := ast.BuildAstForFiles(files)
 
 	// extract components
-	components := model.GetComponents(astMap)
+	components := model.GetComponents(astMap, syntaxKind)
 
 	// generate a component dictionary
-	// componentFileMap := make(map[string]model.Component, 0)
-	// for _, component := range components {
-	// 	componentFileMap[component.SourcePath+"$"+component.Name] = component
-	// }
+	componentFileMap := make(map[string]model.Component, 0)
+	for _, component := range components {
+		componentFileMap[component.SourcePath+"$"+component.Name] = component
+	}
 
 	// write the JSON file
 	payload := jsonPayload{
