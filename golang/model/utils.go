@@ -17,9 +17,10 @@ import (
 )
 
 type ComponentTypeWrapper struct {
-	ComponentType *ComponentType
+	ComponentType ComponentType
 	Clause        *ast.HeritageClause
 	Type          *ast.TypeValue
+	Detected      bool
 }
 
 func detectComponentType(ast ast.SourceFile, st ast.Statement) *ComponentTypeWrapper {
@@ -33,7 +34,12 @@ func detectComponentType(ast ast.SourceFile, st ast.Statement) *ComponentTypeWra
 			name := typ.Expression.Name.EscapedText
 
 			if (name == "Component" || name == "PureComponent") && isReactImport(ast, expr) {
-				return &ComponentTypeWrapper{}
+				return &ComponentTypeWrapper{
+					ComponentType: REACT_CLASS_COMPONENT,
+					Clause:        &clause,
+					Type:          &typ,
+					Detected:      true,
+				}
 			}
 		}
 	}

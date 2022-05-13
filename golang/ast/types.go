@@ -229,7 +229,7 @@ func (st *Statement) GetClassName() string {
 
 func (st *Statement) HasExportModifier() bool {
 	for _, modifier := range st.Modifiers {
-		if modifier.Kind == 92 {
+		if modifier.Kind == Syntax.ExportKeyword {
 			return true
 		}
 	}
@@ -239,7 +239,7 @@ func (st *Statement) HasExportModifier() bool {
 
 func (st *Statement) HasDefaultModifier() bool {
 	for _, modifier := range st.Modifiers {
-		if modifier.Kind == 87 {
+		if modifier.Kind == Syntax.DefaultKeyword {
 			return true
 		}
 	}
@@ -252,7 +252,7 @@ func (st *Statement) HasHeritageClauses() bool {
 }
 
 func (sf *SourceFile) GetImportPath(key string) string {
-	if sf.importsResolved {
+	if !sf.importsResolved {
 		sf.resolveImports()
 	}
 
@@ -262,6 +262,10 @@ func (sf *SourceFile) GetImportPath(key string) string {
 func (sf *SourceFile) resolveImports() {
 	if len(sf.Statements) == 0 {
 		return
+	}
+
+	if sf.imports == nil {
+		sf.imports = make(map[string]string, 0)
 	}
 
 	for _, st := range sf.Statements {

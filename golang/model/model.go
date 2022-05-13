@@ -131,7 +131,7 @@ func extractClassBasedComponents(path string, source ast.SourceFile, st ast.Stat
 	// all checks pass - this is a class based component
 	// verify if it extends from React or not
 	componentTypeWrapper := detectComponentType(source, st)
-	if componentTypeWrapper == nil || componentTypeWrapper.ComponentType == nil {
+	if componentTypeWrapper == nil || !componentTypeWrapper.Detected {
 		return nil
 	}
 
@@ -139,7 +139,7 @@ func extractClassBasedComponents(path string, source ast.SourceFile, st ast.Stat
 	def := Component{
 		Name:          st.GetClassName(),
 		SourcePath:    path,
-		ComponentType: *componentTypeWrapper.ComponentType,
+		ComponentType: componentTypeWrapper.ComponentType,
 		Description:   ast.GetJsDoc(st.JsDoc),
 		Props:         make([]PropDef, 0),
 	}

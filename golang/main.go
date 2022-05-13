@@ -71,7 +71,7 @@ func main() {
 	}
 
 	// start the server as needed
-	fmt.Println(jsonStr)
+	fmt.Println(string(jsonStr))
 }
 
 type jsonPayload struct {

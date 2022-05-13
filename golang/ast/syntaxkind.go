@@ -427,7 +427,7 @@ func (sk *SyntaxKind) IsFunctionType(node AstNode) bool {
 }
 
 func (sk *SyntaxKind) HasMethodOfName(statement Statement, methodName string) bool {
-	if sk.IsClassDeclaration(&statement) {
+	if !sk.IsClassDeclaration(&statement) {
 		return false
 	}
 
