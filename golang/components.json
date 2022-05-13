@@ -1,0 +1,1780 @@
+{
+  "title": "React components",
+  "components": [
+    {
+      "name": "Invisible",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "Control the visibility of elements, without modifying their display, with visibility utilities.",
+      "props": [
+        {
+          "name": "invisible",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether the content is invisible or not.",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Alert",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/feedback",
+      "componentType": 0,
+      "description": "An `alert` or informational component, also called as `MessageBar`.",
+      "props": [
+        {
+          "name": "variant",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Look and feel variant of the button",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "role",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "allowClose",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Add a close button to the alert. The button manages an internal\nstate to hide the content when closed. It does not remove the\nalert from component hierarchy. To achieve the same, add a close\nbutton as a child and then remove the component from heirarchy\nin your calling component.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "show",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Used to control show/hide state outside of component.\nRecommended to be paired with `allowClose` prop.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "closeButtonAriaLabel",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "LoadingDots",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/feedback",
+      "componentType": 0,
+      "description": "",
+      "props": []
+    },
+    {
+      "name": "Spinner",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/feedback",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "ariaLabel",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "variant",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "ButtonGroup",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/form",
+      "componentType": 0,
+      "description": "Used to group a bunch of buttons, such as in pagination or a toolbar.",
+      "props": [
+        {
+          "name": "ariaLabel",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "role",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "size",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The size of the button",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "isVertical",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "AssetIcon",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/asset",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "asset",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Indicator",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "A color box component.",
+      "props": [
+        {
+          "name": "variant",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "FlexBox",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/layout",
+      "componentType": 0,
+      "description": "Layout children in horizontal row.",
+      "props": [
+        {
+          "name": "justifyContent",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "`justify-content` value",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "alignContent",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "`align-content` value",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "reverse",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Reverse the arrangement of items inside this container",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "direction",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The flex direction",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Heading",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/typography",
+      "componentType": 0,
+      "description": "All HTML headings, `\u003ch1\u003e` to `\u003ch6\u003e`. Allows style augmentation\non a `\u003cp\u003e` tag too.",
+      "props": [
+        {
+          "name": "size",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "displayHeading",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "asParagraph",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "ByteSize",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "bytes",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "ProgressBar",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/feedback",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "min",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The minimum value to use when computing percentage progress.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "max",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The maximum value to use when computing percentage progress.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "value",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Current value to display as progress",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "label",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Label, if any, to display within the progress bar",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "variant",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Color styling variant for the component.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "striped",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether to display a striped progress bar.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "animated",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether to display an animated progress bar.",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "TokenInput",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/form",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "numChars",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The number of digits the token will contain",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "maskInput",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Do we need to mask input?",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "maskChar",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The masking character to be used. Only useful when\n`maskInput` is set to `true`.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "allowCharacters",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onSubmit",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onChange",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Underlay",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/layout",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "show",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether to display the underlay or not",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Image",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/media",
+      "componentType": 0,
+      "description": "The `img` component.",
+      "props": [
+        {
+          "name": "src",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "responsive",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "thumbnail",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "rounded",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "HttpLoader",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/rpc",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "httpCallInvoker",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "whenLoad",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Rendered while data is loading",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "whenError",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Rendered when we have an error loading data",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onError",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Called when we have an error fetching data",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "whenSuccess",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Rendered when we have success receiving data",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onDataSuccess",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Called when we have a success and receive data",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Code",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/typography",
+      "componentType": 0,
+      "description": "The `code` component.",
+      "props": []
+    },
+    {
+      "name": "HexFileViewer",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/asset",
+      "componentType": 0,
+      "description": "The default HEX viewer used to view files in hex.",
+      "props": [
+        {
+          "name": "bytes",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "MonacoFileViewer",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/asset",
+      "componentType": 0,
+      "description": "Component that renders the file contents inside a Monaco editor\ninstance. Refer to https://microsoft.github.io/monaco-editor/ for\nmore details on the Monaco editor.",
+      "props": [
+        {
+          "name": "contents",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "language",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "readOnly",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Countdown",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "start",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The starting value",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "stop",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The ending value",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "step",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The stepping value to increment/decrement with",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "timeInMillis",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Delay between each update",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "DateTime",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "value",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "valueType",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "type",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "TimeAgo",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "value",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Time in milliseconds from which the duration needs to be computed.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "valueType",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Time in seconds from which the duration needs to be computed.",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Typewriter",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "message",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The message to work on",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "eraseMode",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Are we erasing than typing?",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "timeInMillis",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Delay between each update",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "VBox",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/layout",
+      "componentType": 0,
+      "description": "Layout children in horizontal row.",
+      "props": [
+        {
+          "name": "justify",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Horizontal justification to use when aligning elements inside",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "align",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Vertical justification to use when aligning items",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "reverse",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Reverse the arrangement of items inside this container",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "AssetBrowser",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/asset",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "assets",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onAssetClick",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onAssetOpen",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "displayColumns",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Link",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/navigation",
+      "componentType": 0,
+      "description": "The `anchor` or a simple hyperlink component.",
+      "props": [
+        {
+          "name": "variant",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "href",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "active",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "LogFileViewer",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/asset",
+      "componentType": 0,
+      "description": "A basic log file viewer.",
+      "props": [
+        {
+          "name": "logLines",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Modal",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/feedback",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "backdrop",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether to show the backdrop or not",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "align",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "BaseInput",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/form",
+      "componentType": 0,
+      "description": "The `input type='*'` component. This component is used directly by\nvarious implementations such as `TextInput`, `NumberInput`, `EmailInput`\netc. You should prefer to use these implementations unless you have a\ncustom use-case that those implementation do not provide for.",
+      "props": [
+        {
+          "name": "type",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The type of element to render.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "value",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The initial value of the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "form",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The form to bind to, unless its the nearest ancestoral form",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "name",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The attribute name to use when storing the value in `Form`",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "size",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Size for the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "required",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Value required or not?",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "validators",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Validators, if any, required on the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "showInvalidState",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether to show invalid state via red border and an\nicon or not. This adds CSS class `is-invalid` to the\ncomponent.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "valueConverter",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "hasValue",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onChange",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Handler invoked when value of this field changes",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "NumberInput",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/form",
+      "componentType": 0,
+      "description": "The `input type=\"number\"` component.",
+      "props": [
+        {
+          "name": "value",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The initial value of the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "form",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The form to bind to, unless its the nearest ancestoral form",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "name",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The attribute name to use when storing the value in `Form`",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "size",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Size for the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "required",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Value required or not?",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "validators",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Validators, if any, required on the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "showInvalidState",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether to show invalid state via red border and an\nicon or not. This adds CSS class `is-invalid` to the\ncomponent.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "placeholder",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "min",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The minimum value",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "max",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The maximum value",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "step",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Stepping value when up/down buttons are used",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onChange",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Handler invoked when value of this field changes",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "TextInput",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/form",
+      "componentType": 0,
+      "description": "The `input type=\"text\"` component.",
+      "props": [
+        {
+          "name": "value",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The initial value of the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "form",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The form to bind to, unless its the nearest ancestoral form",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "name",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The attribute name to use when storing the value in `Form`",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "size",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Size for the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "required",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Value required or not?",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "validators",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Validators, if any, required on the component",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "showInvalidState",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether to show invalid state via red border and an\nicon or not. This adds CSS class `is-invalid` to the\ncomponent.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "placeholder",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The placeholder to display",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "maxLength",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onChange",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Handler invoked when value of this field changes",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Form",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/form",
+      "componentType": 0,
+      "description": "The `form` component.",
+      "props": [
+        {
+          "name": "onSubmit",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onUpdate",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "name",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "autoCapitalize",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "autoComplete",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "noValidate",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "AspectRatio",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/layout",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "ratio",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Para",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/typography",
+      "componentType": 0,
+      "description": "The paragraph component.",
+      "props": [
+        {
+          "name": "variant",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "leadPara",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "textAlign",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "wrapMode",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "transform",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Button",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/form",
+      "componentType": 0,
+      "description": "The `button` component",
+      "props": [
+        {
+          "name": "variant",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Look and feel variant of the button",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "isOutline",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether the button displays as outline",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "size",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The size of the button",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "label",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Label for the button. If provided, it will override the\n`child` components for the button.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "disabled",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether the button is disabled or not?",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "type",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The `type` of button as per HTML specs. If button is being\nrendered using `asLink`, the `type` value will be emmitted\nas `role` attribute.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "asLink",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "If we should render an `anchor` instead of a `button` tag.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "href",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The `href` associated with the `anchor` tag. Only applies if\nthe Button is rendered `asLink`.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "active",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Whether the button is active or not?",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "ColorBox",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "A color box component.",
+      "props": [
+        {
+          "name": "color",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "label",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "onClick",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "StaticContent",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/content",
+      "componentType": 0,
+      "description": "A component that will never ever re-render. The `shouldComponentUpdate`\nmethod always returns `false`.",
+      "props": []
+    },
+    {
+      "name": "HBox",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/layout",
+      "componentType": 0,
+      "description": "Layout children in horizontal row.",
+      "props": [
+        {
+          "name": "justify",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Horizontal justification to use when aligning elements inside",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "align",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Vertical justification to use when aligning items",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "reverse",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Reverse the arrangement of items inside this container",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Gravatar",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/media",
+      "componentType": 0,
+      "description": "React component for rendering a gravatar profile image.",
+      "props": [
+        {
+          "name": "email",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The email address for which gravatar needs to be shown.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "md5",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The MD5 hash of the email address for which gravatar needs to be shown.\nThis is useful if the email address is not available on client due to\nprivacy concerns, in which case, the MD5 can be sent from server to the\nclient.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "size",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The size of the gravatar image. Defaults to 50px square.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "rating",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "Rating value for the gravatar image to pull.\n`g` is suitable for display on all websites with any audience type.\n`pg` may contain rude gestures, provocatively dressed individuals, the lesser swear words, or mild violence.\n`r` may contain such things as harsh profanity, intense violence, nudity, or hard drug use.\n`x` may contain hardcore sexual imagery or extremely disturbing violence.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "defaultImage",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The default image to display if gravatar is not found.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "scheme",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The URL scheme to use. Defaults to using `//` to make\nwork in accordance of client scheme.",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "MediaSource",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/media",
+      "componentType": 0,
+      "description": "",
+      "props": [
+        {
+          "name": "mimeType",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "The MIME type for the source as described in https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types\noptionally with a codec parameter.",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "src",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "srcSet",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "mediaQuery",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "width",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "height",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    },
+    {
+      "name": "Video",
+      "sourcePath": "/Users/sangupta/git/sangupta/bedrock/src/components/media",
+      "componentType": 0,
+      "description": "The `video` HTML component.",
+      "props": [
+        {
+          "name": "autoPlay",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "autoPip",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "controls",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "controlsList",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "disablePip",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "disableRemotePlayback",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "loop",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "muted",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "width",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "height",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "preload",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "src",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "poster",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "playsInline",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        },
+        {
+          "name": "isResponsive",
+          "type": "",
+          "required": false,
+          "defaultValue": "",
+          "description": "",
+          "returnType": "",
+          "params": null
+        }
+      ]
+    }
+  ]
+}

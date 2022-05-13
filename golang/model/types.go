@@ -11,26 +11,26 @@
 package model
 
 type Component struct {
-	Name          string
-	SourcePath    string
-	ComponentType ComponentType
-	Description   string
-	Props         []PropDef
+	Name          string        `json:"name"`
+	SourcePath    string        `json:"sourcePath"`
+	ComponentType ComponentType `json:"componentType"`
+	Description   string        `json:"description"`
+	Props         []PropDef     `json:"props"`
 }
 
 type PropDef struct {
-	Name         string
-	PropType     string
-	Required     bool
-	DefaultValue string
-	Description  string
-	ReturnType   string
-	Params       []ParamDef
+	Name         string     `json:"name"`
+	PropType     string     `json:"type"`
+	Required     bool       `json:"required"`
+	DefaultValue string     `json:"defaultValue"`
+	Description  string     `json:"description"`
+	ReturnType   string     `json:"returnType"`
+	Params       []ParamDef `json:"params"`
 }
 
 type ParamDef struct {
-	Name      string
-	ParamType string
+	Name      string `json:"name"`
+	ParamType string `json:"type"`
 }
 
 type ComponentType int64

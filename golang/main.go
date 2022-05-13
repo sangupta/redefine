@@ -12,7 +12,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -71,12 +71,13 @@ func main() {
 	}
 
 	// start the server as needed
-	fmt.Println(string(jsonStr))
+	ioutil.WriteFile("components.json", jsonStr, 0644)
+	// fmt.Println(string(jsonStr))
 }
 
 type jsonPayload struct {
-	Title      string
-	Components []model.Component
+	Title      string            `json:"title"`
+	Components []model.Component `json:"components"`
 }
 
 /**
