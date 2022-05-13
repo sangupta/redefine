@@ -1,5 +1,5 @@
 /**
- * Redefine
+ * Redefine - UI component documentation
  *
  * MIT License.
  * Copyright (c) 2022, Sandeep Gupta.
@@ -70,18 +70,25 @@ func main() {
 		return
 	}
 
-	// start the server as needed
+	// write the file to disk
 	ioutil.WriteFile("components.json", jsonStr, 0644)
-	// fmt.Println(string(jsonStr))
 }
 
+/**
+ * Value object to define how the component JSON
+ * should be written to disk and/or served for client
+ */
 type jsonPayload struct {
 	Title      string            `json:"title"`
 	Components []model.Component `json:"components"`
 }
 
 /**
- * Scan a folder for all files that match the pattern given
+ * Scan a folder for all files that match a given pattern.
+ *
+ * @param baseFolder the base location that needs to be scanned
+ *
+ * @param includes an array of wildcard patterns that select files
  */
 func scanFolder(baseFolder string, includes []string) ([]string, error) {
 	totalFiles := []string{}

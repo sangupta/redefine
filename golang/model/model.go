@@ -1,5 +1,5 @@
 /**
- * Redefine
+ * Redefine - UI component documentation
  *
  * MIT License.
  * Copyright (c) 2022, Sandeep Gupta.
@@ -160,9 +160,7 @@ func extractClassBasedComponents(path string, source ast.SourceFile, st ast.Stat
 		}
 	}
 
-	// // for all these prop members, see if there is a default value specified or not
-	// Object x = ComponentUtils.getDefaultPropsStaticClassMember(statement);
-
+	// for all these prop members, see if there is a default value specified or not
 	return &def
 }
 
@@ -178,10 +176,6 @@ func getComponentProp(member ast.Member) *PropDef {
 		Name:        member.Name.EscapedText,
 		Description: ast.GetJsDoc(member.JsDoc),
 	}
-
-	// if member.Type.TypeName != nil {
-
-	// }
 
 	return &def
 }

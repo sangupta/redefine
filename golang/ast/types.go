@@ -1,5 +1,5 @@
 /**
- * Redefine
+ * Redefine - UI component documentation
  *
  * MIT License.
  * Copyright (c) 2022, Sandeep Gupta.

@@ -1,5 +1,5 @@
 /**
- * Redefine
+ * Redefine - UI component documentation
  *
  * MIT License.
  * Copyright (c) 2022, Sandeep Gupta.
@@ -120,7 +120,6 @@ func parseSingleFile(file string, parser *tsParser) *SourceFile {
 	json.Unmarshal([]byte(sourceFileAsString), &sourceFile)
 
 	_, err = json.MarshalIndent(sourceFile, "", "  ")
-	// fmt.Println(string(bytes))
 	return &sourceFile
 }
 
