@@ -10,3 +10,6 @@ target/*
 yarn.lock
 package-lock.json
 **/.parcel-cache/*
+/target/
+golang/.vscode
+	
