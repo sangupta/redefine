@@ -22,11 +22,13 @@ import (
 )
 
 type tsParser struct {
-	runtime    *quickjs.Runtime
-	context    *quickjs.Context
-	globals    *quickjs.Value
-	codeParser *quickjs.Value
-	syntaxKind *SyntaxKind
+	runtime          *quickjs.Runtime
+	context          *quickjs.Context
+	globals          *quickjs.Value
+	codeParser       *quickjs.Value
+	stringify        *quickjs.Value
+	circularReplacer *quickjs.Value
+	syntaxKind       *SyntaxKind
 }
 
 /**
@@ -84,24 +86,40 @@ func parseSingleFile(file string, parser *tsParser) *SourceFile {
 
 	// invoke the "createSourceFile" method
 	result, err := parser.context.Call(*parser.globals, *parser.codeParser, args)
-	// defer result.Free()
+	defer result.Free()
+
+	args = make([]quickjs.Value, 2)
+	args[0] = result
+	args[1] = *parser.circularReplacer
+	codeJson, err := parser.context.Call(*parser.globals, *parser.stringify, args)
+	defer codeJson.Free()
 
 	// check for error, and free up the result
 	check(err)
+	if err != nil {
+		panic(err)
+	}
+
+	sourceFileAsString := codeJson.String()
 
 	// now convert the "result" represented as AST in QJS objects
 	// to the pure objects that we require
-	fmt.Println("Fetching object for " + file)
+	fmt.Println("Fetching object for: " + file)
+	sourceFile := SourceFile{}
 
-	typescript := Typescript{
-		syntaxKind: *parser.syntaxKind,
-	}
+	json.Unmarshal([]byte(sourceFileAsString), &sourceFile)
 
-	sourceFile := typescript.getSourceFile(result)
-	return sourceFile
+	bytes, err := json.MarshalIndent(sourceFile, "", "  ")
+	fmt.Println(string(bytes))
+	return &sourceFile
 }
 
+/**
+ * Free all created objects
+ */
 func (parser *tsParser) free() {
+	parser.stringify.Free()
+	parser.circularReplacer.Free()
 	parser.context.Free()
 	parser.codeParser.Free()
 
@@ -109,6 +127,9 @@ func (parser *tsParser) free() {
 	defer parser.runtime.Free()
 }
 
+/**
+ * Initialize the Typescript parser based on QuickJS runtime
+ */
 func (parser *tsParser) init() {
 	// read typescript code to be used
 	typeScript, err := ioutil.ReadFile("/Users/sangupta/git/sangupta/bedrock/node_modules/typescript/lib/typescript.js")
@@ -144,14 +165,14 @@ func (parser *tsParser) init() {
 	defer jsJson.Free()
 
 	stringify := jsJson.Get("stringify")
-	defer stringify.Free()
+	parser.stringify = &stringify
 
 	stringifyArgs := make([]quickjs.Value, 1)
 	stringifyArgs[0] = sk
 
 	syntaxKind := SyntaxKind{}
 	syntaxKindJson, err := context.Call(globals, stringify, stringifyArgs)
-	if err != nil {
+	if err == nil {
 		_ = json.Unmarshal([]byte(syntaxKindJson.String()), &syntaxKind)
 	}
 
@@ -167,6 +188,33 @@ func (parser *tsParser) init() {
 	// read parsing function
 	parseCode := ts.Get("createSourceFile")
 	parser.codeParser = &parseCode
+
+	// craeate a circular replacer
+	replacerCode := `const ____getCircularReplacer = () => {
+		const seen = new WeakSet();
+		return (key, value) => {
+		  if (typeof value === 'object' && value !== null) {
+			if (seen.has(value)) {
+			  return;
+			}
+			seen.add(value);
+		  }
+		  return value;
+		};
+	  };
+	  `
+
+	replacerCodeResult, err := context.Eval(replacerCode, quickjs.EVAL_GLOBAL)
+	defer replacerCodeResult.Free()
+	if err != nil {
+		panic(err)
+	}
+
+	replacer, err := context.Eval("____getCircularReplacer()", quickjs.EVAL_GLOBAL)
+	parser.circularReplacer = &replacer
+	if err != nil {
+		panic(err)
+	}
 }
 
 /**
