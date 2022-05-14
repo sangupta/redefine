@@ -163,9 +163,9 @@ func extractClassBasedComponents(path string, source ast.SourceFile, classDeclSt
 	propDefaultValueMap := getPropsDefaultValuesIfAvailable(&classDeclStatement)
 
 	// find component props
-	if len(componentTypeWrapper.Type.TypeArguments) > 0 {
+	if len(componentTypeWrapper.ClauseType.TypeArguments) > 0 {
 		// the first argument specifies the props
-		typeReference := componentTypeWrapper.Type.TypeArguments[0]
+		typeReference := componentTypeWrapper.ClauseType.TypeArguments[0]
 
 		// find all members of the interface from the source file
 		members := source.GetMembersOfType(typeReference.TypeName.EscapedText)
@@ -202,6 +202,7 @@ func getPropsDefaultValuesIfAvailable(classDeclStatement *ast.Statement) map[str
 		return defaultValueMap
 	}
 
+	// iterate over all properties
 	for _, property := range defaultProps.Initializer.Properties {
 		propName := property.Name.EscapedText
 		propValue := extractPropValue(property)
@@ -219,12 +220,24 @@ func getPropsDefaultValuesIfAvailable(classDeclStatement *ast.Statement) map[str
  * member of the class based component.
  */
 func extractPropValue(property ast.Property) string {
-	if property.Initializer.Kind == Syntax.TrueKeyword {
+	switch property.Initializer.Kind {
+	case Syntax.TrueKeyword:
 		return "true"
-	}
 
-	if property.Initializer.Kind == Syntax.FalseKeyword {
+	case Syntax.FalseKeyword:
 		return "false"
+
+	case Syntax.StringLiteral:
+		return property.Initializer.Text
+
+	case Syntax.NumericLiteral:
+		return property.Initializer.Text
+
+	case Syntax.Identifier:
+		return property.Initializer.EscapedText
+
+	case Syntax.NullKeyword:
+		return "null"
 	}
 
 	return property.Initializer.EscapedText
@@ -289,6 +302,27 @@ func getComponentProp(member ast.Member, propDefaultValueMap map[string]string) 
 		} else {
 			if Syntax.IsUnionType(member.TypeReference) {
 				def.PropType = "$enum"
+
+				// check under type.types - it carries a list
+				// of all types of which this value is a union of
+				def.EnumTypes = make([]ParamDef, len(member.TypeReference.Types))
+
+				// iterate and add
+				for index, individualType := range member.TypeReference.Types {
+					if individualType.Kind == Syntax.TypeReference {
+						// we read the value from typeName.escapedText
+						def.EnumTypes[index] = ParamDef{
+							Name:      individualType.TypeName.EscapedText,
+							ParamType: "",
+						}
+					} else if individualType.Kind == Syntax.LiteralType {
+						// we read the value from literal.text
+						def.EnumTypes[index] = ParamDef{
+							Name:      individualType.Literal.Text,
+							ParamType: Syntax.GetType(individualType.Literal),
+						}
+					}
+				}
 			} else if Syntax.IsFunctionType(member.TypeReference) {
 				def.PropType = "$function"
 

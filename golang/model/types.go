@@ -21,6 +21,7 @@ type Component struct {
 type PropDef struct {
 	Name         string     `json:"name"`
 	PropType     string     `json:"type"`
+	EnumTypes    []ParamDef `json:"enumOf"`
 	Required     bool       `json:"required"`
 	DefaultValue string     `json:"defaultValue"`
 	Description  string     `json:"description"`

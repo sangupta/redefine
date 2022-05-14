@@ -166,6 +166,8 @@ type SyntaxKind struct {
 	SetKeyword                                   int
 	intKeyword                                   int
 	StringKeyword                                int
+	StringLiteral                                int
+	NumericLiteral                               int
 	SymbolKeyword                                int
 	TypeKeyword                                  int
 	UndefinedKeyword                             int
@@ -376,10 +378,13 @@ func (sk *SyntaxKind) getNodeType(node AstNode) string {
 	switch node.GetKind() {
 	case sk.ClassDeclaration:
 		return "ClassDeclaration"
+
 	case sk.FunctionDeclaration:
 		return "FunctionDeclaration"
+
 	case sk.InterfaceDeclaration:
 		return "InterfaceDeclaration"
+
 	case sk.ImportDeclaration:
 		return "ImportDeclaration"
 	}
@@ -511,9 +516,11 @@ func (sk *SyntaxKind) IsJsxElement(expr *Expression) bool {
 func (sk *SyntaxKind) GetType(node AstNode) string {
 	switch node.GetKind() {
 	case sk.NumberKeyword:
+	case sk.NumericLiteral:
 		return "number"
 
 	case sk.StringKeyword:
+	case sk.StringLiteral:
 		return "string"
 
 	case sk.BooleanKeyword:

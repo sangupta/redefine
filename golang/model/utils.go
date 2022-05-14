@@ -19,25 +19,28 @@ import (
 type ComponentTypeWrapper struct {
 	ComponentType ComponentType
 	Clause        *ast.HeritageClause
-	Type          *ast.TypeValue
+	ClauseType    *ast.TypeValue
 	Detected      bool
 }
 
-func detectComponentType(ast ast.SourceFile, st ast.Statement) *ComponentTypeWrapper {
-	if len(st.HeritageClauses) == 0 {
+// This method detects the component type, its heritage
+// clause (read the interface implementing the props)
+// and the applicable `HeritageClause.Type`
+func detectComponentType(sourceFile ast.SourceFile, classDeclStatement ast.Statement) *ComponentTypeWrapper {
+	if len(classDeclStatement.HeritageClauses) == 0 {
 		return nil
 	}
 
-	for _, clause := range st.HeritageClauses {
-		for _, typ := range clause.Types {
-			expr := typ.Expression.Expression.EscapedText
-			name := typ.Expression.Name.EscapedText
+	for _, clause := range classDeclStatement.HeritageClauses {
+		for _, clauseType := range clause.Types {
+			expr := clauseType.Expression.Expression.EscapedText
+			name := clauseType.Expression.Name.EscapedText
 
-			if (name == "Component" || name == "PureComponent") && isReactImport(ast, expr) {
+			if (name == "Component" || name == "PureComponent") && isReactImport(sourceFile, expr) {
 				return &ComponentTypeWrapper{
 					ComponentType: REACT_CLASS_COMPONENT,
 					Clause:        &clause,
-					Type:          &typ,
+					ClauseType:    &clauseType,
 					Detected:      true,
 				}
 			}
@@ -47,6 +50,11 @@ func detectComponentType(ast ast.SourceFile, st ast.Statement) *ComponentTypeWra
 	return nil
 }
 
+// Check if the name of the import associated with
+// the class `extends` keyword is coming in from `react`.
+// To find it out, we run a check against all import
+// statements in the source file, and see if the import
+// object is coming in from a package called `react`.
 func isReactImport(sourceFile ast.SourceFile, name string) bool {
 	for _, st := range sourceFile.Statements {
 		if !Syntax.IsImportDeclaration(&st) {

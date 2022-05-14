@@ -136,11 +136,12 @@ type TypeValue struct {
 }
 
 type TypeReference struct {
-	TypeName   *AstObject    `json:"typeName"`
-	TypeValue  *AstObject    `json:"type"`
-	Types      []LiteralType `json:"types"`
-	Parameters []Parameter   `json:"parameters"`
-	Kind       int           `json:"kind"`
+	TypeName   *AstObject      `json:"typeName"`
+	TypeValue  *AstObject      `json:"type"`
+	Types      []TypeReference `json:"types"`
+	Parameters []Parameter     `json:"parameters"`
+	Literal    *AstObject      `json:"literal"`
+	Kind       int             `json:"kind"`
 }
 
 // implement AstNode interface

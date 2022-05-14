@@ -17,6 +17,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 
 	ast "sangupta.com/redefine/ast"
 	"sangupta.com/redefine/model"
@@ -34,7 +35,7 @@ type RedefineConfig struct {
 // A simple function that is used to test a the
 // code against a single file. This helps in easy
 // addition of features and/or fixing bugs.
-func mainTest() {
+func main2() {
 	files := []string{"/Users/sangupta/git/sangupta/bedrock/src/components/form/Button.tsx"}
 	astMap, syntaxKind := ast.BuildAstForFiles(files)
 	components := model.GetComponents(astMap, syntaxKind)
@@ -60,6 +61,11 @@ func main() {
 
 	// extract components
 	components := model.GetComponents(astMap, syntaxKind)
+
+	// sort components
+	sort.SliceStable(components, func(i, j int) bool {
+		return components[i].Name < components[j].Name
+	})
 
 	// generate a component dictionary
 	componentFileMap := make(map[string]model.Component, 0)
