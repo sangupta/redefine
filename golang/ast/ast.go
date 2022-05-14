@@ -81,6 +81,8 @@ func doWork(files []string, parser *tsParser, astMap map[string]SourceFile) {
  * Parse a single file by reading it from disk
  */
 func parseSingleFile(file string, parser *tsParser) *SourceFile {
+	fmt.Println("Processing file: " + file)
+
 	// read the source code file from disk
 	sourceCode, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -114,7 +116,8 @@ func parseSingleFile(file string, parser *tsParser) *SourceFile {
 
 	// now convert the "result" represented as AST in QJS objects
 	// to the pure objects that we require
-	fmt.Println("Fetching object for: " + file)
+	// fmt.Println(sourceFileAsString)
+
 	sourceFile := SourceFile{}
 
 	json.Unmarshal([]byte(sourceFileAsString), &sourceFile)

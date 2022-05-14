@@ -60,6 +60,8 @@ func GetComponents(astMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxKind)
  * Extract a list of components from a given source file
  */
 func extractComponents(name string, path string, sourceFile ast.SourceFile) []Component {
+	fmt.Println("Extracting components from: " + path + "/" + name)
+
 	cl := make([]Component, 0)
 
 	if len(sourceFile.Statements) == 0 {
@@ -108,39 +110,39 @@ func getNameAndPath(str string) (string, string) {
 /**
  * Extract a class based component (if applicable) from the given statement
  */
-func extractClassBasedComponents(path string, source ast.SourceFile, st ast.Statement) *Component {
+func extractClassBasedComponents(path string, source ast.SourceFile, classDeclStatement ast.Statement) *Component {
 	// skip if there is no export modifier - we only document
 	// public components
-	if !st.HasExportModifier() {
+	if !classDeclStatement.HasExportModifier() {
 		return nil
 	}
 
 	// check if the class has any heritage clause - means it extends
 	// another clause. A class component must extend React.Component
 	// to be a component
-	if !st.HasHeritageClauses() {
+	if !classDeclStatement.HasHeritageClauses() {
 		return nil
 	}
 
 	// case 1: has export keyword, and extend react.component or just component from both react library
 	// the class must have a method called "render" to be a component
-	if !Syntax.HasMethodOfName(st, "render") {
+	if !Syntax.HasMethodOfName(classDeclStatement, "render") {
 		return nil
 	}
 
 	// all checks pass - this is a class based component
 	// verify if it extends from React or not
-	componentTypeWrapper := detectComponentType(source, st)
+	componentTypeWrapper := detectComponentType(source, classDeclStatement)
 	if componentTypeWrapper == nil || !componentTypeWrapper.Detected {
 		return nil
 	}
 
 	// class extends and is definitely a react component
-	def := Component{
-		Name:          st.GetClassName(),
+	componentDef := Component{
+		Name:          classDeclStatement.GetClassName(),
 		SourcePath:    path,
 		ComponentType: componentTypeWrapper.ComponentType,
-		Description:   ast.GetJsDoc(st.JsDoc),
+		Description:   ast.GetJsDoc(classDeclStatement.JsDoc),
 		Props:         make([]PropDef, 0),
 	}
 
@@ -155,13 +157,73 @@ func extractClassBasedComponents(path string, source ast.SourceFile, st ast.Stat
 		// document all the members as this components props
 		if len(members) > 0 {
 			for _, member := range members {
-				def.Props = append(def.Props, *getComponentProp(member))
+				componentDef.Props = append(componentDef.Props, *getComponentProp(member))
 			}
 		}
 	}
 
-	// for all these prop members, see if there is a default value specified or not
-	return &def
+	// if there were props detected find their default values
+	if len(componentDef.Props) > 0 {
+		// for all these prop members, see if there is a default value specified or not
+		defaultProps := findDefaultPropsMember(path, source, classDeclStatement)
+		if defaultProps != nil {
+
+			// check if initializer and properties exist
+			if defaultProps.Initializer != nil && len(defaultProps.Initializer.Properties) > 0 {
+				for _, property := range defaultProps.Initializer.Properties {
+					propName := property.Name.EscapedText
+					propValue := extractPropValue(property)
+
+					fmt.Println("  found default value for: " + propName + " as: " + propValue)
+
+					// set this value as the default value for
+					// the correct prop
+					for _, comProp := range componentDef.Props {
+						if comProp.Name == propName {
+							fmt.Println("       set value for: " + comProp.Name + " as: " + propValue)
+							comProp.DefaultValue = propValue
+							// break so that outer loop can run
+							// break
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return &componentDef
+}
+
+/**
+ * This function extracts the property value using
+ * the initializer of the property. This is only used
+ * when reading properties from `static defaultProps`
+ * member of the class based component.
+ */
+func extractPropValue(property ast.Property) string {
+	if property.Initializer.Kind == Syntax.TrueKeyword {
+		return "true"
+	}
+
+	if property.Initializer.Kind == Syntax.FalseKeyword {
+		return "false"
+	}
+
+	return property.Initializer.EscapedText
+}
+
+func findDefaultPropsMember(path string, source ast.SourceFile, st ast.Statement) *ast.Member {
+	if len(st.Members) == 0 {
+		return nil
+	}
+
+	for _, member := range st.Members {
+		if member.Name != nil && member.Name.EscapedText == "defaultProps" && member.HasStaticModifier() {
+			return &member
+		}
+	}
+
+	return nil
 }
 
 /**

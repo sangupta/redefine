@@ -324,3 +324,13 @@ func (sf *SourceFile) GetMembersOfType(typeName string) []Member {
 func (sf *SourceFile) GetMembersOfTypeFromLibrary(importLibrary string, typeName string) []Member {
 	return nil
 }
+
+func (member *Member) HasStaticModifier() bool {
+	for _, modifier := range member.Modifiers {
+		if modifier.Kind == Syntax.StaticKeyword {
+			return true
+		}
+	}
+
+	return false
+}
