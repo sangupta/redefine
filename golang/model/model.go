@@ -26,9 +26,15 @@ var Syntax *ast.SyntaxKind
  * are present in. This uses the `SourceFile` instance and
  * scans for all classes/functions to figure out candidate
  * components.
+ *
+ * @param fileAstMap a `map` of file paths v/s their `SourceFile`
+ *		instance.
+ *
+ * @param syntaxKind the `SyntaxKind` object as extracted from
+ *		the typescript compiler.
  */
-func GetComponents(astMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxKind) []Component {
-	// setup syntax so anyone can use it
+func GetComponents(fileAstMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxKind) []Component {
+	// setup syntax so anyone can use it within the package
 	Syntax = syntaxKind
 
 	// start timing
@@ -37,11 +43,13 @@ func GetComponents(astMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxKind)
 	// create component list
 	list := make([]Component, 0)
 
-	if len(astMap) == 0 {
+	// if there are no files, just skip
+	if len(fileAstMap) == 0 {
 		return list
 	}
 
-	for file, sourceFile := range astMap {
+	// process for each file path and AST
+	for file, sourceFile := range fileAstMap {
 		name, path := getNameAndPath(file)
 
 		components := extractComponents(name, path, sourceFile)
@@ -57,7 +65,13 @@ func GetComponents(astMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxKind)
 }
 
 /**
- * Extract a list of components from a given source file
+ * Extract a list of components from a given source file.
+ *
+ * @param name the name of the file defining component.
+ *
+ * @param path the absolute path to the file
+ *
+ * @param sourceFile the `SourceFile` instance describing the AST
  */
 func extractComponents(name string, path string, sourceFile ast.SourceFile) []Component {
 	fmt.Println("Extracting components from: " + path + "/" + name)
@@ -146,6 +160,8 @@ func extractClassBasedComponents(path string, source ast.SourceFile, classDeclSt
 		Props:         make([]PropDef, 0),
 	}
 
+	propDefaultValueMap := getPropsDefaultValuesIfAvailable(&classDeclStatement)
+
 	// find component props
 	if len(componentTypeWrapper.Type.TypeArguments) > 0 {
 		// the first argument specifies the props
@@ -157,56 +173,43 @@ func extractClassBasedComponents(path string, source ast.SourceFile, classDeclSt
 		// document all the members as this components props
 		if len(members) > 0 {
 			for _, member := range members {
-				componentDef.Props = append(componentDef.Props, *getComponentProp(member))
+				componentDef.Props = append(componentDef.Props, *getComponentProp(member, propDefaultValueMap))
 			}
 		}
 	}
 
-	// if there were props detected find their default values
-	populateDefaultPropsIfApplicable(&componentDef, &classDeclStatement)
-
 	return &componentDef
 }
 
-func populateDefaultPropsIfApplicable(componentDef *Component, classDeclStatement *ast.Statement) {
-	if len(componentDef.Props) == 0 {
-		return
-	}
+/**
+ * Build a map of default values for all props for this
+ * component. The key is the name of the prop, and value
+ * the default value of prop. If there is no default value
+ * for a prop, the key for that prop is not present in the
+ * map.
+ */
+func getPropsDefaultValuesIfAvailable(classDeclStatement *ast.Statement) map[string]string {
+	defaultValueMap := make(map[string]string, 0)
 
 	// for all these prop members, see if there is a default value specified or not
 	defaultProps := findDefaultPropsMember(classDeclStatement)
 	if defaultProps == nil {
-		return
+		return defaultValueMap
 	}
 
 	// check if initializer and properties exist
 	if defaultProps.Initializer == nil && len(defaultProps.Initializer.Properties) == 0 {
-		return
+		return defaultValueMap
 	}
 
 	for _, property := range defaultProps.Initializer.Properties {
 		propName := property.Name.EscapedText
 		propValue := extractPropValue(property)
 
-		fmt.Println("  found default value for: " + propName + " as: " + propValue)
-		updateDefaultValueInProp(&componentDef.Props, propName, propValue)
+		defaultValueMap[propName] = propValue
 	}
-}
 
-/**
- * This function sets the given default value for the
- * property defined in the component.
- */
-func updateDefaultValueInProp(properties *[]PropDef, name string, value string) {
-	for _, comProp := range *properties {
-		comProp.Description = comProp.Name
-
-		if comProp.Name == name {
-			fmt.Println("       set value for: " + comProp.Name + " as: " + value)
-			comProp.DefaultValue = value
-			return
-		}
-	}
+	return defaultValueMap
 }
 
 /**
@@ -227,12 +230,16 @@ func extractPropValue(property ast.Property) string {
 	return property.Initializer.EscapedText
 }
 
-func findDefaultPropsMember(st *ast.Statement) *ast.Member {
-	if len(st.Members) == 0 {
+/**
+ * Given a class definition, find the member that
+ * is named `defaultProps` and is `static` defined.
+ */
+func findDefaultPropsMember(classDeclStatement *ast.Statement) *ast.Member {
+	if len(classDeclStatement.Members) == 0 {
 		return nil
 	}
 
-	for _, member := range st.Members {
+	for _, member := range classDeclStatement.Members {
 		if member.Name != nil && member.Name.EscapedText == "defaultProps" && member.HasStaticModifier() {
 			return &member
 		}
@@ -248,21 +255,63 @@ func extractFunctionBasedComponent(path string, source ast.SourceFile, st ast.St
 	return nil
 }
 
-func getComponentProp(member ast.Member) *PropDef {
+/**
+ * Generate component prop definition from a class
+ * component member, defined in its interface.
+ *
+ * @param member `Member` instance of the `interface`
+ * 		implementing the props.
+ *
+ * @param propDefaultValueMap a `map` of default values
+ * 		for props as read from the `static defaultProps`
+ * 		read from the component.
+ */
+func getComponentProp(member ast.Member, propDefaultValueMap map[string]string) *PropDef {
 	def := PropDef{
 		Name:        member.Name.EscapedText,
 		Description: ast.GetJsDoc(member.JsDoc),
 	}
 
+	// check if prop is required or not
 	if member.QuestionToken != nil {
 		def.Required = false
 	} else {
 		def.Required = true
 	}
 
+	// get the prop type if available
 	if member.TypeReference != nil && member.TypeReference.TypeName != nil {
 		def.PropType = member.TypeReference.TypeName.EscapedText
+	} else {
+		memberType := Syntax.GetType(member.TypeReference)
+		if !Syntax.IsUnknownType(memberType) && !Syntax.IsFunctionType(member.TypeReference) {
+			def.PropType = memberType
+		} else {
+			if Syntax.IsUnionType(member.TypeReference) {
+				def.PropType = "$enum"
+			} else if Syntax.IsFunctionType(member.TypeReference) {
+				def.PropType = "$function"
+
+				if member.TypeReference.Parameters != nil {
+					def.Params = make([]ParamDef, 0)
+
+					// build the type using definitions
+					for _, param := range member.TypeReference.Parameters {
+						def.Params = append(def.Params, ParamDef{
+							Name:      param.Name.EscapedText,
+							ParamType: Syntax.GetType(param.TypeReference),
+						})
+					}
+
+					// set return type of function
+					def.ReturnType = Syntax.GetType(member.TypeReference.TypeValue)
+				}
+			}
+		}
 	}
+
+	// set default value if applicable
+	def.DefaultValue = propDefaultValueMap[def.Name]
 
 	return &def
 }

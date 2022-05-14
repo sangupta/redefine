@@ -12,6 +12,8 @@ package ast
 
 import "strings"
 
+const unknownType = "$unknown"
+
 type SyntaxKind struct {
 	FirstToken                                   int
 	EndOfFileToken                               int
@@ -163,6 +165,7 @@ type SyntaxKind struct {
 	ObjectKeyword                                int
 	SetKeyword                                   int
 	intKeyword                                   int
+	StringKeyword                                int
 	SymbolKeyword                                int
 	TypeKeyword                                  int
 	UndefinedKeyword                             int
@@ -509,23 +512,35 @@ func (sk *SyntaxKind) GetType(node AstNode) string {
 	switch node.GetKind() {
 	case sk.NumberKeyword:
 		return "number"
-	// case KIND_STRING_KEYWORD:
-	// 	return "string"
+
+	case sk.StringKeyword:
+		return "string"
+
 	case sk.BooleanKeyword:
 		return "boolean"
+
 	case sk.VoidKeyword:
 		return "void"
+
 	case sk.FunctionType:
 		return "Function"
+
 	case sk.AnyKeyword:
 		return "any"
+
 	case sk.NullKeyword:
 		return "null"
+
 	case sk.UndefinedKeyword:
 		return "undefined"
+
 	case sk.NeverKeyword:
 		return "never"
 	}
 
-	return "$unknown"
+	return unknownType
+}
+
+func (sk *SyntaxKind) IsUnknownType(typ string) bool {
+	return unknownType == typ
 }

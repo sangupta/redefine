@@ -12,6 +12,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -28,6 +29,13 @@ import (
 type RedefineConfig struct {
 	baseFolder string
 	includes   []string
+}
+
+func mainTest() {
+	files := []string{"/Users/sangupta/git/sangupta/bedrock/src/components/form/Button.tsx"}
+	astMap, syntaxKind := ast.BuildAstForFiles(files)
+	components := model.GetComponents(astMap, syntaxKind)
+	fmt.Println(components)
 }
 
 /**

@@ -41,9 +41,11 @@ type tsParser struct {
 	circularReplacer *quickjs.Value
 }
 
-/**
- * Create a map of AST's by parsing each file
- */
+//
+// Create a map of ASTs by parsing each file.
+//
+// @param files an array of absolute file paths to process.
+//
 func BuildAstForFiles(files []string) (map[string]SourceFile, *SyntaxKind) {
 	start := time.Now()
 	astMap := make(map[string]SourceFile, len(files))
