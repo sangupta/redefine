@@ -163,35 +163,50 @@ func extractClassBasedComponents(path string, source ast.SourceFile, classDeclSt
 	}
 
 	// if there were props detected find their default values
-	if len(componentDef.Props) > 0 {
-		// for all these prop members, see if there is a default value specified or not
-		defaultProps := findDefaultPropsMember(path, source, classDeclStatement)
-		if defaultProps != nil {
-
-			// check if initializer and properties exist
-			if defaultProps.Initializer != nil && len(defaultProps.Initializer.Properties) > 0 {
-				for _, property := range defaultProps.Initializer.Properties {
-					propName := property.Name.EscapedText
-					propValue := extractPropValue(property)
-
-					fmt.Println("  found default value for: " + propName + " as: " + propValue)
-
-					// set this value as the default value for
-					// the correct prop
-					for _, comProp := range componentDef.Props {
-						if comProp.Name == propName {
-							fmt.Println("       set value for: " + comProp.Name + " as: " + propValue)
-							comProp.DefaultValue = propValue
-							// break so that outer loop can run
-							// break
-						}
-					}
-				}
-			}
-		}
-	}
+	populateDefaultPropsIfApplicable(&componentDef, &classDeclStatement)
 
 	return &componentDef
+}
+
+func populateDefaultPropsIfApplicable(componentDef *Component, classDeclStatement *ast.Statement) {
+	if len(componentDef.Props) == 0 {
+		return
+	}
+
+	// for all these prop members, see if there is a default value specified or not
+	defaultProps := findDefaultPropsMember(classDeclStatement)
+	if defaultProps == nil {
+		return
+	}
+
+	// check if initializer and properties exist
+	if defaultProps.Initializer == nil && len(defaultProps.Initializer.Properties) == 0 {
+		return
+	}
+
+	for _, property := range defaultProps.Initializer.Properties {
+		propName := property.Name.EscapedText
+		propValue := extractPropValue(property)
+
+		fmt.Println("  found default value for: " + propName + " as: " + propValue)
+		updateDefaultValueInProp(&componentDef.Props, propName, propValue)
+	}
+}
+
+/**
+ * This function sets the given default value for the
+ * property defined in the component.
+ */
+func updateDefaultValueInProp(properties *[]PropDef, name string, value string) {
+	for _, comProp := range *properties {
+		comProp.Description = comProp.Name
+
+		if comProp.Name == name {
+			fmt.Println("       set value for: " + comProp.Name + " as: " + value)
+			comProp.DefaultValue = value
+			return
+		}
+	}
 }
 
 /**
@@ -212,7 +227,7 @@ func extractPropValue(property ast.Property) string {
 	return property.Initializer.EscapedText
 }
 
-func findDefaultPropsMember(path string, source ast.SourceFile, st ast.Statement) *ast.Member {
+func findDefaultPropsMember(st *ast.Statement) *ast.Member {
 	if len(st.Members) == 0 {
 		return nil
 	}
@@ -237,6 +252,16 @@ func getComponentProp(member ast.Member) *PropDef {
 	def := PropDef{
 		Name:        member.Name.EscapedText,
 		Description: ast.GetJsDoc(member.JsDoc),
+	}
+
+	if member.QuestionToken != nil {
+		def.Required = false
+	} else {
+		def.Required = true
+	}
+
+	if member.TypeReference != nil && member.TypeReference.TypeName != nil {
+		def.PropType = member.TypeReference.TypeName.EscapedText
 	}
 
 	return &def

@@ -19,128 +19,128 @@ type AstNode interface {
 }
 
 type AstObject struct {
-	EscapedText              string
-	Comment                  string
-	Text                     string
-	HasExtendedUnicodeEscape bool
-	Kind                     int
+	EscapedText              string `json:"escapedText"`
+	Comment                  string `json:"comment"`
+	Text                     string `json:"text"`
+	HasExtendedUnicodeEscape bool   `json:"hasExtendedUnicodeEscape"`
+	Kind                     int    `json:"kind"`
 }
 
 type AstType struct {
-	Expression AstObject
-	Kind       int
+	Expression AstObject `json:"expression"`
+	Kind       int       `json:"kind"`
 }
 
 type Block struct {
-	Statements []Statement
-	Kind       int
+	Statements []Statement `json:"statements"`
+	Kind       int         `json:"kind"`
 }
 
 type Element struct {
-	Name         AstObject
-	PropertyName AstObject
-	Kind         int
+	Name         AstObject `json:"name"`
+	PropertyName AstObject `json:"propertyName"`
+	Kind         int       `json:"kind"`
 }
 
 type Expression struct {
-	Expression               *Expression
-	Name                     *AstObject
-	EscapedText              string
-	Comment                  string
-	Text                     string
-	HasExtendedUnicodeEscape bool
-	Kind                     int
+	Expression               *Expression `json:"expression"`
+	Name                     *AstObject  `json:"name"`
+	EscapedText              string      `json:"escapedText"`
+	Comment                  string      `json:"comment"`
+	Text                     string      `json:"text"`
+	HasExtendedUnicodeEscape bool        `json:"hasExtendedUnicodeEscape"`
+	Kind                     int         `json:"kind"`
 }
 
 type HeritageClause struct {
-	Types []TypeValue
-	Kind  int
+	Types []TypeValue `json:"types"`
+	Kind  int         `json:"kind"`
 }
 
 type ImportClause struct {
-	IsTypeOnly    bool
-	Name          *AstObject
-	NamedBindings *NamedBindings
-	Kind          int
+	IsTypeOnly    bool           `json:"isTypeOnly"`
+	Name          *AstObject     `json:"name"`
+	NamedBindings *NamedBindings `json:"namedBindings"`
+	Kind          int            `json:"kind"`
 }
 
 type Initializer struct {
-	Properties []Property
-	Kind       int
+	Properties []Property `json:"properties"`
+	Kind       int        `json:"kind"`
 }
 
 type LiteralType struct {
-	Literal *AstObject
-	Kind    int
+	Literal *AstObject `json:"literal"`
+	Kind    int        `json:"kind"`
 }
 
 type Member struct {
-	Name          *AstObject
-	TypeReference *TypeReference
-	QuestionToken *AstObject
-	JsDoc         []AstObject
-	Modifiers     []AstObject
-	Initializer   *Initializer
-	Kind          int
+	Name          *AstObject     `json:"name"`
+	TypeReference *TypeReference `json:"type"`
+	QuestionToken *AstObject     `json:"questionToken"`
+	JsDoc         []AstObject    `json:"jsDoc"`
+	Modifiers     []AstObject    `json:"modifiers"`
+	Initializer   *Initializer   `json:"initializer"`
+	Kind          int            `json:"kind"`
 }
 
 type ModuleSpecifier struct {
-	Text string
-	Kind int
+	Text string `json:"text"`
+	Kind int    `json:"kind"`
 }
 
 type NamedBindings struct {
-	Name     *AstObject
-	Elements []Element
-	Kind     int
+	Name     *AstObject `json:"name"`
+	Elements []Element  `json:"elements"`
+	Kind     int        `json:"kind"`
 }
 
 type Parameter struct {
-	Name          *AstObject
-	TypeReference *TypeReference
-	Kind          int
+	Name          *AstObject     `json:"name"`
+	TypeReference *TypeReference `json:"type"`
+	Kind          int            `json:"kind"`
 }
 
 type Property struct {
-	Name        *AstObject
-	Initializer *AstObject
-	Kind        int
+	Name        *AstObject `json:"name"`
+	Initializer *AstObject `json:"initializer"`
+	Kind        int        `json:"kind"`
 }
 
 type SourceFile struct {
-	Statements []Statement
-	Kind       int
+	Statements []Statement `json:"statements"`
+	Kind       int         `json:"kind"`
 
 	importsResolved bool
 	imports         map[string]string
 }
 
 type Statement struct {
-	ImportClause    *ImportClause
-	ModuleSpecifier *ModuleSpecifier
-	Name            *AstObject
-	Body            *Block
-	Expression      *Expression
-	HeritageClauses []HeritageClause
-	Modifiers       []AstObject
-	Members         []Member
-	JsDoc           []AstObject
-	Parameters      []Parameter
-	Kind            int
+	ImportClause    *ImportClause    `json:"importClause"`
+	ModuleSpecifier *ModuleSpecifier `json:"moduleSpecifier"`
+	Name            *AstObject       `json:"name"`
+	Body            *Block           `json:"body"`
+	Expression      *Expression      `json:"expression"`
+	HeritageClauses []HeritageClause `json:"heritageClauses"`
+	Modifiers       []AstObject      `json:"modifiers"`
+	Members         []Member         `json:"members"`
+	JsDoc           []AstObject      `json:"jsDoc"`
+	Parameters      []Parameter      `json:"parameters"`
+	Kind            int              `json:"kind"`
 }
 
 type TypeValue struct {
-	Expression    *Expression
-	TypeArguments []TypeReference
-	Kind          int
+	Expression    *Expression     `json:"expression"`
+	TypeArguments []TypeReference `json:"typeArguments"`
+	Kind          int             `json:"kind"`
 }
 
 type TypeReference struct {
-	TypeName   *AstObject
-	TypeValue  *AstObject
-	Types      []LiteralType
-	Parameters []Parameter
-	Kind       int
+	TypeName   *AstObject    `json:"typeName"`
+	TypeValue  *AstObject    `json:"type"`
+	Types      []LiteralType `json:"types"`
+	Parameters []Parameter   `json:"parameters"`
+	Kind       int           `json:"kind"`
 }
 
 // implement AstNode interface
