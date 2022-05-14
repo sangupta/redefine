@@ -12,4 +12,4 @@ package-lock.json
 **/.parcel-cache/*
 /target/
 golang/.vscode
-	
+**/components.json
