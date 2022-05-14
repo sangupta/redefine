@@ -1,12 +1,12 @@
-/**
- * Redefine - UI component documentation
- *
- * MIT License.
- * Copyright (c) 2022, Sandeep Gupta.
- *
- * Use of this source code is governed by a MIT style license
- * that can be found in LICENSE file in the code repository.
- */
+/*
+Redefine - UI component documentation
+
+MIT License.
+Copyright (c) 2022, Sandeep Gupta.
+
+Use of this source code is governed by a MIT style license
+that can be found in LICENSE file in the code repository.
+*/
 
 package main
 
@@ -22,15 +22,18 @@ import (
 	"sangupta.com/redefine/model"
 )
 
-/**
- * The user provided configuration as to where
- * to look for code.
- */
+// The user provided configuration as to where
+// to look for components, the type to detect,
+// and other user supplied configuration when
+// invoking the redefine app.
 type RedefineConfig struct {
 	baseFolder string
 	includes   []string
 }
 
+// A simple function that is used to test a the
+// code against a single file. This helps in easy
+// addition of features and/or fixing bugs.
 func mainTest() {
 	files := []string{"/Users/sangupta/git/sangupta/bedrock/src/components/form/Button.tsx"}
 	astMap, syntaxKind := ast.BuildAstForFiles(files)
@@ -38,9 +41,7 @@ func mainTest() {
 	fmt.Println(components)
 }
 
-/**
- * The main entry point to the application.
- */
+// The main entry point to the application.
 func main() {
 	config := RedefineConfig{
 		baseFolder: "/Users/sangupta/git/sangupta/bedrock/src",
@@ -82,22 +83,26 @@ func main() {
 	ioutil.WriteFile("components.json", jsonStr, 0644)
 }
 
-/**
- * Value object to define how the component JSON
- * should be written to disk and/or served for client
- */
+// Value object to define how the component JSON
+// should be written to disk and/or served for client
 type jsonPayload struct {
-	Title      string            `json:"title"`
+
+	// the title that is recognized from the package.json
+	// file or a user supplied string
+	Title string `json:"title"`
+
+	// the extracted components
 	Components []model.Component `json:"components"`
 }
 
-/**
- * Scan a folder for all files that match a given pattern.
- *
- * @param baseFolder the base location that needs to be scanned
- *
- * @param includes an array of wildcard patterns that select files
- */
+// Scan a folder for all files that match a given pattern.
+// Returns an array of absolute paths, along with an `error`
+// object which is `nil` if successful.
+//
+// @param baseFolder the base location that needs to be scanned
+//
+// @param includes an array of wildcard patterns that select files
+//
 func scanFolder(baseFolder string, includes []string) ([]string, error) {
 	totalFiles := []string{}
 
@@ -129,10 +134,9 @@ func scanFolder(baseFolder string, includes []string) ([]string, error) {
 	return totalFiles, nil
 }
 
-/**
- * Check if a file should be included in the list
- * of files to be parsed
- */
+// Check if a file should be included in the list
+// of files to be parsed, against the inclusion rules
+// defined in user supplied configuation
 func isFileIncluded(path string, includes []string) bool {
 	for _, pattern := range includes {
 		if isWildCardMatch(path, pattern) {
@@ -143,9 +147,8 @@ func isFileIncluded(path string, includes []string) bool {
 	return false
 }
 
-/**
- * Check if this is a wildcard match
- */
+// Check if the given string is a wildcard match against
+// the given wildcard pattern. Returns a `bool`.
 func isWildCardMatch(str string, pattern string) bool {
 	i := 0
 	j := 0
