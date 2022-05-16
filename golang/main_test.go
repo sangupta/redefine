@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,12 +49,35 @@ func TestClassComponentWithPropsAndWithJsDoc(t *testing.T) {
 		 * I am param bool.
 		 */
 		paramBool?:bool;
+
+		/**
+		 * I am param any.
+		 */
 		paramAny:any;
+
+		/**
+		 * I am param number.
+		 */
 		paramNumber:number;
+
+		/**
+		 * I am param object.
+		 */
 		paramObject:object;
+
+		/**
+		 * I am param function.
+		 */
 		paramFunction:Function;
 
+		/**
+		 * I am param arrow function.
+		 */
 		paramEmptyArrowFunction:() => void;
+
+		/**
+		 * I am param arrow function with args.
+		 */
 		paramArrowFunction: (str:string, num:number) => object;
 	}
 	
@@ -66,7 +87,12 @@ func TestClassComponentWithPropsAndWithJsDoc(t *testing.T) {
 	export default class HelloWorld extends React.Component<HelloWorldProps> {
 
 		static defaultProps = {
-			paramString: "hello"
+			paramString: "hello",
+			paramBool:false,
+			paramAny: { name: "Redefine" },
+			paramNumber: 256,
+			paramObject: { hello : "world" },
+			paramFunction: () => {},
 		}
 
 		render() {
@@ -100,19 +126,91 @@ func TestClassComponentWithPropsAndWithJsDoc(t *testing.T) {
 	assert.Equal(t, "paramBool", param.Name)
 	assert.Equal(t, "bool", param.PropType)
 	assert.Equal(t, false, param.Required)
-	assert.Equal(t, "", param.DefaultValue)
+	assert.Equal(t, "false", param.DefaultValue)
 	assert.Equal(t, "I am param bool.", param.Description)
 	assert.Equal(t, "", param.ReturnType)
 	assert.Nil(t, param.Params)
 	assert.Nil(t, param.EnumTypes)
+
+	// third param
+	param = component.Props[2]
+	assert.Equal(t, "paramAny", param.Name)
+	assert.Equal(t, "any", param.PropType)
+	assert.Equal(t, true, param.Required)
+	assert.Equal(t, "", param.DefaultValue)
+	assert.Equal(t, "I am param any.", param.Description)
+	assert.Equal(t, "", param.ReturnType)
+	assert.Nil(t, param.Params)
+	assert.Nil(t, param.EnumTypes)
+
+	// fourth param
+	param = component.Props[3]
+	assert.Equal(t, "paramNumber", param.Name)
+	assert.Equal(t, "number", param.PropType)
+	assert.Equal(t, true, param.Required)
+	assert.Equal(t, "256", param.DefaultValue)
+	assert.Equal(t, "I am param number.", param.Description)
+	assert.Equal(t, "", param.ReturnType)
+	assert.Nil(t, param.Params)
+	assert.Nil(t, param.EnumTypes)
+
+	// fifth param
+	param = component.Props[4]
+	assert.Equal(t, "paramObject", param.Name)
+	assert.Equal(t, "object", param.PropType)
+	assert.Equal(t, true, param.Required)
+	assert.Equal(t, "", param.DefaultValue)
+	assert.Equal(t, "I am param object.", param.Description)
+	assert.Equal(t, "", param.ReturnType)
+	assert.Nil(t, param.Params)
+	assert.Nil(t, param.EnumTypes)
+
+	// sixth param
+	param = component.Props[5]
+	assert.Equal(t, "paramFunction", param.Name)
+	assert.Equal(t, "Function", param.PropType)
+	assert.Equal(t, true, param.Required)
+	assert.Equal(t, "", param.DefaultValue)
+	assert.Equal(t, "I am param function.", param.Description)
+	assert.Equal(t, "", param.ReturnType)
+	assert.Nil(t, param.Params)
+	assert.Nil(t, param.EnumTypes)
+
+	// seventh param
+	param = component.Props[6]
+	assert.Equal(t, "paramEmptyArrowFunction", param.Name)
+	assert.Equal(t, "$function", param.PropType)
+	assert.Equal(t, true, param.Required)
+	assert.Equal(t, "", param.DefaultValue)
+	assert.Equal(t, "I am param arrow function.", param.Description)
+	assert.Equal(t, "void", param.ReturnType)
+	assert.Equal(t, 0, len(param.Params))
+	assert.Nil(t, param.EnumTypes)
+
+	// eighth param
+	param = component.Props[7]
+	assert.Equal(t, "paramArrowFunction", param.Name)
+	assert.Equal(t, "$function", param.PropType)
+	assert.Equal(t, true, param.Required)
+	assert.Equal(t, "", param.DefaultValue)
+	assert.Equal(t, "I am param arrow function with args.", param.Description)
+	assert.Equal(t, "object", param.ReturnType)
+	assert.Equal(t, 2, len(param.Params))
+	assert.Nil(t, param.EnumTypes)
+
+	assert.Equal(t, "str", param.Params[0].Name)
+	assert.Equal(t, "string", param.Params[0].ParamType)
+
+	assert.Equal(t, "num", param.Params[1].Name)
+	assert.Equal(t, "number", param.Params[1].ParamType)
 }
 
 func getComponents(code string) []model.Component {
 	sourceFile, syntaxKind := ast.GetAstForFileContents(code)
 	components := model.GetComponentsFromSourceFile(sourceFile, syntaxKind, "testComponent.go", "in-memory/testing")
 
-	jsonStr, _ := json.MarshalIndent(components, "", "  ")
-	fmt.Println(string(jsonStr))
+	// jsonStr, _ := json.MarshalIndent(components, "", "  ")
+	// fmt.Println(string(jsonStr))
 
 	return components
 }

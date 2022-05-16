@@ -547,6 +547,9 @@ func (sk *SyntaxKind) GetType(node AstNode) string {
 
 	case sk.NeverKeyword:
 		return "never"
+
+	case sk.ObjectKeyword:
+		return "object"
 	}
 
 	return unknownType
