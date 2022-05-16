@@ -36,10 +36,11 @@ type RedefineConfig struct {
 // code against a single file. This helps in easy
 // addition of features and/or fixing bugs.
 func main2() {
-	files := []string{"/Users/sangupta/git/sangupta/bedrock/src/components/form/Button.tsx"}
+	files := []string{"/Users/sangupta/git/sangupta/bedrock/src/components/feedback/Alert.tsx"}
 	astMap, syntaxKind := ast.BuildAstForFiles(files)
 	components := model.GetComponents(astMap, syntaxKind)
-	fmt.Println(components)
+	jsonStr, _ := json.MarshalIndent(components, "", "  ")
+	fmt.Println(string(jsonStr))
 }
 
 // The main entry point to the application.
@@ -68,10 +69,10 @@ func main() {
 	})
 
 	// generate a component dictionary
-	componentFileMap := make(map[string]model.Component, 0)
-	for _, component := range components {
-		componentFileMap[component.SourcePath+"$"+component.Name] = component
-	}
+	// componentFileMap := make(map[string]model.Component, 0)
+	// for _, component := range components {
+	// 	componentFileMap[component.SourcePath+"$"+component.Name] = component
+	// }
 
 	// write the JSON file
 	payload := jsonPayload{

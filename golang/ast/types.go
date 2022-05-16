@@ -294,6 +294,8 @@ func (sf *SourceFile) resolveImports() {
 	sf.importsResolved = true
 }
 
+// Check if the source file has any class declaration. The first
+// class declaration found returns `true`.
 func (sf *SourceFile) HasClassDeclaration() bool {
 	for _, statement := range sf.Statements {
 		if Syntax.IsClassDeclaration(&statement) {
@@ -304,9 +306,13 @@ func (sf *SourceFile) HasClassDeclaration() bool {
 	return false
 }
 
+// Given a type name find all members of the type in the source file.
+// The type represented here is mostly an interface and specifies
+// the props of the React component
 func (sf *SourceFile) GetMembersOfType(typeName string) []Member {
 	// is this an imported typeName
 	importLibrary := sf.GetImportPath(typeName)
+
 	if len(importLibrary) > 0 {
 		return sf.GetMembersOfTypeFromLibrary(importLibrary, typeName)
 	}
@@ -322,10 +328,15 @@ func (sf *SourceFile) GetMembersOfType(typeName string) []Member {
 	return nil
 }
 
+// Find the members (aka props) of given type from a different library
+// or import path. This usually happens when we want to pull props or extend
+// props from an interface defined else where in the code.
 func (sf *SourceFile) GetMembersOfTypeFromLibrary(importLibrary string, typeName string) []Member {
 	return nil
 }
 
+// Check if the member has a `static` modifier applied to it or not.
+// This is usually checked when reading default props.
 func (member *Member) HasStaticModifier() bool {
 	for _, modifier := range member.Modifiers {
 		if modifier.Kind == Syntax.StaticKeyword {

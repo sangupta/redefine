@@ -105,9 +105,9 @@ func extractComponents(name string, path string, sourceFile ast.SourceFile) []Co
 	return cl
 }
 
-/**
- * Extract name and path from a complete full absolute path
- */
+// Extract name and path from a complete full absolute path.
+// Returns the name as the first part and path as the second
+// part in the return values.
 func getNameAndPath(str string) (string, string) {
 	if string(str[len(str)-1]) == "/" {
 		str = str[0 : len(str)-1]
@@ -160,17 +160,28 @@ func extractClassBasedComponents(path string, source ast.SourceFile, classDeclSt
 		Props:         make([]PropDef, 0),
 	}
 
+	// read and build a map (if available) of default values
+	// of the component props. We build it before reading the
+	// props themselves, so that we can assign the default
+	// values within the same loop
 	propDefaultValueMap := getPropsDefaultValuesIfAvailable(&classDeclStatement)
 
-	// find component props
+	// find component props and their types
 	if len(componentTypeWrapper.ClauseType.TypeArguments) > 0 {
 		// the first argument specifies the props
+		// this is the interface as specified as the first
+		// argument in the heritage clause
 		typeReference := componentTypeWrapper.ClauseType.TypeArguments[0]
 
 		// find all members of the interface from the source file
+		// we just read all members of the interface
+		// TODO: we need to find and read all members of any super type
+		// as well here, so that we can create a single list of all
+		// properties
 		members := source.GetMembersOfType(typeReference.TypeName.EscapedText)
 
-		// document all the members as this components props
+		// document all the members as thi components props of this
+		// component. We create a value object for each member we found
 		if len(members) > 0 {
 			for _, member := range members {
 				componentDef.Props = append(componentDef.Props, *getComponentProp(member, propDefaultValueMap))
@@ -280,72 +291,77 @@ func extractFunctionBasedComponent(path string, source ast.SourceFile, st ast.St
  * 		read from the component.
  */
 func getComponentProp(member ast.Member, propDefaultValueMap map[string]string) *PropDef {
-	def := PropDef{
+	// create a prop definition for the member
+	propDefintion := PropDef{
 		Name:        member.Name.EscapedText,
 		Description: ast.GetJsDoc(member.JsDoc),
 	}
 
 	// check if prop is required or not
+	// this is done by checking the question mark token
 	if member.QuestionToken != nil {
-		def.Required = false
+		propDefintion.Required = false
 	} else {
-		def.Required = true
+		propDefintion.Required = true
 	}
 
 	// get the prop type if available
+	// this is a tricky place. The prop type may not have
+	// been explicitly defined.
 	if member.TypeReference != nil && member.TypeReference.TypeName != nil {
-		def.PropType = member.TypeReference.TypeName.EscapedText
+		propDefintion.PropType = member.TypeReference.TypeName.EscapedText
 	} else {
 		memberType := Syntax.GetType(member.TypeReference)
 		if !Syntax.IsUnknownType(memberType) && !Syntax.IsFunctionType(member.TypeReference) {
-			def.PropType = memberType
+			propDefintion.PropType = memberType
 		} else {
+			// Is this a union type? for example `myProp: string | bool`
 			if Syntax.IsUnionType(member.TypeReference) {
-				def.PropType = "$enum"
+				propDefintion.PropType = "$enum"
 
 				// check under type.types - it carries a list
 				// of all types of which this value is a union of
-				def.EnumTypes = make([]ParamDef, len(member.TypeReference.Types))
+				propDefintion.EnumTypes = make([]ParamDef, len(member.TypeReference.Types))
 
 				// iterate and add
 				for index, individualType := range member.TypeReference.Types {
 					if individualType.Kind == Syntax.TypeReference {
 						// we read the value from typeName.escapedText
-						def.EnumTypes[index] = ParamDef{
+						propDefintion.EnumTypes[index] = ParamDef{
 							Name:      individualType.TypeName.EscapedText,
 							ParamType: "",
 						}
 					} else if individualType.Kind == Syntax.LiteralType {
 						// we read the value from literal.text
-						def.EnumTypes[index] = ParamDef{
+						propDefintion.EnumTypes[index] = ParamDef{
 							Name:      individualType.Literal.Text,
 							ParamType: Syntax.GetType(individualType.Literal),
 						}
 					}
 				}
 			} else if Syntax.IsFunctionType(member.TypeReference) {
-				def.PropType = "$function"
+				propDefintion.PropType = "$function"
 
 				if member.TypeReference.Parameters != nil {
-					def.Params = make([]ParamDef, 0)
+					propDefintion.Params = make([]ParamDef, 0)
 
 					// build the type using definitions
 					for _, param := range member.TypeReference.Parameters {
-						def.Params = append(def.Params, ParamDef{
+						propDefintion.Params = append(propDefintion.Params, ParamDef{
 							Name:      param.Name.EscapedText,
 							ParamType: Syntax.GetType(param.TypeReference),
 						})
 					}
 
 					// set return type of function
-					def.ReturnType = Syntax.GetType(member.TypeReference.TypeValue)
+					propDefintion.ReturnType = Syntax.GetType(member.TypeReference.TypeValue)
 				}
 			}
 		}
 	}
 
 	// set default value if applicable
-	def.DefaultValue = propDefaultValueMap[def.Name]
+	propDefintion.DefaultValue = propDefaultValueMap[propDefintion.Name]
 
-	return &def
+	return &propDefintion
 }

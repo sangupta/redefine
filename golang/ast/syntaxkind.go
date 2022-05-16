@@ -516,10 +516,14 @@ func (sk *SyntaxKind) IsJsxElement(expr *Expression) bool {
 func (sk *SyntaxKind) GetType(node AstNode) string {
 	switch node.GetKind() {
 	case sk.NumberKeyword:
+		return "number"
+
 	case sk.NumericLiteral:
 		return "number"
 
 	case sk.StringKeyword:
+		return "string"
+
 	case sk.StringLiteral:
 		return "string"
 
