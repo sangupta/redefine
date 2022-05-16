@@ -52,7 +52,7 @@ func GetComponents(fileAstMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxK
 	for file, sourceFile := range fileAstMap {
 		name, path := getNameAndPath(file)
 
-		components := extractComponents(name, path, sourceFile)
+		components := extractComponentsFromSourceFile(name, path, sourceFile)
 		list = append(list, components...)
 	}
 
@@ -64,6 +64,16 @@ func GetComponents(fileAstMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxK
 	return list
 }
 
+// Get components as defined in a single source file.
+// This is useful for testing
+func GetComponentsFromSourceFile(sourceFile *ast.SourceFile, syntaxKind *ast.SyntaxKind, name string, path string) []Component {
+	// setup syntax so anyone can use it within the package
+	Syntax = syntaxKind
+
+	// convert and return
+	return extractComponentsFromSourceFile(name, path, *sourceFile)
+}
+
 /**
  * Extract a list of components from a given source file.
  *
@@ -73,7 +83,7 @@ func GetComponents(fileAstMap map[string]ast.SourceFile, syntaxKind *ast.SyntaxK
  *
  * @param sourceFile the `SourceFile` instance describing the AST
  */
-func extractComponents(name string, path string, sourceFile ast.SourceFile) []Component {
+func extractComponentsFromSourceFile(name string, path string, sourceFile ast.SourceFile) []Component {
 	fmt.Println("Extracting components from: " + path + "/" + name)
 
 	cl := make([]Component, 0)

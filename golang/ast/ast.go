@@ -41,15 +41,49 @@ type tsParser struct {
 	circularReplacer *quickjs.Value
 }
 
+// returns an AST for the given file contents
+// this method does not accessess the file system
+// and is primarly meant to be used when testing
+func GetAstForFileContents(contents string) (*SourceFile, *SyntaxKind) {
+	var sourceFile *SourceFile
+	quickJsWorker := func(parser *tsParser) {
+		sourceFile = parseSingleFileContents(contents, parser)
+	}
+
+	// run the worker
+	runInQuickJS(quickJsWorker)
+
+	// return obtained source file
+	return sourceFile, Syntax
+}
+
 //
 // Create a map of ASTs by parsing each file.
 //
 // @param files an array of absolute file paths to process.
 //
 func BuildAstForFiles(files []string) (map[string]SourceFile, *SyntaxKind) {
-	start := time.Now()
 	astMap := make(map[string]SourceFile, len(files))
 
+	// create simple worker to do our job
+
+	quickJsWorker := func(parser *tsParser) {
+		// do job
+		doWork(files, parser, astMap)
+	}
+
+	// start noting the time
+	start := time.Now()
+	runInQuickJS(quickJsWorker)
+
+	// get time spent
+	duration := time.Since(start)
+	fmt.Println("Total time in parsing files: " + duration.String())
+
+	return astMap, Syntax
+}
+
+func runInQuickJS(worker func(parser *tsParser)) {
 	// all processing for QJS happens in same thread
 	stdruntime.LockOSThread()
 
@@ -57,17 +91,11 @@ func BuildAstForFiles(files []string) (map[string]SourceFile, *SyntaxKind) {
 	parser.init()
 	defer parser.free()
 
-	// do job
-	doWork(files, &parser, astMap)
-
-	// get time spent
-	duration := time.Since(start)
-	fmt.Println("Total time in parsing files: " + duration.String())
+	// run the worker
+	worker(&parser)
 
 	// remove OS thread lock
 	stdruntime.UnlockOSThread()
-
-	return astMap, Syntax
 }
 
 func doWork(files []string, parser *tsParser, astMap map[string]SourceFile) {
@@ -79,9 +107,8 @@ func doWork(files []string, parser *tsParser, astMap map[string]SourceFile) {
 	}
 }
 
-/**
- * Parse a single file by reading it from disk
- */
+// Parse a single file after reading from the disk.
+// The file path specified must be an absolute file path that resolves.
 func parseSingleFile(file string, parser *tsParser) *SourceFile {
 	fmt.Println("Processing file: " + file)
 
@@ -91,6 +118,12 @@ func parseSingleFile(file string, parser *tsParser) *SourceFile {
 		panic(err)
 	}
 
+	return parseSingleFileContents(string(sourceCode), parser)
+}
+
+// Parse the contents of a file/or supplied from memory
+// using the Typescript parser and return the `SourceFile` AST.
+func parseSingleFileContents(sourceCode string, parser *tsParser) *SourceFile {
 	// create argument list to call the method
 	args := make([]quickjs.Value, 4)
 	args[0] = parser.context.String("index.ts")

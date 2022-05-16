@@ -32,6 +32,46 @@ type RedefineConfig struct {
 	includes   []string
 }
 
+// func main() {
+// 	code := `import React from 'react';
+
+// 	interface HelloWorldProps {
+// 		paramString:string;
+// 		paramBool:bool;
+// 		paramAny:any;
+// 		paramNumber:number;
+// 		paramObject:object;
+// 		paramFunction:Function;
+
+// 		paramEmptyArrowFunction:() => void;
+// 		paramArrowFunction: (str:string, num:number) => object;
+// 	}
+
+// 	/**
+// 	 * This is a hello world component
+// 	 */
+// 	export default class HelloWorld extends React.Component<HelloWorldProps> {
+
+// 		render() {
+// 			return <div>Hello World</div>
+// 		}
+
+// 	}
+// 	`
+
+// 	gc2(code)
+// }
+
+// func gc2(code string) []model.Component {
+// 	sourceFile, syntaxKind := ast.GetAstForFileContents(code)
+// 	components := model.GetComponentsFromSourceFile(sourceFile, syntaxKind, "testComponent.go", "in-memory/testing")
+
+// 	jsonStr, _ := json.MarshalIndent(components, "", "  ")
+// 	fmt.Println(string(jsonStr))
+
+// 	return components
+// }
+
 // A simple function that is used to test a the
 // code against a single file. This helps in easy
 // addition of features and/or fixing bugs.
