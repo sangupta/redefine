@@ -215,6 +215,26 @@ func TestClassComponentWithPropsAndWithJsDoc(t *testing.T) {
 	assert.Equal(t, "number", param.Params[1].ParamType)
 }
 
+func TestSimpleFunctionComponent(t *testing.T) {
+	code := `
+	/**
+	 * Simple hello world component
+	 */
+	export function HelloWorld() {
+		return <div>Hello World</div>
+	}
+	`
+
+	components := getComponents(code)
+	assert.True(t, len(components) == 1)
+
+	component := components[0]
+	assert.Equal(t, "HelloWorld", component.Name)
+	assert.Equal(t, "Simple hello world component", component.Description)
+	assert.Equal(t, model.REACT_FUNCTION_COMPONENT, component.ComponentType)
+	assert.Equal(t, 0, len(component.Props))
+}
+
 func getComponents(code string) []model.Component {
 	sourceFile, syntaxKind := ast.GetAstForFileContents(code)
 	components := model.GetComponentsFromSourceFile(sourceFile, syntaxKind, "testComponent.go", "in-memory/testing")

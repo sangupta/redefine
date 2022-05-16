@@ -50,6 +50,20 @@ type Expression struct {
 	Text                     string      `json:"text"`
 	HasExtendedUnicodeEscape bool        `json:"hasExtendedUnicodeEscape"`
 	Kind                     int         `json:"kind"`
+	OpeningElement           *JsxElement `json:"openingElement"`
+	Children                 []AstObject `json:"children"`
+	ClosingElement           *JsxElement `json:"closingElement"`
+}
+
+type JsxElement struct {
+	TagName    *AstObject     `json:"tagName"`
+	Attributes []JsxAttribute `json:"attributes"`
+	Kind       int            `json:"kind"`
+}
+
+type JsxAttribute struct {
+	Properties []Member `json:"properties"`
+	Kind       int      `json:"kind"`
 }
 
 type HeritageClause struct {

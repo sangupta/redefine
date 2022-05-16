@@ -126,7 +126,7 @@ func parseSingleFile(file string, parser *tsParser) *SourceFile {
 func parseSingleFileContents(sourceCode string, parser *tsParser) *SourceFile {
 	// create argument list to call the method
 	args := make([]quickjs.Value, 4)
-	args[0] = parser.context.String("index.ts")
+	args[0] = parser.context.String("index.tsx")
 	args[1] = parser.context.String(string(sourceCode))
 	args[2] = parser.context.String("")
 	args[3] = parser.context.Bool(true)

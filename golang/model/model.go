@@ -285,7 +285,45 @@ func findDefaultPropsMember(classDeclStatement *ast.Statement) *ast.Member {
 /**
  * Extract a function based component (if applicable) from the given statement
  */
-func extractFunctionBasedComponent(path string, source ast.SourceFile, st ast.Statement) *Component {
+func extractFunctionBasedComponent(path string, source ast.SourceFile, functionStatement ast.Statement) *Component {
+	// skip if there is no export modifier - we only document
+	// public components
+	if !functionStatement.HasExportModifier() {
+		return nil
+	}
+
+	// check if the function body
+	// has a return type of Jsx
+	if functionStatement.Body == nil {
+		return nil
+	}
+
+	if len(functionStatement.Body.Statements) == 0 {
+		return nil
+	}
+
+	for _, statement := range functionStatement.Body.Statements {
+		if !Syntax.IsReturnStatement(&statement) {
+			continue
+		}
+
+		// this is a return statement
+		// check its type
+		if !Syntax.IsJsxElement(statement.Expression) {
+			return nil
+		}
+
+		// this is a component, for sure
+		componentDef := Component{
+			Name:          functionStatement.Name.EscapedText,
+			SourcePath:    path,
+			ComponentType: REACT_FUNCTION_COMPONENT,
+			Description:   ast.GetJsDoc(functionStatement.JsDoc),
+		}
+
+		return &componentDef
+	}
+
 	return nil
 }
 
