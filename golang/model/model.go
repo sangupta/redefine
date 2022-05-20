@@ -188,7 +188,10 @@ func extractClassBasedComponents(path string, source ast.SourceFile, classDeclSt
 		// TODO: we need to find and read all members of any super type
 		// as well here, so that we can create a single list of all
 		// properties
-		members := source.GetMembersOfType(typeReference.TypeName.EscapedText)
+		var members []ast.Member
+		if typeReference.TypeName != nil {
+			members = source.GetMembersOfType(typeReference.TypeName.EscapedText)
+		}
 
 		// document all the members as thi components props of this
 		// component. We create a value object for each member we found
