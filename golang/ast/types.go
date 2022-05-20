@@ -43,16 +43,17 @@ type Element struct {
 }
 
 type Expression struct {
-	Expression               *Expression `json:"expression"`
-	Name                     *AstObject  `json:"name"`
-	EscapedText              string      `json:"escapedText"`
-	Comment                  string      `json:"comment"`
-	Text                     string      `json:"text"`
-	HasExtendedUnicodeEscape bool        `json:"hasExtendedUnicodeEscape"`
-	Kind                     int         `json:"kind"`
-	OpeningElement           *JsxElement `json:"openingElement"`
-	Children                 []AstObject `json:"children"`
-	ClosingElement           *JsxElement `json:"closingElement"`
+	Expression               *Expression  `json:"expression"`
+	Name                     *AstObject   `json:"name"`
+	EscapedText              string       `json:"escapedText"`
+	Comment                  string       `json:"comment"`
+	Text                     string       `json:"text"`
+	HasExtendedUnicodeEscape bool         `json:"hasExtendedUnicodeEscape"`
+	Kind                     int          `json:"kind"`
+	OpeningElement           *JsxElement  `json:"openingElement"`
+	Children                 []AstObject  `json:"children"`
+	ClosingElement           *JsxElement  `json:"closingElement"`
+	Arguments                []Expression `json:"arguments"`
 }
 
 type JsxElement struct {
@@ -272,6 +273,49 @@ func (sf *SourceFile) GetImportPath(key string) string {
 	}
 
 	return sf.imports[key]
+}
+
+// This method checks if a given name is exported in the file
+// for example, `export default <name>`.
+func (sf *SourceFile) IsNameExported(name string) bool {
+	if len(sf.Statements) == 0 {
+		return false
+	}
+
+	for _, st := range sf.Statements {
+		// check we this is of form `export MyComponent`
+		if Syntax.IsExpressionStatement(&st) {
+			if st.Expression != nil && Syntax.IsIdentifier(st.Expression) && st.Expression.EscapedText == name {
+				return true
+			}
+
+			continue
+		}
+
+		// check if we have an export assignment
+		// of the form is `export injectIntl(MyComponent)`
+		if Syntax.IsExportAssignment(&st) {
+			if st.Expression != nil {
+				// for `export default injectIntl(MyComponent)`
+				if Syntax.IsCallExpression(st.Expression) && len(st.Expression.Arguments) > 0 {
+					for _, arg := range st.Expression.Arguments {
+						if Syntax.IsIdentifier(&arg) && arg.EscapedText == name {
+							return true
+						}
+					}
+				}
+
+				// for simple `export MyComponent`
+				if Syntax.IsIdentifier(st.Expression) && st.Expression.EscapedText == name {
+					return true
+				}
+			}
+
+			continue
+		}
+	}
+
+	return false
 }
 
 func (sf *SourceFile) resolveImports() {

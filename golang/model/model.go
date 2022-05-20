@@ -137,7 +137,7 @@ func getNameAndPath(str string) (string, string) {
 func extractClassBasedComponents(path string, source ast.SourceFile, classDeclStatement ast.Statement) *Component {
 	// skip if there is no export modifier - we only document
 	// public components
-	if !classDeclStatement.HasExportModifier() {
+	if !(classDeclStatement.HasExportModifier() || source.IsNameExported(classDeclStatement.Name.EscapedText)) {
 		return nil
 	}
 
@@ -288,7 +288,7 @@ func findDefaultPropsMember(classDeclStatement *ast.Statement) *ast.Member {
 func extractFunctionBasedComponent(path string, source ast.SourceFile, functionStatement ast.Statement) *Component {
 	// skip if there is no export modifier - we only document
 	// public components
-	if !functionStatement.HasExportModifier() {
+	if !(functionStatement.HasExportModifier() || source.IsNameExported(functionStatement.Name.EscapedText)) {
 		return nil
 	}
 
@@ -308,7 +308,7 @@ func extractFunctionBasedComponent(path string, source ast.SourceFile, functionS
 	// function parameters are what define the function
 	// props (directly, or via destructuring)
 	if len(functionStatement.Parameters) > 0 {
-
+		// TODO
 	}
 
 	// check each statement in the body
@@ -317,28 +317,32 @@ func extractFunctionBasedComponent(path string, source ast.SourceFile, functionS
 	// Similarly, if this function body contains any JSX value
 	// in there, we will consider this to be a function component
 	for _, statement := range functionStatement.Body.Statements {
-		if !Syntax.IsReturnStatement(&statement) {
-			continue
-		}
-
 		// this is a return statement
-		// check its type
-		if !Syntax.IsJsxElement(statement.Expression) {
-			return nil
+		// this takes care of something `return <MyComponent />`
+		if Syntax.IsReturnStatement(&statement) && Syntax.IsJsxElement(statement.Expression) {
+			// (Syntax.IsParenthesizedExpression(statement.Expression) && Syntax.IsJsxElement(statement.Expression.Expression))) {
+			return createFunctionComponentDef(path, functionStatement)
 		}
 
-		// this is a component, for sure
-		componentDef := Component{
-			Name:          functionStatement.Name.EscapedText,
-			SourcePath:    path,
-			ComponentType: REACT_FUNCTION_COMPONENT,
-			Description:   ast.GetJsDoc(functionStatement.JsDoc),
+		// body is ParenthesizedExpression with JSX
+		// const NewComponent = () => <MyComponent />
+		if Syntax.IsParenthesizedExpression(&statement) && Syntax.IsJsxElement(statement.Expression) {
+			return createFunctionComponentDef(path, functionStatement)
 		}
-
-		return &componentDef
 	}
 
 	return nil
+}
+
+func createFunctionComponentDef(path string, functionStatement ast.Statement) *Component {
+	componentDef := Component{
+		Name:          functionStatement.Name.EscapedText,
+		SourcePath:    path,
+		ComponentType: REACT_FUNCTION_COMPONENT,
+		Description:   ast.GetJsDoc(functionStatement.JsDoc),
+	}
+
+	return &componentDef
 }
 
 /**

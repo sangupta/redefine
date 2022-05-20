@@ -558,3 +558,23 @@ func (sk *SyntaxKind) GetType(node AstNode) string {
 func (sk *SyntaxKind) IsUnknownType(typ string) bool {
 	return unknownType == typ
 }
+
+func (sk *SyntaxKind) IsExportAssignment(node AstNode) bool {
+	return node.GetKind() == sk.ExportAssignment
+}
+
+func (sk *SyntaxKind) IsIdentifier(node AstNode) bool {
+	return node.GetKind() == sk.Identifier
+}
+
+func (sk *SyntaxKind) IsExpressionStatement(node AstNode) bool {
+	return node.GetKind() == sk.ExpressionStatement
+}
+
+func (sk *SyntaxKind) IsCallExpression(node AstNode) bool {
+	return node.GetKind() == sk.CallExpression
+}
+
+func (sk *SyntaxKind) IsParenthesizedExpression(node AstNode) bool {
+	return node.GetKind() == sk.ParenthesizedExpression
+}
