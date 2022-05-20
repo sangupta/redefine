@@ -298,10 +298,24 @@ func extractFunctionBasedComponent(path string, source ast.SourceFile, functionS
 		return nil
 	}
 
+	// there must be atleast one statement in the function
+	// because we need to return a JSX value
 	if len(functionStatement.Body.Statements) == 0 {
 		return nil
 	}
 
+	// check if this function has parameters
+	// function parameters are what define the function
+	// props (directly, or via destructuring)
+	if len(functionStatement.Parameters) > 0 {
+
+	}
+
+	// check each statement in the body
+	// if there is a return statement that returns any kind
+	// of JSX expression, we will consider this as a component.
+	// Similarly, if this function body contains any JSX value
+	// in there, we will consider this to be a function component
 	for _, statement := range functionStatement.Body.Statements {
 		if !Syntax.IsReturnStatement(&statement) {
 			continue
