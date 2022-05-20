@@ -33,15 +33,35 @@ func detectComponentType(sourceFile ast.SourceFile, classDeclStatement ast.State
 
 	for _, clause := range classDeclStatement.HeritageClauses {
 		for _, clauseType := range clause.Types {
-			expr := clauseType.Expression.Expression.EscapedText
-			name := clauseType.Expression.Name.EscapedText
+			expr := clauseType.Expression
 
-			if (name == "Component" || name == "PureComponent") && isReactImport(sourceFile, expr) {
-				return &ComponentTypeWrapper{
-					ComponentType: REACT_CLASS_COMPONENT,
-					Clause:        &clause,
-					ClauseType:    &clauseType,
-					Detected:      true,
+			var exprText string
+
+			if expr != nil {
+				if Syntax.IsPropertyAccessExpression(expr) {
+					exprText = expr.Expression.EscapedText
+					name := expr.Name.EscapedText
+
+					if !(name == "Component" || name == "PureComponent") {
+						continue
+					}
+				}
+
+				if Syntax.IsIdentifier(expr) {
+					exprText = expr.EscapedText
+				}
+
+				if exprText == "" {
+					continue
+				}
+
+				if isReactImport(sourceFile, exprText) {
+					return &ComponentTypeWrapper{
+						ComponentType: REACT_CLASS_COMPONENT,
+						Clause:        &clause,
+						ClauseType:    &clauseType,
+						Detected:      true,
+					}
 				}
 			}
 		}
