@@ -13,3 +13,5 @@ package-lock.json
 /target/
 golang/.vscode
 **/components.json
+client/dist.backup
+.DS_Store
