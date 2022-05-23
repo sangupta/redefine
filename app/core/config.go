@@ -10,7 +10,7 @@ that can be found in LICENSE file in the code repository.
 
 */
 
-package main
+package core
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ type RedefineConfig struct {
 // Extract redefine configuration params using the
 // OS arguments and/or redefine.config file present
 // in the current folder
-func getRedefineConfig() *RedefineConfig {
+func GetRedefineConfig() *RedefineConfig {
 	var baseFolder string
 
 	// check for os arguments

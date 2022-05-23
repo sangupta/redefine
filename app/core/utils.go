@@ -10,7 +10,7 @@ that can be found in LICENSE file in the code repository.
 
 */
 
-package main
+package core
 
 // Check if a file should be included in the list
 // of files to be parsed, against the inclusion rules

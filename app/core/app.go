@@ -10,7 +10,7 @@ that can be found in LICENSE file in the code repository.
 
 */
 
-package main
+package core
 
 import (
 	"encoding/json"
@@ -26,7 +26,7 @@ import (
 // Simple struct that acts as a wrapper for various
 // ways the application can be invoked
 type RedefineApp struct {
-	config *RedefineConfig
+	Config *RedefineConfig
 }
 
 // Value object to define how the component JSON
@@ -41,8 +41,8 @@ type jsonPayload struct {
 	Components []model.Component `json:"components"`
 }
 
-func (app *RedefineApp) extractAndWriteComponents() {
-	config := app.config
+func (app *RedefineApp) ExtractAndWriteComponents() {
+	config := app.Config
 
 	// scan the base folder for all files present
 	files, err := config.scanFolder()
@@ -78,7 +78,7 @@ func (app *RedefineApp) extractAndWriteComponents() {
 	ioutil.WriteFile("components.json", jsonStr, 0644)
 }
 
-func (app *RedefineApp) printComponentsFromSingleFile(absoluteFilePath string) {
+func (app *RedefineApp) PrintComponentsFromSingleFile(absoluteFilePath string) {
 	files := []string{absoluteFilePath}
 	astMap, syntaxKind := ast.BuildAstForFiles(files)
 	components := model.GetComponents(astMap, syntaxKind)

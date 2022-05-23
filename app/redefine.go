@@ -12,13 +12,17 @@ that can be found in LICENSE file in the code repository.
 
 package main
 
-func main() {
-	config := getRedefineConfig()
+import (
+	core "sangupta.com/redefine/core"
+)
 
-	app := RedefineApp{
-		config: config,
+func main() {
+	config := core.GetRedefineConfig()
+
+	app := core.RedefineApp{
+		Config: config,
 	}
 
-	app.extractAndWriteComponents()
-	// app.printComponentsFromSingleFile("/Users/")
+	app.ExtractAndWriteComponents()
+	// app.PrintComponentsFromSingleFile("/Users/")
 }
