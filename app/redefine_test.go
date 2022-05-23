@@ -48,6 +48,52 @@ func TestClassComponentWithNoPropsAndNoJsDoc(t *testing.T) {
 	assert.Equal(t, 0, len(component.Props))
 }
 
+func TestClassComponentWithExportStatement(t *testing.T) {
+	code := `import React from 'react';
+	
+	class HelloWorld extends React.Component {
+
+		render() {
+			return <div>Hello World</div>
+		}
+
+	}
+
+	export default HelloWorld;
+	`
+
+	components := getComponents(code)
+	assert.True(t, len(components) == 1, "Test when source file is empty")
+
+	component := components[0]
+	assert.Equal(t, "", component.Description)
+	assert.Equal(t, model.REACT_CLASS_COMPONENT, component.ComponentType)
+	assert.Equal(t, 0, len(component.Props))
+}
+
+func TestClassComponentWithExportStatementUsingCallExpression(t *testing.T) {
+	code := `import React from 'react';
+	
+	class HelloWorld extends React.Component {
+
+		render() {
+			return <div>Hello World</div>
+		}
+
+	}
+
+	export default withIntl(HelloWorld);
+	`
+
+	components := getComponents(code)
+	assert.True(t, len(components) == 1, "Test when source file is empty")
+
+	component := components[0]
+	assert.Equal(t, "", component.Description)
+	assert.Equal(t, model.REACT_CLASS_COMPONENT, component.ComponentType)
+	assert.Equal(t, 0, len(component.Props))
+}
+
 func TestClassComponentWithPropsAndWithJsDoc(t *testing.T) {
 	code := `import React from 'react';
 
@@ -246,6 +292,52 @@ func TestSimpleFunctionComponentThatUsesFragments(t *testing.T) {
 		const sum = 22;
 		return <>{sum}</>
 	}
+	`
+
+	components := getComponents(code)
+	assert.True(t, len(components) == 1)
+
+	component := components[0]
+	assert.Equal(t, "HelloWorld", component.Name)
+	assert.Equal(t, "Simple hello world component", component.Description)
+	assert.Equal(t, model.REACT_FUNCTION_COMPONENT, component.ComponentType)
+	assert.Equal(t, 0, len(component.Props))
+}
+
+func TestFunctionComponentWithExportStatement(t *testing.T) {
+	code := `
+	/**
+	 * Simple hello world component
+	 */
+	function HelloWorld() {
+		const sum = 22;
+		return <>{sum}</>
+	}
+
+	export default HelloWorld;
+	`
+
+	components := getComponents(code)
+	assert.True(t, len(components) == 1)
+
+	component := components[0]
+	assert.Equal(t, "HelloWorld", component.Name)
+	assert.Equal(t, "Simple hello world component", component.Description)
+	assert.Equal(t, model.REACT_FUNCTION_COMPONENT, component.ComponentType)
+	assert.Equal(t, 0, len(component.Props))
+}
+
+func TestFunctionComponentWithExportStatementUsingCallExpression(t *testing.T) {
+	code := `
+	/**
+	 * Simple hello world component
+	 */
+	function HelloWorld() {
+		const sum = 22;
+		return <>{sum}</>
+	}
+
+	export default withIntl(HelloWorld);
 	`
 
 	components := getComponents(code)
