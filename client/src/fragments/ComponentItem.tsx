@@ -16,7 +16,9 @@ export default class ComponentItem extends React.Component<ComponentItemProps> {
 
     render() {
         const { component } = this.props;
-        return <li className='pointer' onClick={this.handleClick}>{component.name}</li>
+        return <a href='#' className='list-group-item list-group-item-action py-2 lh-tight pointer' onClick={this.handleClick}>
+            {component.name}
+        </a>
     }
 
 }

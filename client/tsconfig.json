@@ -1,15 +1,16 @@
 {
     "compilerOptions": {
         "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "jsx": "react",
+        "jsx": "react-jsx",
+        "jsxImportSource": "react",
         "target": "esnext",
+        "module": "System",
         "strict": true,
         "rootDir": "./src",
         "incremental": true,
         "lib": [
             "dom",
-            "es2015"
+            "ESNext"
         ],
         "allowSyntheticDefaultImports": true
     },

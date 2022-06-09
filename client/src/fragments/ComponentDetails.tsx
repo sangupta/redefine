@@ -1,11 +1,66 @@
 import React from 'react';
-import { ComponentDef } from '../Utils';
+import ReactMarkdown from 'react-markdown';
+import { ComponentDef, PropDef } from '../Utils';
+import CodePlayground from './CodePlayground';
 
 interface ComponentDetailsProps {
     component: ComponentDef;
 }
 
 export default class ComponentDetails extends React.Component<ComponentDetailsProps> {
+
+    renderType(prop: PropDef) {
+        if (!prop.type) {
+            return prop.type;
+        }
+
+        switch (prop.type) {
+            case '$function':
+                if (prop.params?.length || prop.returnType) {
+                    let paramStr = '';
+                    if (prop.params && prop.params.length > 0) {
+                        for (let index = 0; index < prop.params.length; index++) {
+                            const param = prop.params[index];
+                            if (index > 0) {
+                                paramStr += ', ';
+                            }
+                            paramStr += param.name;
+                            if (param.type && param.type !== '$unknown') {
+                                paramStr += ':' + param.type;
+                            }
+                        }
+                    }
+                    return '(' + paramStr + ') => ' + prop.returnType;
+                }
+
+                return prop.type;
+
+            case '$enum':
+                if (prop.enumOf && prop.enumOf.length > 0) {
+                    let combined = '';
+                    for (let index = 0; index < prop.enumOf.length; index++) {
+                        const paramDef = prop.enumOf[index];
+
+                        if (index > 0) {
+                            combined += ' | ';
+                        }
+
+                        if (paramDef.type === 'string') {
+                            combined += '"' + paramDef.name + '"'
+                        } else {
+                            combined += paramDef.name
+                        }
+                    }
+
+                    return combined;
+                }
+
+                return '$enum';
+
+            default:
+                return prop.type;
+        }
+    }
 
     renderProps() {
         const { component } = this.props;
@@ -17,41 +72,71 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
         for (let index = 0; index < component.props.length; index++) {
             const prop = component.props[index];
 
-            rows.push(<tr>
-                <td>{prop.name}</td>
-                <td>{prop.type}</td>
-                <td>{'' + prop.required}</td>
-                <td>{prop.defaultValue || ''}</td>
+            rows.push(<tr key={prop.name}>
+                <td><code>{prop.name}</code></td>
+                <td><code>{this.renderType(prop)}</code></td>
+                <td><pre>{'' + prop.required}</pre></td>
+                <td><pre>{prop.defaultValue || ''}</pre></td>
                 <td>{prop.description || ''}</td>
             </tr>);
         }
 
-        return <table className='table table-striped table-bordered'>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Required</th>
-                    <th>Default Value</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                {rows}
-            </tbody>
-        </table>
+        return <>
+            <h5 className='props-title'>Props</h5>
+            <table className='table table-striped table-bordered props-table'>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Default Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+            </table>
+        </>
+    }
+
+    /**
+     * Render the associated markdown file. This includes rendering
+     * all the editable code examples here.
+     */
+    renderMarkdownFile = () => {
+        const { component } = this.props;
+        if (component.docs) {
+            return <ReactMarkdown className='markdown-docs' components={{
+                code({ node, inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || '')
+                    const sourceCode = '<>\n' + String(children).replace(/\n$/, '') + '\n</>'
+
+                    return !inline && match ? (
+                        <CodePlayground source={sourceCode} />
+                    ) : (
+                        <code className={className} {...props}>
+                            {children}
+                        </code>
+                    )
+                }
+            }}>{component.docs}</ReactMarkdown>
+        }
+
+        return null
     }
 
     render() {
         const { component } = this.props;
 
         return <div className='component-details'>
-            <h1>{component.name}</h1>
-            <h6>{component.sourcePath}</h6>
+            <h1 className='component-name'>{component.name}</h1>
+            <pre className='component-source-path'>{component.sourcePath}</pre>
 
-            <p>{component.description}</p>
+            <ReactMarkdown className='component-description'>{component.description}</ReactMarkdown>
 
             {this.renderProps()}
+            {this.renderMarkdownFile()}
         </div>
     }
 

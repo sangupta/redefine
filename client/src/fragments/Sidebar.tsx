@@ -22,13 +22,20 @@ export default class Sidebar extends React.Component<SidebarProps> {
 
         for (let index = 0; index < components.length; index++) {
             const component = components[index];
-            result.push(<ComponentItem component={component} onSelect={this.handleComponentSelect} />)
+            result.push(<ComponentItem key={component.name} component={component} onSelect={this.handleComponentSelect} />)
         }
-        return <ul className='component-list'>{result}</ul>;
+        return <div className='list-group list-group-flush border-bottom scrollarea'>
+            {result}
+        </div>
     }
 
     render() {
-        return <div className='sidebar'>
+        const { components } = this.props;
+        if(!components || components.length === 0) {
+            return null;
+        }
+
+        return <div className='d-flex flex-column align-items-stretch flex-shrink-0 bg-white sidebar'>
             {this.renderComponents()}
         </div>
     }
