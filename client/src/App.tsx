@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 
 import { ComponentDef, NoProps } from './Utils';
 
@@ -11,6 +12,12 @@ interface AppState {
     selectedComponent?: ComponentDef;
     title: string;
 }
+
+const Footer = styled.footer`
+    font-size: 11px;
+    color: white;
+    line-height: 36px;
+`;
 
 export default class App extends React.Component<NoProps, AppState> {
 
@@ -40,11 +47,11 @@ export default class App extends React.Component<NoProps, AppState> {
                 <Sidebar components={this.state.components} onComponentSelect={this.handleComponentSelect} />
                 <ContentPane component={this.state.selectedComponent} />
             </div>
-            <footer className="footer mt-auto bg-dark">
+            <Footer className="footer mt-auto bg-dark">
                 <div className='container-fluid'>
                     <span className="text-muted">powered by Redefine</span>
                 </div>
-            </footer>
+            </Footer>
         </>
     }
 

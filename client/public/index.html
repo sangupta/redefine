@@ -11,11 +11,38 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
 
     <!-- load our overrides -->
-    <link href="redefine.css" rel="stylesheet">
+    <style type="text/css">
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+
+        .flex-1 {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .scrollarea {
+            overflow-y: auto;
+        }
+
+        nav.navbar {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+    </style>
     <title>Redefine</title>
 
     <!-- CSS only -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 </head>
 
 <body class='d-flex flex-column'>
@@ -36,7 +63,7 @@
         const script = document.createElement('script');
         script.src = "https://sangupta.com/hosted/js/dynamic-import-with-react.js";
         script.type = "module"
-        script.onload = function() {
+        script.onload = function () {
             window.__import__('http://localhost:13090/bedrock.js').then(lib => {
                 window.__ComponentLibrary = lib;
             });
@@ -46,4 +73,5 @@
     </script>
     <script type='module' src='../src/RedefineClient.tsx'></script>
 </body>
+
 </html>

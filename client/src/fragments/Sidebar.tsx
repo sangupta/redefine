@@ -1,14 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
+
 import { ComponentDef, componentSorter } from './../Utils';
 import ComponentItem from './ComponentItem';
 
 interface SidebarProps {
+    className?: string;
     components: Array<ComponentDef>;
-
     onComponentSelect: (def: ComponentDef) => void;
 }
 
-export default class Sidebar extends React.Component<SidebarProps> {
+class Sidebar extends React.Component<SidebarProps> {
 
     handleComponentSelect = (def: ComponentDef) => {
         this.props.onComponentSelect(def);
@@ -31,13 +33,20 @@ export default class Sidebar extends React.Component<SidebarProps> {
 
     render() {
         const { components } = this.props;
-        if(!components || components.length === 0) {
+        if (!components || components.length === 0) {
             return null;
         }
 
-        return <div className='d-flex flex-column align-items-stretch flex-shrink-0 bg-white sidebar'>
+        return <div className={'d-flex flex-column align-items-stretch flex-shrink-0 bg-white ' + this.props.className}>
             {this.renderComponents()}
         </div>
     }
 
 }
+
+export default styled(Sidebar)`
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    border-right: 1px solid;
+`;
