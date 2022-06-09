@@ -67,9 +67,9 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 	if len(components) > 0 {
 		baseLen := len(config.BaseFolder)
 
-		for _, component := range components {
-			if strings.HasPrefix(component.SourcePath, config.BaseFolder) {
-				component.SourcePath = component.SourcePath[baseLen+1:]
+		for index := range components {
+			if strings.HasPrefix(components[index].SourcePath, config.BaseFolder) {
+				components[index].SourcePath = components[index].SourcePath[baseLen+1:]
 			}
 		}
 	}
