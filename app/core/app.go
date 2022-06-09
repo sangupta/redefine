@@ -64,7 +64,7 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 
 	// write the JSON file
 	payload := jsonPayload{
-		Title:      "React components",
+		Title:      config.Title,
 		Components: components,
 	}
 
