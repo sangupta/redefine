@@ -18,6 +18,7 @@ import (
 	"io/ioutil"
 	"log"
 	"sort"
+	"strings"
 
 	ast "sangupta.com/redefine/ast"
 	"sangupta.com/redefine/model"
@@ -61,6 +62,17 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 	sort.SliceStable(components, func(i, j int) bool {
 		return components[i].Name < components[j].Name
 	})
+
+	// fix source path in components
+	if len(components) > 0 {
+		baseLen := len(config.BaseFolder)
+
+		for _, component := range components {
+			if strings.HasPrefix(component.SourcePath, config.BaseFolder) {
+				component.SourcePath = component.SourcePath[baseLen+1:]
+			}
+		}
+	}
 
 	// write the JSON file
 	payload := jsonPayload{
