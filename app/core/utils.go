@@ -12,6 +12,11 @@ that can be found in LICENSE file in the code repository.
 
 package core
 
+import (
+	"errors"
+	"os"
+)
+
 // Check if a file should be included in the list
 // of files to be parsed, against the inclusion rules
 // defined in user supplied configuation
@@ -58,4 +63,18 @@ func isWildCardMatch(str string, pattern string) bool {
 	}
 
 	return j == patternLen
+}
+
+func fileExists(filePath string) bool {
+	_, err := os.Stat(filePath)
+
+	if err == nil {
+		return true
+	}
+
+	if errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+
+	return false
 }

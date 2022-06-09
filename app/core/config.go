@@ -13,9 +13,12 @@ that can be found in LICENSE file in the code repository.
 package core
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -24,8 +27,23 @@ import (
 // and other user supplied configuration when
 // invoking the redefine app.
 type RedefineConfig struct {
-	baseFolder string
-	includes   []string
+	// the base folder from where all components are read
+	BaseFolder string `json:"baseFolder"`
+
+	// type of files to include
+	Includes []string `json:"includes"`
+
+	// folder from where docs are to be read
+	DocsFolder string `json:"docsFolder"`
+
+	// the title to use when emitting the components.json file
+	Title string `json:"title"`
+
+	// the path of the library to use from disk when loading in UI
+	LibraryPath string `json:"libraryPath"`
+
+	// the published URL of the library to use when loading the UI
+	LibraryUrl string `json:"libraryUrl"`
 }
 
 // Extract redefine configuration params using the
@@ -42,19 +60,54 @@ func GetRedefineConfig() *RedefineConfig {
 		cwd, err := os.Getwd()
 		if err != nil {
 			fmt.Println("No path was specified and error reading current directory")
-			os.Exit(0)
 			return nil
 		}
 
 		baseFolder = cwd
 	}
 
-	// check if we have a redefine.json present
-	// in the current folder
+	// check if the path passed is to a folder containing redefine.config.json
+	// file or to the place that we need to scan
+	configFilePath := path.Join(baseFolder, "redefine.config.json")
+	configFile := fileExists(configFilePath)
 
-	config := RedefineConfig{
-		baseFolder: baseFolder,
-		includes:   []string{"*.ts", "*.tsx", "*.js", "*.jsx"},
+	var config RedefineConfig
+
+	if configFile {
+		// read the JSON file and populate the structure
+		configFileContents, err := ioutil.ReadFile(configFilePath)
+		if err != nil {
+			fmt.Println("redefine.config.json file present, unable to read file.")
+			return nil
+		}
+
+		// unmarshal the file
+		fmt.Println("Init using redefine.config.json...")
+		json.Unmarshal(configFileContents, &config)
+
+		// normalize the base folder path
+		baseFolder = path.Join(baseFolder, config.BaseFolder)
+		baseFolder, _ = filepath.Abs(baseFolder)
+		config.BaseFolder = baseFolder // set the resolved base folder
+
+		// normalize the docs folder path
+		if config.DocsFolder != "" {
+			docsFolder := path.Join(baseFolder, config.DocsFolder)
+			docsFolder, _ = filepath.Abs(docsFolder)
+			config.DocsFolder = docsFolder // set the resolved base folder
+		}
+
+		// check and fix title as needed
+		if config.Title == "" {
+			config.Title = filepath.Base(config.BaseFolder)
+		}
+	} else {
+		// config file does not exist
+		// we create default configuration
+		config = RedefineConfig{
+			BaseFolder: baseFolder,
+			Includes:   []string{"*.ts", "*.tsx", "*.js", "*.jsx"},
+		}
 	}
 
 	return &config
@@ -71,23 +124,25 @@ func GetRedefineConfig() *RedefineConfig {
 func (config *RedefineConfig) scanFolder() ([]string, error) {
 	totalFiles := []string{}
 
-	filepath.Walk(config.baseFolder, func(path string, fileInfo os.FileInfo, err error) error {
+	filepath.Walk(config.BaseFolder, func(path string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatal("Unable to read files from path: " + path)
 			return nil
 		}
 
+		// skip if this is a folder
 		if fileInfo.IsDir() {
 			return nil
 		}
 
-		// absFilePath := filepath.Join(path, fileInfo.Name())
+		// get absolute path for path
 		absPath, err := filepath.Abs(path)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if !isFileIncluded(absPath, config.includes) {
+		// check if the file is included or not
+		if !isFileIncluded(absPath, config.Includes) {
 			return nil
 		}
 
