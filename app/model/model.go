@@ -86,7 +86,7 @@ func GetComponentsFromSourceFile(sourceFile *ast.SourceFile, syntaxKind *ast.Syn
  * @param sourceFile the `SourceFile` instance describing the AST
  */
 func extractComponentsFromSourceFile(name string, path string, sourceFile ast.SourceFile) []Component {
-	fmt.Println("Extracting components from: " + path + "/" + name)
+	// fmt.Println("Extracting components from: " + path + "/" + name)
 
 	cl := make([]Component, 0)
 

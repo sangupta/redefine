@@ -18,6 +18,7 @@ type Component struct {
 	ComponentType ComponentType `json:"componentType"`
 	Description   string        `json:"description"`
 	Props         []PropDef     `json:"props"`
+	Docs          string        `json:"docs"`
 }
 
 type PropDef struct {

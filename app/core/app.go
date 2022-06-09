@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"path"
 	"sort"
 	"strings"
 
@@ -65,12 +66,35 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 
 	// fix source path in components
 	if len(components) > 0 {
-		baseLen := len(config.BaseFolder)
+		baseLen := len(config.SrcFolder)
 
 		for index := range components {
-			if strings.HasPrefix(components[index].SourcePath, config.BaseFolder) {
+			if strings.HasPrefix(components[index].SourcePath, config.SrcFolder) {
 				components[index].SourcePath = components[index].SourcePath[baseLen+1:]
 			}
+		}
+	}
+
+	// add documentation if available to component
+	if config.DocsFolder != "" {
+		for index := range components {
+			// build path to doc file
+			docFile := path.Join(config.DocsFolder, components[index].SourcePath, components[index].Name)
+			ext := path.Ext(docFile)
+			docFile = docFile[0:len(docFile)-len(ext)] + ".md"
+
+			// see if file exists
+			if !FileExists(docFile) {
+				continue
+			}
+
+			// read the doc file
+			mdFile, err := ioutil.ReadFile(docFile)
+			if err != nil {
+				panic(err)
+			}
+
+			components[index].Docs = string(mdFile)
 		}
 	}
 

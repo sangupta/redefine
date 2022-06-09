@@ -28,13 +28,16 @@ import (
 // invoking the redefine app.
 type RedefineConfig struct {
 	// the base folder from where all components are read
-	BaseFolder string `json:"baseFolder"`
+	SrcFolder string `json:"srcFolder"`
 
 	// type of files to include
 	Includes []string `json:"includes"`
 
 	// folder from where docs are to be read
 	DocsFolder string `json:"docsFolder"`
+
+	// the documentation mode to use
+	DocMode string `json:"docMode"`
 
 	// the title to use when emitting the components.json file
 	Title string `json:"title"`
@@ -69,7 +72,7 @@ func GetRedefineConfig() *RedefineConfig {
 	// check if the path passed is to a folder containing redefine.config.json
 	// file or to the place that we need to scan
 	configFilePath := path.Join(baseFolder, "redefine.config.json")
-	configFile := fileExists(configFilePath)
+	configFile := FileExists(configFilePath)
 
 	var config RedefineConfig
 
@@ -86,9 +89,9 @@ func GetRedefineConfig() *RedefineConfig {
 		json.Unmarshal(configFileContents, &config)
 
 		// normalize the base folder path
-		baseFolder = path.Join(baseFolder, config.BaseFolder)
-		baseFolder, _ = filepath.Abs(baseFolder)
-		config.BaseFolder = baseFolder // set the resolved base folder
+		srcFolder := path.Join(baseFolder, config.SrcFolder)
+		srcFolder, _ = filepath.Abs(srcFolder)
+		config.SrcFolder = srcFolder // set the resolved base folder
 
 		// normalize the docs folder path
 		if config.DocsFolder != "" {
@@ -99,14 +102,14 @@ func GetRedefineConfig() *RedefineConfig {
 
 		// check and fix title as needed
 		if config.Title == "" {
-			config.Title = filepath.Base(config.BaseFolder)
+			config.Title = filepath.Base(config.SrcFolder)
 		}
 	} else {
 		// config file does not exist
 		// we create default configuration
 		config = RedefineConfig{
-			BaseFolder: baseFolder,
-			Includes:   []string{"*.ts", "*.tsx", "*.js", "*.jsx"},
+			SrcFolder: baseFolder,
+			Includes:  []string{"*.ts", "*.tsx", "*.js", "*.jsx"},
 		}
 	}
 
@@ -124,7 +127,7 @@ func GetRedefineConfig() *RedefineConfig {
 func (config *RedefineConfig) scanFolder() ([]string, error) {
 	totalFiles := []string{}
 
-	filepath.Walk(config.BaseFolder, func(path string, fileInfo os.FileInfo, err error) error {
+	filepath.Walk(config.SrcFolder, func(path string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatal("Unable to read files from path: " + path)
 			return nil

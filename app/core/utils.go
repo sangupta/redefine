@@ -65,7 +65,7 @@ func isWildCardMatch(str string, pattern string) bool {
 	return j == patternLen
 }
 
-func fileExists(filePath string) bool {
+func FileExists(filePath string) bool {
 	_, err := os.Stat(filePath)
 
 	if err == nil {

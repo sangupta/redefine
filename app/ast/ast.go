@@ -112,7 +112,7 @@ func doWork(files []string, parser *tsParser, astMap map[string]SourceFile) {
 // Parse a single file after reading from the disk.
 // The file path specified must be an absolute file path that resolves.
 func parseSingleFile(file string, parser *tsParser) *SourceFile {
-	fmt.Println("Processing file: " + file)
+	// fmt.Println("Processing file: " + file)
 
 	// read the source code file from disk
 	sourceCode, err := ioutil.ReadFile(file)
