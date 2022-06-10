@@ -92,10 +92,6 @@ func GetRedefineConfig(baseFolder string) *RedefineConfig {
 
 		config.SrcFolder = normalizeFolderPath(baseFolder, config.SrcFolder)   // normalize the base folder path
 		config.DocsFolder = normalizeFolderPath(baseFolder, config.DocsFolder) // normalize the docs folder path
-	} else {
-		// config file does not exist
-		// we create default configuration
-		config = RedefineConfig{}
 	}
 
 	// setup defaults

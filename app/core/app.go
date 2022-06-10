@@ -137,8 +137,8 @@ func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
 
 	// find the output folder
 	var outFolder string
-	if config.PackageJson != nil && config.PackageJson.MainFile != "" {
-		outFolder = path.Dir(config.PackageJson.MainFile)
+	if pkgJson.MainFile != "" {
+		outFolder = path.Dir(pkgJson.MainFile)
 		outFolder = path.Join(app.BaseFolder, outFolder)
 	} else {
 		outFolder = app.BaseFolder
