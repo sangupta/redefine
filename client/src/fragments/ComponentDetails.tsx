@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { ComponentDef, PropDef } from '../Utils';
+import { ComponentDef, PropDef, propsSorter } from '../Utils';
 import CodePlayground from './CodePlayground';
 import ComponentPlayground from './ComponentPlayground';
 import TabContainer from './Tabs';
@@ -70,6 +70,8 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
             return null;
         }
 
+        component.props = component.props.sort(propsSorter)
+
         const rows = [];
         for (let index = 0; index < component.props.length; index++) {
             const prop = component.props[index];
@@ -112,15 +114,11 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
             return <ReactMarkdown className='markdown-docs' components={{
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || '')
-                    const sourceCode = '<>\n' + String(children).replace(/\n$/, '') + '\n</>'
+                    const sourceCode = '<>\n' + String(children).trim() + '\n</>'
 
-                    return !inline && match ? (
-                        <CodePlayground source={sourceCode} />
-                    ) : (
-                        <code className={className} {...props}>
-                            {children}
-                        </code>
-                    )
+                    return (!inline && match)
+                        ? <CodePlayground source={sourceCode} />
+                        : <code className={className} {...props}>{children}</code>
                 }
             }}>{component.docs}</ReactMarkdown>
         }

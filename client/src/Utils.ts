@@ -35,3 +35,12 @@ export function componentSorter(a: ComponentDef, b: ComponentDef) {
 
     return a.name.localeCompare(b.name);
 }
+
+export function propsSorter(a: PropDef, b: PropDef) {
+    if (!a || !b) {
+        console.warn('sorting received undefined');
+        return 0;
+    }
+
+    return a.name.localeCompare(b.name);
+}
