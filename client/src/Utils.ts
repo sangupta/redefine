@@ -58,7 +58,6 @@ export function processComponentInfo(components: Array<ComponentDef>): Array<Com
     }
 
     // finally return the components itself
-    console.log(components);
     return components;
 }
 
