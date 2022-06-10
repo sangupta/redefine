@@ -112,15 +112,20 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 // file to where it needs to be
 func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
 	config := app.Config
+	pkgJson := config.PackageJson
+	if pkgJson == nil {
+		pj := PackageJson{}
+		pkgJson = &pj
+	}
 
 	// write the JSON file
 	payload := jsonPayload{
 		Title:       config.Title,
 		Components:  components,
-		Description: config.PackageJson.Description,
-		HomePage:    config.PackageJson.HomePage,
-		Version:     config.PackageJson.Version,
-		Author:      config.PackageJson.Author,
+		Description: pkgJson.Description,
+		HomePage:    pkgJson.HomePage,
+		Version:     pkgJson.Version,
+		Author:      pkgJson.Author,
 	}
 
 	// create JSON byte array

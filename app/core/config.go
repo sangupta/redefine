@@ -59,8 +59,8 @@ func GetRedefineConfig(baseFolder string) *RedefineConfig {
 	packageJsonFilePath := path.Join(baseFolder, "package.json")
 	packageJsonExists := FileExists(packageJsonFilePath)
 
-	var packageJson PackageJson
 	// read package.json file
+	var packageJson PackageJson
 	if packageJsonExists {
 		packageJsonFileContents, err := ioutil.ReadFile(packageJsonFilePath)
 		if err == nil {
@@ -92,22 +92,52 @@ func GetRedefineConfig(baseFolder string) *RedefineConfig {
 
 		config.SrcFolder = normalizeFolderPath(baseFolder, config.SrcFolder)   // normalize the base folder path
 		config.DocsFolder = normalizeFolderPath(baseFolder, config.DocsFolder) // normalize the docs folder path
-
-		// check and fix title as needed
-		if config.Title == "" {
-			config.Title = filepath.Base(config.SrcFolder)
-		}
 	} else {
 		// config file does not exist
 		// we create default configuration
-		config = RedefineConfig{
-			SrcFolder: baseFolder,
-		}
+		config = RedefineConfig{}
 	}
 
 	// setup defaults
+	// for includes
 	if len(config.Includes) == 0 {
 		config.Includes = []string{"*.ts", "*.tsx", "*.js", "*.jsx"}
+	}
+
+	// for title
+	if config.Title == "" {
+		config.Title = packageJson.Name
+
+		if config.Title == "" {
+			config.Title = filepath.Base(config.SrcFolder)
+		}
+	}
+
+	// for docs folder
+	if config.DocsFolder == "" {
+		config.DocsFolder = normalizeFolderPath(baseFolder, "docs")
+	}
+
+	// for src folder
+	if config.SrcFolder == "" {
+		folder := normalizeFolderPath(baseFolder, "src")
+		if FileExists(folder) {
+			config.SrcFolder = folder
+		}
+	}
+	if config.SrcFolder == "" {
+		folder := normalizeFolderPath(baseFolder, "lib")
+		if FileExists(folder) {
+			config.SrcFolder = folder
+		}
+	}
+	if config.SrcFolder == "" {
+		folder := normalizeFolderPath(baseFolder, "packages")
+		if FileExists(folder) {
+			config.SrcFolder = folder
+		} else {
+			config.SrcFolder = baseFolder
+		}
 	}
 
 	// all done
