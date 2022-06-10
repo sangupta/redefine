@@ -1,3 +1,15 @@
+/**
+ *
+ * Redefine - UI component documentation
+ * 
+ * MIT License.
+ * Copyright (c) 2022, Sandeep Gupta.
+ * 
+ * Use of this source code is governed by a MIT style license
+ * that can be found in LICENSE file in the code repository.
+ * 
+ **/
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -14,10 +26,10 @@ const PreviewRenderer = (props: any) => {
 export default class CodePlayground extends React.Component<Props> {
 
     render() {
-        const {source} = this.props;
+        const { source } = this.props;
         const ComponentLibrary = (window as any).__ComponentLibrary || [];
 
-        if(!ComponentLibrary || ComponentLibrary.length === 0)  {
+        if (!ComponentLibrary || ComponentLibrary.length === 0) {
             // this is read only mode
             return <code>{source}</code>
         }

@@ -1,3 +1,15 @@
+/**
+ *
+ * Redefine - UI component documentation
+ * 
+ * MIT License.
+ * Copyright (c) 2022, Sandeep Gupta.
+ * 
+ * Use of this source code is governed by a MIT style license
+ * that can be found in LICENSE file in the code repository.
+ * 
+ **/
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -7,18 +19,29 @@ import Header from './fragments/Header';
 import Sidebar from './fragments/Sidebar';
 import ContentPane from './fragments/ContentPane';
 
+/**
+ * State attributes for the app component.
+ */
 interface AppState {
     components: Array<ComponentDef>;
     selectedComponent?: ComponentDef;
     title: string;
 }
 
+/**
+ * Styled `footer` HTML element.
+ */
 const Footer = styled.footer`
     font-size: 11px;
     color: white;
     line-height: 36px;
 `;
 
+/**
+ * The main Redefine client application.
+ * 
+ * @author sangupta
+ */
 export default class App extends React.Component<NoProps, AppState> {
 
     constructor(props: NoProps) {
