@@ -28,7 +28,7 @@ import (
 // invoking the redefine app.
 type RedefineConfig struct {
 	// the base folder from where all components are read
-	SrcFolder string `json:"rootFolder"`
+	SrcFolder string `json:"srcFolder"`
 
 	// type of files to include
 	Includes []string `json:"includes"`
