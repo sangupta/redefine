@@ -28,7 +28,8 @@ import (
 // Simple struct that acts as a wrapper for various
 // ways the application can be invoked
 type RedefineApp struct {
-	Config *RedefineConfig
+	Config     *RedefineConfig
+	BaseFolder string
 }
 
 // Value object to define how the component JSON
@@ -38,6 +39,12 @@ type jsonPayload struct {
 	// the title that is recognized from the package.json
 	// file or a user supplied string
 	Title string `json:"title"`
+
+	Description string        `json:"description"`
+	Version     string        `json:"version"`
+	HomePage    string        `json:"homePage"`
+	Author      PackageAuthor `json:"author"`
+	License     string        `json:"license"`
 
 	// the extracted components
 	Components []model.Component `json:"components"`
@@ -98,20 +105,44 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 		}
 	}
 
+	writeFinalJsonFile(app, components)
+}
+
+// Function responsible to write the final components.json
+// file to where it needs to be
+func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
+	config := app.Config
+
 	// write the JSON file
 	payload := jsonPayload{
-		Title:      config.Title,
-		Components: components,
+		Title:       config.Title,
+		Components:  components,
+		Description: config.PackageJson.Description,
+		HomePage:    config.PackageJson.HomePage,
+		Version:     config.PackageJson.Version,
+		Author:      config.PackageJson.Author,
 	}
 
+	// create JSON byte array
 	jsonStr, err := json.MarshalIndent(payload, "", "  ")
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
+	// find the output folder
+	var outFolder string
+	if config.PackageJson != nil && config.PackageJson.MainFile != "" {
+		outFolder = path.Dir(config.PackageJson.MainFile)
+		outFolder = path.Join(app.BaseFolder, outFolder)
+	} else {
+		outFolder = app.BaseFolder
+	}
+
 	// write the file to disk
-	ioutil.WriteFile("components.json", jsonStr, 0644)
+	jsonFile := path.Join(outFolder, "components.json")
+	fmt.Println("Components JSON written to: " + jsonFile)
+	ioutil.WriteFile(jsonFile, jsonStr, 0644)
 }
 
 func (app *RedefineApp) PrintComponentsFromSingleFile(absoluteFilePath string) {

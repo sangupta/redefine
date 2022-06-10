@@ -28,7 +28,7 @@ import (
 // invoking the redefine app.
 type RedefineConfig struct {
 	// the base folder from where all components are read
-	SrcFolder string `json:"srcFolder"`
+	SrcFolder string `json:"rootFolder"`
 
 	// type of files to include
 	Includes []string `json:"includes"`
@@ -47,26 +47,25 @@ type RedefineConfig struct {
 
 	// the published URL of the library to use when loading the UI
 	LibraryUrl string `json:"libraryUrl"`
+
+	PackageJson *PackageJson
 }
 
 // Extract redefine configuration params using the
 // OS arguments and/or redefine.config file present
 // in the current folder
-func GetRedefineConfig() *RedefineConfig {
-	var baseFolder string
+func GetRedefineConfig(baseFolder string) *RedefineConfig {
+	// check if we have a package.json file in there
+	packageJsonFilePath := path.Join(baseFolder, "package.json")
+	packageJsonExists := FileExists(packageJsonFilePath)
 
-	// check for os arguments
-	if len(os.Args) > 1 {
-		baseFolder = os.Args[1]
-	} else {
-		// we will pick the current folder
-		cwd, err := os.Getwd()
-		if err != nil {
-			fmt.Println("No path was specified and error reading current directory")
-			return nil
+	var packageJson PackageJson
+	// read package.json file
+	if packageJsonExists {
+		packageJsonFileContents, err := ioutil.ReadFile(packageJsonFilePath)
+		if err == nil {
+			json.Unmarshal(packageJsonFileContents, &packageJson)
 		}
-
-		baseFolder = cwd
 	}
 
 	// check if the path passed is to a folder containing redefine.config.json
@@ -74,7 +73,10 @@ func GetRedefineConfig() *RedefineConfig {
 	configFilePath := path.Join(baseFolder, "redefine.config.json")
 	configFile := FileExists(configFilePath)
 
-	var config RedefineConfig
+	// create the app config object
+	config := RedefineConfig{
+		PackageJson: &packageJson,
+	}
 
 	if configFile {
 		// read the JSON file and populate the structure
@@ -88,17 +90,8 @@ func GetRedefineConfig() *RedefineConfig {
 		fmt.Println("Init using redefine.config.json...")
 		json.Unmarshal(configFileContents, &config)
 
-		// normalize the base folder path
-		srcFolder := path.Join(baseFolder, config.SrcFolder)
-		srcFolder, _ = filepath.Abs(srcFolder)
-		config.SrcFolder = srcFolder // set the resolved base folder
-
-		// normalize the docs folder path
-		if config.DocsFolder != "" {
-			docsFolder := path.Join(baseFolder, config.DocsFolder)
-			docsFolder, _ = filepath.Abs(docsFolder)
-			config.DocsFolder = docsFolder // set the resolved base folder
-		}
+		config.SrcFolder = normalizeFolderPath(baseFolder, config.SrcFolder)   // normalize the base folder path
+		config.DocsFolder = normalizeFolderPath(baseFolder, config.DocsFolder) // normalize the docs folder path
 
 		// check and fix title as needed
 		if config.Title == "" {
@@ -109,11 +102,26 @@ func GetRedefineConfig() *RedefineConfig {
 		// we create default configuration
 		config = RedefineConfig{
 			SrcFolder: baseFolder,
-			Includes:  []string{"*.ts", "*.tsx", "*.js", "*.jsx"},
 		}
 	}
 
+	// setup defaults
+	if len(config.Includes) == 0 {
+		config.Includes = []string{"*.ts", "*.tsx", "*.js", "*.jsx"}
+	}
+
+	// all done
 	return &config
+}
+
+func normalizeFolderPath(baseFolder string, configPath string) string {
+	if configPath == "" {
+		return ""
+	}
+
+	folder := path.Join(baseFolder, configPath)
+	folder, _ = filepath.Abs(folder)
+	return folder
 }
 
 // Scan a folder for all files that match a given pattern.
