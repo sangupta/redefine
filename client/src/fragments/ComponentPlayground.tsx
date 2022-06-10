@@ -11,7 +11,7 @@
  **/
 
 import React from 'react';
-import { ComponentDef, propsSorter } from '../Utils';
+import { propsSorter } from '../Utils';
 
 interface ComponentPlaygroundProps {
     component: ComponentDef;

@@ -13,7 +13,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { ComponentDef, componentSorter } from './../Utils';
+import { componentSorter } from './../Utils';
 import ComponentItem from './ComponentItem';
 
 interface SidebarProps {

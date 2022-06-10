@@ -10,45 +10,6 @@
  * 
  **/
 
-export interface NoProps {
-
-}
-
-/**
- * Defines the type of a function parameter.
- * 
- */
-export interface ParamDef {
-    name: string;
-    type?: string;
-}
-
-/**
- * Attributes in component JSON that define a component `prop`.
- */
-export interface PropDef {
-    name: string;
-    type?: string;
-    required: boolean;
-    enumOf?: Array<ParamDef>
-    defaultValue?: string;
-    description?: string;
-    returnType?: string;
-    params?: Array<ParamDef>;
-}
-
-/**
- * Attributes in component JSON that define a `component`.
- */
-export interface ComponentDef {
-    name: string;
-    sourcePath: string;
-    componentType: string;
-    description: string;
-    props?: Array<PropDef>
-    docs: string;
-}
-
 /**
  * Method to sort components on name.
  * 
@@ -79,4 +40,114 @@ export function propsSorter(a: PropDef, b: PropDef) {
     }
 
     return a.name.localeCompare(b.name);
+}
+
+/**
+ * Processes component information as received from server.
+ *  
+ * @param components 
+ * @returns 
+ */
+export function processComponentInfo(components: Array<ComponentDef>): Array<ComponentDef> {
+    if (!components || components.length === 0) {
+        return components;
+    }
+
+    for (let index = 0; index < components.length; index++) {
+        components[index] = processComponent(components[index]);
+    }
+
+    // finally return the components itself
+    console.log(components);
+    return components;
+}
+
+/**
+ * Two things need to happen:
+ * 
+ * 1. divide the content into sections
+ * which is signified by line starting with a single hash character and a white space '#'
+ * 2. Find the code block that has language set to `playground`
+ * this code block shall be used as playground data in tabs
+ * 
+ * @param component 
+ * @returns 
+ */
+function processComponent(component: ComponentDef): ComponentDef {
+    if (!component) {
+        return component;
+    }
+
+    if ((component.docs || '').trim().length === 0) {
+        return component;
+    }
+
+    // split into lines
+    const lines = component.docs.split('\n');
+
+    // find code block with playground lang
+    let start = -1, end = -1;
+    for (let index = 0; index < lines.length; index++) {
+        const line = lines[index].trim();
+
+        // find start
+        if (start < 0 && line === '```js:playground') {
+            start = index;
+            continue;
+        }
+
+        if (start >= 0 && line === '```') {
+            // we are done
+            end = index;
+            break;
+        }
+    }
+
+    // did we find the playground?
+    if (start >= 0) {
+        if (end < 0) {
+            end = lines.length;
+        }
+
+        component.playground = '';
+        for (let index = start + 1; index < end; index++) {
+            component.playground += lines[index];
+        }
+
+        // delete these lines from the list of lines
+        lines.splice(start, end - start + 1);
+    }
+
+    // create splits for sections
+    let section = '', title = '';
+    component.examples = [];
+    for (let index = 0; index < lines.length; index++) {
+        const line = lines[index];
+
+        if (line.startsWith('# ') && line.trim().length >= 3) {
+            // this is a new section start
+            if (section.trim().length > 0) {
+                const example = { name: (title || 'Default'), markdown: section };
+                if (example.name.startsWith('# ')) {
+                    example.name = example.name.substring(2);
+                }
+
+                component.examples.push(example);
+            }
+
+            // clear up
+            section = '';
+            title = line.substring(2).trim();
+            continue;
+        }
+
+        // add this line to section
+        section += line;
+    }
+
+    // all lines finish, add last section
+    component.examples.push({ markdown: section, name: (title || 'Default') });
+
+    // all done
+    return component;
 }

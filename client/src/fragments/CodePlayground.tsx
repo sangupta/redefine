@@ -26,10 +26,10 @@ const PreviewRenderer = (props: any) => {
 export default class CodePlayground extends React.Component<Props> {
 
     render() {
-        const { source } = this.props;
+        const {source} = this.props;
         const ComponentLibrary = (window as any).__ComponentLibrary || [];
 
-        if (!ComponentLibrary || ComponentLibrary.length === 0) {
+        if(!ComponentLibrary || ComponentLibrary.length === 0)  {
             // this is read only mode
             return <code>{source}</code>
         }

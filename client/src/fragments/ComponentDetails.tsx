@@ -12,7 +12,7 @@
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { ComponentDef, PropDef, propsSorter } from '../Utils';
+import { propsSorter } from '../Utils';
 import CodePlayground from './CodePlayground';
 import ComponentPlayground from './ComponentPlayground';
 import TabContainer from './Tabs';
@@ -156,7 +156,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
             });
         }
 
-        if (component.props && component.props.length > 0) {
+        if (component.playground && component.props && component.props.length > 0) {
             tabs.push({
                 name: 'Playground',
                 component: <ComponentPlayground component={component} />

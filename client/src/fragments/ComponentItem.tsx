@@ -11,7 +11,6 @@
  **/
 
 import React from 'react';
-import { ComponentDef } from '../Utils';
 
 interface ComponentItemProps {
     component: ComponentDef;

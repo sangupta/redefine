@@ -12,7 +12,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import { ComponentDef } from '../Utils';
 import ComponentDetails from './ComponentDetails';
 
 interface ContentPaneProps {

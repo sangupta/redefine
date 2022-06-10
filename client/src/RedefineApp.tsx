@@ -14,7 +14,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import { ComponentDef, NoProps } from './Utils';
+import { processComponentInfo } from './Utils';
 
 import Header from './fragments/Header';
 import Sidebar from './fragments/Sidebar';
@@ -66,7 +66,7 @@ class App extends React.Component<NoProps, AppState> {
     componentDidMount = async () => {
         const response = await fetch('http://localhost:1309/components.json')
         const data = await response.json();
-        this.setState({ title: data.title, components: data.components });
+        this.setState({ title: data.title, components: processComponentInfo(data.components) });
     }
 
     /**
