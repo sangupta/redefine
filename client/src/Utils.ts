@@ -14,11 +14,18 @@ export interface NoProps {
 
 }
 
+/**
+ * Defines the type of a function parameter.
+ * 
+ */
 export interface ParamDef {
     name: string;
     type?: string;
 }
 
+/**
+ * Attributes in component JSON that define a component `prop`.
+ */
 export interface PropDef {
     name: string;
     type?: string;
@@ -30,6 +37,9 @@ export interface PropDef {
     params?: Array<ParamDef>;
 }
 
+/**
+ * Attributes in component JSON that define a `component`.
+ */
 export interface ComponentDef {
     name: string;
     sourcePath: string;
@@ -39,6 +49,13 @@ export interface ComponentDef {
     docs: string;
 }
 
+/**
+ * Method to sort components on name.
+ * 
+ * @param a 
+ * @param b 
+ * @returns 
+ */
 export function componentSorter(a: ComponentDef, b: ComponentDef) {
     if (!a || !b) {
         console.warn('sorting received undefined');
@@ -48,6 +65,13 @@ export function componentSorter(a: ComponentDef, b: ComponentDef) {
     return a.name.localeCompare(b.name);
 }
 
+/**
+ * Method to sort component props on name.
+ * 
+ * @param a 
+ * @param b 
+ * @returns 
+ */
 export function propsSorter(a: PropDef, b: PropDef) {
     if (!a || !b) {
         console.warn('sorting received undefined');

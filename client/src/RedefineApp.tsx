@@ -11,6 +11,7 @@
  **/
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
 import { ComponentDef, NoProps } from './Utils';
@@ -42,8 +43,13 @@ const Footer = styled.footer`
  * 
  * @author sangupta
  */
-export default class App extends React.Component<NoProps, AppState> {
+class App extends React.Component<NoProps, AppState> {
 
+    /**
+     * Constructor.
+     * 
+     * @param props 
+     */
     constructor(props: NoProps) {
         super(props);
 
@@ -53,17 +59,31 @@ export default class App extends React.Component<NoProps, AppState> {
         }
     }
 
+    /**
+     * Load components.json file once the app is mounted.
+     * 
+     */
     componentDidMount = async () => {
         const response = await fetch('http://localhost:1309/components.json')
         const data = await response.json();
         this.setState({ title: data.title, components: data.components });
     }
 
+    /**
+     * Handle selection of a particular component.
+     * 
+     * @param def 
+     */
     handleComponentSelect = (def: ComponentDef): void => {
         this.setState({ selectedComponent: def });
     }
 
-    render() {
+    /**
+     * Render the component.
+     * 
+     * @returns 
+     */
+    render(): React.ReactNode {
         return <>
             <Header title={this.state.title} />
             <div className='d-flex flex-row flex-1'>
@@ -79,3 +99,8 @@ export default class App extends React.Component<NoProps, AppState> {
     }
 
 }
+
+/**
+ * We are all set, mount the application component.
+ */
+ReactDOM.render(<App />, document.body);
