@@ -31,7 +31,7 @@ export default class App extends React.Component<NoProps, AppState> {
     }
 
     componentDidMount = async () => {
-        const response = await fetch('http://localhost:13090/components.json')
+        const response = await fetch('http://localhost:1309/components.json')
         const data = await response.json();
         this.setState({ title: data.title, components: data.components });
     }

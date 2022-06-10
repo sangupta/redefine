@@ -2,6 +2,8 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import { ComponentDef, PropDef } from '../Utils';
 import CodePlayground from './CodePlayground';
+import ComponentPlayground from './ComponentPlayground';
+import TabContainer from './Tabs';
 
 interface ComponentDetailsProps {
     component: ComponentDef;
@@ -129,14 +131,35 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
     render() {
         const { component } = this.props;
 
+        const tabs = [];
+        if (component.props && component.props.length > 0) {
+            tabs.push({
+                name: 'Props',
+                component: this.renderProps()
+            });
+        }
+
+        if (component.docs && component.docs.trim().length > 0) {
+            tabs.push({
+                name: 'Examples',
+                component: this.renderMarkdownFile()
+            });
+        }
+
+        if (component.props && component.props.length > 0) {
+            tabs.push({
+                name: 'Playground',
+                component: <ComponentPlayground component={component} />
+            });
+        }
+
         return <div className='component-details'>
             <h1 className='component-name'>{component.name}</h1>
             <pre className='component-source-path'>{component.sourcePath}</pre>
 
             <ReactMarkdown className='component-description'>{component.description}</ReactMarkdown>
 
-            {this.renderProps()}
-            {this.renderMarkdownFile()}
+            <TabContainer tabs={tabs} />
         </div>
     }
 
