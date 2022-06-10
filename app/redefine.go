@@ -15,11 +15,14 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	core "sangupta.com/redefine/core"
 )
 
 func main() {
+	start := time.Now()
+
 	app := parseOsArguments()
 
 	config := core.GetRedefineConfig(app.BaseFolder)
@@ -35,7 +38,10 @@ func main() {
 
 	// run extraction
 	app.ExtractAndWriteComponents()
-	fmt.Println("Done.")
+
+	duration := time.Since(start)
+
+	fmt.Println("Done in " + duration.String())
 	fmt.Println()
 
 	// app.PrintComponentsFromSingleFile("/Users/sangupta/git/sangupta/bedrock/src/components/asset/AssetBrowser.tsx")
