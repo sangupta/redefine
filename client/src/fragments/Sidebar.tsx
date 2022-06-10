@@ -19,7 +19,7 @@ import ComponentItem from './ComponentItem';
 interface SidebarProps {
     className?: string;
     components: Array<ComponentDef>;
-    onComponentSelect: (def: ComponentDef) => void;
+    onComponentSelect: (def: ComponentDef, example?: ComponentExample) => void;
 }
 
 interface SidebarState {
@@ -36,8 +36,8 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
         }
     }
 
-    handleComponentSelect = (def: ComponentDef) => {
-        this.props.onComponentSelect(def);
+    handleComponentSelect = (def: ComponentDef, example?: ComponentExample) => {
+        this.props.onComponentSelect(def, example);
     }
 
     renderComponents() {
@@ -64,7 +64,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
         </div>
     }
 
-    handleFindChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({ filter: e.target.value });
     }
 
@@ -77,7 +77,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
 
         return <div className={'d-flex flex-column align-items-stretch flex-shrink-0 bg-white ' + this.props.className}>
             <div className='list-group-item list-group-item-action py-2 lh-tight'>
-                <input type='text' placeholder='Find...' onChange={this.handleFindChange} />
+                <input type='text' placeholder='Find...' onChange={this.handleFilterChange} />
             </div>
 
             {this.renderComponents()}

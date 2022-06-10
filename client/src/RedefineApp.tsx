@@ -26,6 +26,7 @@ import ContentPane from './fragments/ContentPane';
 interface AppState {
     components: Array<ComponentDef>;
     selectedComponent?: ComponentDef;
+    selectedExample?: ComponentExample;
     title: string;
 }
 
@@ -74,8 +75,8 @@ class App extends React.Component<NoProps, AppState> {
      * 
      * @param def 
      */
-    handleComponentSelect = (def: ComponentDef): void => {
-        this.setState({ selectedComponent: def });
+    handleComponentSelect = (def: ComponentDef, example?: ComponentExample): void => {
+        this.setState({ selectedComponent: def, selectedExample: example });
     }
 
     /**
@@ -88,7 +89,7 @@ class App extends React.Component<NoProps, AppState> {
             <Header title={this.state.title} />
             <div className='d-flex flex-row flex-1'>
                 <Sidebar components={this.state.components} onComponentSelect={this.handleComponentSelect} />
-                <ContentPane component={this.state.selectedComponent} />
+                <ContentPane component={this.state.selectedComponent} example={this.state.selectedExample} />
             </div>
             <Footer className="footer mt-auto bg-dark">
                 <div className='container-fluid'>

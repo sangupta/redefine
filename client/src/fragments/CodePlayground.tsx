@@ -23,7 +23,7 @@ const PreviewRenderer = (props: any) => {
     return <div className='preview-render'>{props.children}</div>
 }
 
-export default class CodePlayground extends React.Component<Props> {
+export default class CodePlayground extends React.PureComponent<Props> {
 
     render() {
         const {source} = this.props;

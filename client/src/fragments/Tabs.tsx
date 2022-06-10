@@ -18,7 +18,8 @@ export interface TabValue {
 }
 
 interface TabContainerProps {
-    tabs: Array<TabValue>
+    tabs: Array<TabValue>;
+    selectedTab: number;
 }
 
 interface TabContainerState {
@@ -31,7 +32,7 @@ export default class TabContainer extends React.Component<TabContainerProps, Tab
         super(props);
 
         this.state = {
-            selected: 0
+            selected: props.selectedTab || 0
         }
     }
 

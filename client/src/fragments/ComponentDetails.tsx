@@ -11,6 +11,7 @@
  **/
 
 import React from 'react';
+import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 import { propsSorter } from '../Utils';
 import CodePlayground from './CodePlayground';
@@ -19,7 +20,12 @@ import TabContainer from './Tabs';
 
 interface ComponentDetailsProps {
     component: ComponentDef;
+    example?: ComponentExample;
 }
+
+const ExampleDisplay = styled.div`
+    margin: 20px 0;
+`;
 
 export default class ComponentDetails extends React.Component<ComponentDetailsProps> {
 
@@ -120,29 +126,38 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
      * Render the associated markdown file. This includes rendering
      * all the editable code examples here.
      */
-    renderMarkdownFile = () => {
-        const { component } = this.props;
-        if (component.docs) {
-            return <ReactMarkdown className='markdown-docs' components={{
-                code({ node, inline, className, children, ...props }) {
-                    const match = /language-(\w+)/.exec(className || '')
-                    const sourceCode = '<>\n' + String(children).trim() + '\n</>'
+    renderExamples = () => {
+        const { component, example } = this.props;
+        const markdown = example?.markdown || component.docs || '';
 
-                    return (!inline && match)
-                        ? <CodePlayground source={sourceCode} />
-                        : <code className={className} {...props}>{children}</code>
-                }
-            }}>{component.docs}</ReactMarkdown>
+        if (markdown) {
+
+            return <ExampleDisplay>
+                <h3>{example?.name}</h3>
+                <ReactMarkdown className='markdown-docs' components={{
+                    code({ node, inline, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '')
+                        const sourceCode = '<>\n' + String(children).trim() + '\n</>'
+
+                        return (!inline && match)
+                            ? <CodePlayground source={sourceCode} />
+                            : <code className={className} {...props}>{children}</code>
+                    }
+                }}>{markdown}</ReactMarkdown>
+            </ExampleDisplay>
         }
 
         return null
     }
 
     render() {
-        const { component } = this.props;
+        const { component, example } = this.props;
 
         const tabs = [];
+        let exampleTab = 0;
         if (component.props && component.props.length > 0) {
+            exampleTab++;
+
             tabs.push({
                 name: 'Props',
                 component: this.renderProps()
@@ -150,13 +165,15 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
         }
 
         if (component.docs && component.docs.trim().length > 0) {
+            exampleTab++;
+
             tabs.push({
                 name: 'Examples',
-                component: this.renderMarkdownFile()
+                component: this.renderExamples()
             });
         }
 
-        if (component.playground && component.props && component.props.length > 0) {
+        if (component.playground) {
             tabs.push({
                 name: 'Playground',
                 component: <ComponentPlayground component={component} />
@@ -169,7 +186,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
 
             <ReactMarkdown className='component-description'>{component.description}</ReactMarkdown>
 
-            <TabContainer tabs={tabs} />
+            <TabContainer key={component.name + '-' + example?.name} tabs={tabs} selectedTab={example ? exampleTab - 1 : 0} />
         </div>
     }
 

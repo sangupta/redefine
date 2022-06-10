@@ -12,7 +12,8 @@
         "react-dom": "^17.0.2",
         "react-live": "^2.4.1",
         "react-markdown": "^8.0.3",
-        "styled-components": "^5.3.5"
+        "styled-components": "^5.3.5",
+        "simplified-jsx-to-json": "^0.2.0"
     },
     "devDependencies": {
         "@types/react": "^17.0.43",

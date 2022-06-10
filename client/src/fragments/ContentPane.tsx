@@ -17,17 +17,18 @@ import ComponentDetails from './ComponentDetails';
 interface ContentPaneProps {
     className?: string;
     component?: ComponentDef;
+    example?: ComponentExample;
 }
 
 class ContentPane extends React.Component<ContentPaneProps> {
 
     renderDetails() {
-        const { component } = this.props;
+        const { component, example } = this.props;
         if (!component) {
             return "Content Pane"
         }
 
-        return <ComponentDetails key={component.sourcePath} component={component} />
+        return <ComponentDetails key={component.sourcePath} component={component} example={example} />
     }
 
     render() {

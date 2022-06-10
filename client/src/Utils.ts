@@ -141,7 +141,7 @@ function processComponent(component: ComponentDef): ComponentDef {
         }
 
         // add this line to section
-        section += line;
+        section += (line + '\n');
     }
 
     // all lines finish, add last section
