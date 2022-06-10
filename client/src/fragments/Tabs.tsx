@@ -51,10 +51,10 @@ export default class TabContainer extends React.Component<TabContainerProps, Tab
         return <>
             <ul className="nav nav-tabs">
                 {tabs.map((item, index) => {
-                    return <Tab index={index} selected={selected} title={item.name} onSelect={this.handleSelect} />
+                    return <Tab key={item.name || 'tab-index-' + index} index={index} selected={selected} title={item.name} onSelect={this.handleSelect} />
                 })}
             </ul>
-            {tabs[selected].component}
+            {(tabs[selected] || {}).component}
         </>
     }
 
