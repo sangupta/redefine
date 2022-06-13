@@ -62,14 +62,37 @@ export default class ComponentPlayground extends React.Component<ComponentPlaygr
             // create propFields
             if (prop.type === 'boolean') {
                 propFields.push(<React.Fragment key={prop.name}>
-                    <input type='checkbox' name={prop.name} onChange={(e) => {
-                        const values: any = { ...this.state.propValues };
-                        values[prop.name] = e.target.checked;
+                    <input
+                        type='checkbox'
+                        name={prop.name}
+                        onChange={(e) => {
+                            const values: any = { ...this.state.propValues };
+                            values[prop.name] = e.target.checked;
 
-                        this.setState({ propValues: values });
-                    }} />&nbsp;{prop.name}
+                            this.setState({ propValues: values });
+                        }} />&nbsp;{prop.name}
                     <br />
                 </React.Fragment>)
+
+                continue;
+            }
+
+            if (prop.type === 'string') {
+                propFields.push(<React.Fragment key={prop.name}>
+                    <input
+                        type='text'
+                        name={prop.name}
+                        placeholder={prop.name}
+                        onChange={(e) => {
+                            const values: any = { ...this.state.propValues };
+                            values[prop.name] = e.target.value;
+
+                            this.setState({ propValues: values });
+                        }} />
+                    <br />
+                </React.Fragment>)
+
+                continue;
             }
         }
 
@@ -127,18 +150,20 @@ function json2jsx(element: string, props: any, children: any, propMap: { [key: s
     Object.keys(props).forEach(key => {
         const value = props[key];
 
-        const propDef = propMap[key];
-        const type = propDef.type || '';
+        if (value !== undefined) {
+            const propDef = propMap[key];
+            const type = propDef.type || '';
 
-        if (type === 'boolean' || type === 'number') {
-            s += ' ' + key + '={' + value + '}';
-        } else {
-            s += ' ' + key + '="' + value + '"';
+            if (type === 'boolean' || type === 'number') {
+                s += ' ' + key + '={' + value + '}';
+            } else {
+                s += ' ' + key + '="' + value + '"';
+            }
         }
     });
     s += '>';
 
-    s += children;
+    s += (children || '');
     s += '</' + element + '>';
 
     return s;
