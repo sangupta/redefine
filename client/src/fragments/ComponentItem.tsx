@@ -11,12 +11,27 @@
  **/
 
 import React from 'react';
+import styled from 'styled-components';
 
 interface ComponentItemProps {
     component: ComponentDef;
 
     onSelect: (def: ComponentDef, example?: ComponentExample) => void;
 }
+
+const ComponentLink = styled.a`
+    padding: 8px;
+    border: 1px solid #00000020;
+    color: #212529;
+    cursor: pointer;
+    text-decoration: none;
+
+    :hover {
+        background-color: #f8f9fa;
+        color: #495057;
+        text-decoration: none;
+    }
+`;
 
 export default class ComponentItem extends React.Component<ComponentItemProps> {
 
@@ -39,9 +54,9 @@ export default class ComponentItem extends React.Component<ComponentItemProps> {
         }
 
         return <>
-            <a href='#' className='list-group-item list-group-item-action py-2 lh-tight pointer' onClick={this.handleClick}>
+            <ComponentLink href='#' onClick={this.handleClick}>
                 {component.name}
-            </a>
+            </ComponentLink>
             {examples}
         </>
     }
@@ -52,6 +67,17 @@ interface ExampleItemProps {
     example: ComponentExample;
     onSelect: (example: ComponentExample) => void;
 }
+
+const ExampleLink = styled.a`
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #00000020;
+    padding: 8px;
+    padding-left: 16px;
+    text-decoration: none;
+    display: block;
+    position: relative;
+`;
 
 class ExampleItem extends React.Component<ExampleItemProps> {
 
@@ -68,8 +94,8 @@ class ExampleItem extends React.Component<ExampleItemProps> {
     render() {
         const { example } = this.props;
 
-        return <a href='#' className='list-group-item list-group-item-action py-2 lh-tight pointer' onClick={this.handleExampleSelect}>
+        return <ExampleLink href='#' onClick={this.handleExampleSelect}>
             {example.name}
-        </a>
+        </ExampleLink>
     }
 }
