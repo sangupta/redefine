@@ -17,6 +17,7 @@ import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 
 interface Props {
     source: string;
+    editable?: boolean;
 }
 
 const PreviewRenderer = (props: any) => {
@@ -25,8 +26,12 @@ const PreviewRenderer = (props: any) => {
 
 export default class CodePlayground extends React.PureComponent<Props> {
 
+    static defaultProps = {
+        editable: true
+    }
+
     render() {
-        const { source } = this.props;
+        const { source, editable } = this.props;
         const ComponentLibrary = (window as any).__ComponentLibrary || [];
 
         if (!ComponentLibrary || ComponentLibrary.length === 0) {
@@ -37,7 +42,7 @@ export default class CodePlayground extends React.PureComponent<Props> {
         // used to fix vscode warning
         const PreviewComponent: any = LivePreview;
 
-        return <LiveProvider code={source} scope={{ ...ComponentLibrary }} >
+        return <LiveProvider code={source} scope={{ ...ComponentLibrary }} disabled={!editable}>
             <PreviewWrapper>
                 <PreviewComponent Component={PreviewRenderer} />
             </PreviewWrapper>

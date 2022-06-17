@@ -112,8 +112,8 @@ export default class ComponentPlayground extends React.Component<ComponentPlaygr
         const updatedCode = this.updateCode(component, code, propValues);
         // render the preview
         return <>
+            <CodePlayground key={updatedCode.length} source={updatedCode} editable={false} />
             {this.renderPropsFields()}
-            <CodePlayground key={updatedCode.length} source={updatedCode} />
         </>
     }
 
