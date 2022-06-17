@@ -11,19 +11,45 @@
  **/
 
 import React from 'react';
+import styled from 'styled-components';
 
 interface HeaderProps {
     title: string;
 }
 
+const Nav = styled.nav`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(33, 37, 41);
+    height: 40px;
+`;
+
+const Container = styled.div`
+    width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+`;
+
+const BrandLink = styled.a`
+    color: #fff;
+    white-space: nowrap;
+    text-decoration: none;
+    font-size: 20px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-right: 16px;    
+`;
+
 export default class Header extends React.Component<HeaderProps> {
 
     render() {
-        return <nav className="navbar navbar-dark bg-dark">
-            <div className="container-fluid">
-                <a className="navbar-brand" href="#">{this.props.title || 'Redefine'}</a>
-            </div>
-        </nav>
+        return <Nav>
+            <Container>
+                <BrandLink href="#">{this.props.title || 'Redefine'}</BrandLink>
+            </Container>
+        </Nav>
     }
 
 }
