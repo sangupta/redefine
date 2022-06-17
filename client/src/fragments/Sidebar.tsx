@@ -26,7 +26,7 @@ interface SidebarState {
     filter?: string;
 }
 
-class Sidebar extends React.Component<SidebarProps, SidebarState> {
+export default class Sidebar extends React.Component<SidebarProps, SidebarState> {
 
     constructor(props: SidebarProps) {
         super(props);
@@ -59,9 +59,9 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
             const component = filtered[index];
             result.push(<ComponentItem key={component.name} component={component} onSelect={this.handleComponentSelect} />)
         }
-        return <div className='list-group list-group-flush border-bottom scrollarea'>
+        return <ComponentContainer>
             {result}
-        </div>
+        </ComponentContainer>
     }
 
     handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,20 +75,43 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
             return null;
         }
 
-        return <div className={'d-flex flex-column align-items-stretch flex-shrink-0 bg-white ' + this.props.className}>
-            <div className='list-group-item list-group-item-action py-2 lh-tight'>
+        return <SidebarContainer>
+            <SearchContainer>
                 <input type='text' placeholder='Find...' onChange={this.handleFilterChange} />
-            </div>
+            </SearchContainer>
 
             {this.renderComponents()}
-        </div>
+        </SidebarContainer>
     }
 
 }
 
-export default styled(Sidebar)`
+const SidebarContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: stretch !important;
+    flex-shrink: 0 !important;
+    background-color: white;
+
     width: 200px;
     min-width: 200px;
     max-width: 200px;
     border-right: 1px solid;
+`;
+
+const SearchContainer = styled.div`
+    color: #212529;
+    border: 1px solid #00000020;
+    padding: .5rem;
+    text-decoration: none;
+`;
+
+const ComponentContainer = styled.div`
+    border-bottom: 1px solid #dee2e6 !important;
+    border-radius: 0;
+    flex-direction: column;
+    margin-bottom: 0;
+    padding-left: 0;
+    display: flex;
+    overflow-y: auto;
 `;
