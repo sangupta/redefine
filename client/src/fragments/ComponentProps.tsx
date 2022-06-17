@@ -1,5 +1,18 @@
+/**
+ *
+ * Redefine - UI component documentation
+ * 
+ * MIT License.
+ * Copyright (c) 2022, Sandeep Gupta.
+ * 
+ * Use of this source code is governed by a MIT style license
+ * that can be found in LICENSE file in the code repository.
+ * 
+ **/
+
 import { propsSorter } from '../Utils';
 import styled from 'styled-components';
+import StyledMarkdown from './StyledMarkdown';
 
 const StyledCode = styled.code`
     color: #d63384;
@@ -89,7 +102,7 @@ export default function ComponentProps({ component }: { component: ComponentDef 
             <td><StyledCode>{renderType(prop)}</StyledCode></td>
             <td><StyledPre>{'' + prop.required}</StyledPre></td>
             <td><StyledPre>{prop.defaultValue || ''}</StyledPre></td>
-            <td>{prop.description || ''}</td>
+            <td><StyledMarkdown>{prop.description || ''}</StyledMarkdown></td>
         </tr>);
     }
 

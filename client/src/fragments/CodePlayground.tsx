@@ -48,21 +48,17 @@ export default class CodePlayground extends React.PureComponent<Props> {
 }
 
 const PreviewWrapper = styled.div`
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
     padding: 10px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--redefine-border-color);
     overflow-x: scroll;
     margin: 8px 0;
+    border-radius: 2px;
 `;
 
 const CodeWrapper = styled.div`
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
     padding: 10px;
-    border: 1px solid #e8e8e8;
-    background-color: #f5f5f5;
+    border: 1px solid var(--redefine-border-color);
+    background-color: var(--redefine-bg);
     margin: 8px 0;
+    border-radius: 2px;
 `;
