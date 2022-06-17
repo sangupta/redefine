@@ -180,14 +180,31 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
             });
         }
 
-        return <div className='component-details'>
-            <h1 className='component-name'>{component.name}</h1>
-            <pre className='component-source-path'>{component.sourcePath}</pre>
+        return <DetailsContainer>
+            <ComponentName>{component.name}</ComponentName>
+            <ComponentSourceFile>{component.sourcePath}</ComponentSourceFile>
 
             <ReactMarkdown className='component-description'>{component.description}</ReactMarkdown>
 
             <TabContainer key={component.name + '-' + example?.name} tabs={tabs} selectedTab={example ? exampleTab - 1 : 0} />
-        </div>
+        </DetailsContainer>
     }
 
 }
+
+const DetailsContainer = styled.div`
+    height: 100%;
+`;
+
+const ComponentName = styled.h1`
+    font-size: 32px;
+    line-height: 44px;
+`;
+
+const ComponentSourceFile = styled.pre`
+    margin-bottom: 16px;
+    font-size: 14px;
+    direction: ltr;
+    unicode-bidi: bidi-override;
+    overflow: auto;
+`;

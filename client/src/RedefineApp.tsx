@@ -87,19 +87,21 @@ class App extends React.Component<NoProps, AppState> {
     render(): React.ReactNode {
         return <>
             <Header title={this.state.title} />
-            <div className='d-flex flex-row flex-1'>
+            <BodyContainer>
                 <Sidebar components={this.state.components} onComponentSelect={this.handleComponentSelect} />
                 <ContentPane component={this.state.selectedComponent} example={this.state.selectedExample} />
-            </div>
-            <Footer className="footer mt-auto bg-dark">
-                <div className='container-fluid'>
-                    <span className="text-muted">powered by Redefine</span>
-                </div>
-            </Footer>
+            </BodyContainer>
         </>
     }
 
 }
+
+const BodyContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    overflow: hidden;
+`;
 
 /**
  * We are all set, mount the application component.
