@@ -34,9 +34,12 @@ export default class CodePlayground extends React.PureComponent<Props> {
             return <code>{source}</code>
         }
 
+        // used to fix vscode warning
+        const PreviewComponent: any = LivePreview;
+
         return <LiveProvider code={source} scope={{ ...ComponentLibrary }} >
             <PreviewWrapper>
-                <LivePreview Component={PreviewRenderer} />
+                <PreviewComponent Component={PreviewRenderer} />
             </PreviewWrapper>
             <LiveError />
             <CodeWrapper>
