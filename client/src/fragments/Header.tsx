@@ -43,19 +43,6 @@ const BrandLink = styled.a`
     margin-right: 16px;    
 `;
 
-export default class Header extends React.Component<HeaderProps> {
-
-    render() {
-        return <Nav>
-            <Container>
-                <BrandLink href="#">{this.props.title || ''}</BrandLink>
-                <Redefine href='https://redefine.sangupta.com' target='_blank'>redefined</Redefine>
-            </Container>
-        </Nav>
-    }
-
-}
-
 const Redefine = styled.a`
     color: #aaa;
     font-style: italic;
@@ -67,3 +54,32 @@ const Redefine = styled.a`
         text-decoration: none;
     }
 `;
+
+const Title = styled.a`
+    color: var(--redefine-alt-color);
+    white-space: nowrap;
+    font-style: italic;
+    font-size: 16px;
+    text-decoration: none;
+    padding-top: 4px;
+    padding-bottom: 4px;
+`;
+
+const url = 'https://redefine.sangupta.com';
+
+export default class Header extends React.Component<HeaderProps> {
+
+    render() {
+        const { title } = this.props;
+
+        return <Nav>
+            <Container>
+                <BrandLink href="#">{title || ''}</BrandLink>
+                {title
+                    ? <Redefine href={url} target='_blank'>redefined</Redefine>
+                    : <Title href={url} target='_blank'>redefine component documentation</Title>}
+            </Container>
+        </Nav>
+    }
+
+}

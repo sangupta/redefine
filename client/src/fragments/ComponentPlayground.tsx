@@ -94,6 +94,24 @@ export default class ComponentPlayground extends React.Component<ComponentPlaygr
 
                 continue;
             }
+
+            if (prop.type === 'number') {
+                propFields.push(<React.Fragment key={prop.name}>
+                    <input
+                        type='number'
+                        name={prop.name}
+                        placeholder={prop.name}
+                        onChange={(e) => {
+                            const values: any = { ...this.state.propValues };
+                            values[prop.name] = e.target.value;
+
+                            this.setState({ propValues: values });
+                        }} />
+                    <br />
+                </React.Fragment>)
+
+                continue;
+            }
         }
 
         this.propFields = propFields;

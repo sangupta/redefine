@@ -28,6 +28,7 @@ interface AppState {
     selectedComponent?: ComponentDef;
     selectedExample?: ComponentExample;
     title: string;
+    error: boolean;
 }
 
 /**
@@ -56,7 +57,8 @@ class App extends React.Component<NoProps, AppState> {
 
         this.state = {
             components: [],
-            title: ''
+            title: '',
+            error: false
         }
     }
 
@@ -65,9 +67,13 @@ class App extends React.Component<NoProps, AppState> {
      * 
      */
     componentDidMount = async () => {
-        const response = await fetch('http://localhost:1309/components.json')
-        const data = await response.json();
-        this.setState({ title: data.title, components: processComponentInfo(data.components) });
+        try {
+            const response = await fetch('http://localhost:1309/components.json')
+            const data = await response.json();
+            this.setState({ title: data.title, components: processComponentInfo(data.components) });
+        } catch (e) {
+            this.setState({ error: true });
+        }
     }
 
     /**
@@ -85,6 +91,15 @@ class App extends React.Component<NoProps, AppState> {
      * @returns 
      */
     render(): React.ReactNode {
+        const { error } = this.state;
+        if (error) {
+            return <>
+                <Header title={this.state.title} />
+                <BodyContainer>
+                    <Alert>Unable to load component definition file.</Alert>
+                </BodyContainer>
+            </>
+        }
         return <>
             <Header title={this.state.title} />
             <BodyContainer>
@@ -107,3 +122,15 @@ const BodyContainer = styled.div`
  * We are all set, mount the application component.
  */
 ReactDOM.render(<App />, document.body);
+
+const Alert = styled.div`
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    border: 1px solid;
+    border-radius: 6px;
+    height: fit-content;
+    padding: 12px;
+    margin: 0 auto;
+    margin-top: 120px;
+`;

@@ -12,8 +12,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import ReactMarkdown from 'react-markdown';
-import CodePlayground from './CodePlayground';
 import ComponentPlayground from './ComponentPlayground';
 import TabContainer from './Tabs';
 import ComponentDetails from './ComponentDetails';
@@ -48,6 +46,11 @@ const ComponentSourceFile = styled.a`
 `;
 
 export default class ComponentDisplay extends React.Component<ComponentDisplayProps> {
+
+    handleCopy = () => {
+        const { component } = this.props;
+        navigator.clipboard.writeText(component.sourcePath);
+    }
 
     render() {
         const { component, example } = this.props;
@@ -92,10 +95,12 @@ export default class ComponentDisplay extends React.Component<ComponentDisplayPr
             <ComponentName>{component.name}</ComponentName>
             <ComponentSourceFile href={component.url || '#'}>
                 {component.sourcePath}
-                <span style={{ paddingLeft: '12px' }}><CopyIcon /></span>
+                <span style={{ paddingLeft: '12px' }}><CopyIcon onClick={this.handleCopy} /></span>
             </ComponentSourceFile>
 
             <TabContainer key={component.name + '-' + example?.name} tabs={tabs} selectedTab={example ? exampleTab - 1 : 0} />
+
+            <br /><br /><br />
         </DetailsContainer>
     }
 
