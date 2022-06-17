@@ -12,7 +12,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import ComponentDetails from './ComponentDetails';
+import ComponentDisplay from './ComponentDisplay';
 
 interface ContentPaneProps {
     className?: string;
@@ -28,7 +28,7 @@ export default class ContentPane extends React.Component<ContentPaneProps> {
             return "Content Pane"
         }
 
-        return <ComponentDetails key={component.sourcePath} component={component} example={example} />
+        return <ComponentDisplay key={component.sourcePath} component={component} example={example} />
     }
 
     render() {

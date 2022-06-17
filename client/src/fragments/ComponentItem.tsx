@@ -70,7 +70,7 @@ interface ExampleItemProps {
 const ExampleLink = styled.a`
     color: #212529;
     padding: 8px;
-    padding-left: 16px;
+    padding-left: 32px;
     text-decoration: none;
     display: block;
     position: relative;
