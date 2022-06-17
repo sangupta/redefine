@@ -104,7 +104,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
         }
 
         return <>
-            <h5 className='props-title'>Props</h5>
+            <h5>Props</h5>
             <table className='table table-striped table-bordered props-table'>
                 <thead>
                     <tr>
@@ -184,7 +184,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
             <ComponentName>{component.name}</ComponentName>
             <ComponentSourceFile>{component.sourcePath}</ComponentSourceFile>
 
-            <ReactMarkdown className='component-description'>{component.description}</ReactMarkdown>
+            <ReactMarkdown>{component.description}</ReactMarkdown>
 
             <TabContainer key={component.name + '-' + example?.name} tabs={tabs} selectedTab={example ? exampleTab - 1 : 0} />
         </DetailsContainer>

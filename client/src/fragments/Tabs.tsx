@@ -11,6 +11,7 @@
  **/
 
 import React from 'react';
+import styled from 'styled-components';
 
 export interface TabValue {
     name: string,
@@ -52,7 +53,7 @@ export default class TabContainer extends React.Component<TabContainerProps, Tab
         return <>
             <ul className="nav nav-tabs">
                 {tabs.map((item, index) => {
-                    return <Tab key={item.name || 'tab-index-' + index} index={index} selected={selected} title={item.name} onSelect={this.handleSelect} />
+                    return <StyledTab key={item.name || 'tab-index-' + index} index={index} selected={selected} title={item.name} onSelect={this.handleSelect} />
                 })}
             </ul>
             {(tabs[selected] || {}).component}
@@ -66,6 +67,7 @@ interface TabProps {
     selected: number;
     title: string;
     onSelect: (index: number) => void;
+    className?: string;
 }
 
 class Tab extends React.Component<TabProps> {
@@ -79,10 +81,26 @@ class Tab extends React.Component<TabProps> {
     }
 
     render() {
-        const { index, selected, title } = this.props;
+        const { className, title } = this.props;
 
-        return <li className="nav-item">
-            <a className={'nav-link ' + (index === selected ? 'active' : '')} aria-current="page" href="#" onClick={this.handleSelect}>{title}</a>
+        return <li className={className}>
+            <a aria-current="page" href="#" onClick={this.handleSelect}>{title}</a>
         </li>
     }
 }
+
+const StyledTab = styled(Tab)`
+    & a {
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        margin-bottom: -1px;
+        display: block;
+        border: 1px solid #0000;
+
+        color: ${props => props.index !== props.selected ? '#0d6efd' : '#495057'};
+        text-decoration: none;
+        transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+        padding: 8px 16px;
+        border-color: ${props => props.index !== props.selected ? '#0000' : '#dee2e6 #dee2e6 #fff'};
+    }
+`;
