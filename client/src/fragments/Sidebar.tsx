@@ -91,27 +91,24 @@ const SidebarContainer = styled.div`
     flex-direction: column;
     align-items: stretch !important;
     flex-shrink: 0 !important;
-    background-color: white;
+    background-color: var(--redefine-bg);
 
-    width: 200px;
-    min-width: 200px;
-    max-width: 200px;
-    border-right: 1px solid;
+    width: var(--redefine-sidebar-width);
+    min-width: var(--redefine-sidebar-width);
+    max-width: var(--redefine-sidebar-width);
 `;
 
 const SearchContainer = styled.div`
     color: #212529;
-    border: 1px solid #00000020;
     padding: .5rem;
     text-decoration: none;
 `;
 
 const ComponentContainer = styled.div`
-    border-bottom: 1px solid #dee2e6 !important;
-    border-radius: 0;
     flex-direction: column;
     margin-bottom: 0;
     padding-left: 0;
     display: flex;
     overflow-y: auto;
+    line-height: 22px;
 `;

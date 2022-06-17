@@ -95,16 +95,16 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
             const prop = component.props[index];
 
             rows.push(<tr key={prop.name}>
-                <td><code>{prop.name}</code></td>
-                <td><code>{this.renderType(prop)}</code></td>
-                <td><pre>{'' + prop.required}</pre></td>
-                <td><pre>{prop.defaultValue || ''}</pre></td>
+                <td><StyledCode>{prop.name}</StyledCode></td>
+                <td><StyledCode>{this.renderType(prop)}</StyledCode></td>
+                <td><StyledPre>{'' + prop.required}</StyledPre></td>
+                <td><StyledPre>{prop.defaultValue || ''}</StyledPre></td>
                 <td>{prop.description || ''}</td>
             </tr>);
         }
 
         return <>
-            <h5>Props</h5>
+            <SectionName>Props</SectionName>
             <Table>
                 <thead>
                     <tr>
@@ -119,6 +119,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
                     {rows}
                 </tbody>
             </Table>
+            <br /><br /><br />
         </>
     }
 
@@ -144,6 +145,8 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
                             : <code className={className} {...props}>{children}</code>
                     }
                 }}>{markdown}</ReactMarkdown>
+
+                <br /><br /><br />
             </ExampleDisplay>
         }
 
@@ -182,9 +185,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
 
         return <DetailsContainer>
             <ComponentName>{component.name}</ComponentName>
-            <ComponentSourceFile>{component.sourcePath}</ComponentSourceFile>
-
-            <ReactMarkdown>{component.description}</ReactMarkdown>
+            <ComponentSourceFile href={component.url || '#'}>{component.sourcePath}</ComponentSourceFile>
 
             <TabContainer key={component.name + '-' + example?.name} tabs={tabs} selectedTab={example ? exampleTab - 1 : 0} />
         </DetailsContainer>
@@ -199,9 +200,20 @@ const DetailsContainer = styled.div`
 const ComponentName = styled.h1`
     font-size: 32px;
     line-height: 44px;
+    margin-top: 0px;
+    margin-bottom: 4px;
 `;
 
-const ComponentSourceFile = styled.pre`
+const TextContainer = styled.div`
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-top: 1px solid var(--redefine-border-color);
+    // border-bottom: 1px solid var(--redefine-border-color);
+    margin-top: 16px;
+    margin-bottom: 16px;
+`;
+
+const ComponentSourceFile = styled.a`
     margin-bottom: 16px;
     font-size: 14px;
     direction: ltr;
@@ -214,9 +226,28 @@ const Table = styled.table`
     color: #212529;
     border-color: #dee2e6;
     margin-bottom: 16px;
+    caption-side: bottom;
+    border-collapse: collapse;
 
     & > thead {
         vertical-align: bottom;
+    }
+
+    & tr {
+        border-color: inherit;
+        border-style: solid;
+    }
+
+    & td {
+        border-color: inherit;
+        border-style: solid;
+        vertical-align: top;
+    }
+
+    & th {
+        border-width: 0 1px;
+        border-color: inherit;
+        border-style: solid;
     }
 
     & > :not(caption) > * {
@@ -240,4 +271,23 @@ const Table = styled.table`
     & > tbody > tr:nth-of-type(2n+1) > * {
         color: rgb(33, 37, 41);
     }
+`;
+
+const StyledCode = styled.code`
+    color: #d63384;
+    word-wrap: break-word;
+    font-size: 14px;
+`;
+
+const StyledPre = styled.pre`
+    word-wrap: break-word;
+    font-size: 14px;
+    vertical-align: top;
+    margin: 2px 0;
+`;
+
+const SectionName = styled.h5`
+    font-size: 22px;
+    line-height: 33px;
+    margin: 16px 0;
 `;

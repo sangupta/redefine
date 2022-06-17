@@ -43,4 +43,5 @@ const Main = styled.main`
     padding: 20px;
     overflow-y: scroll;
     width: 100%;
+    border-left: 1px solid var(--redefine-border-color)
 `;

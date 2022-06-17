@@ -52,6 +52,7 @@ interface ComponentDef {
     description: string;
     props?: Array<PropDef>
     docs: string;
+    url?: string;
 
     // following are the evaluated properties
     examples: Array<ComponentExample>; // holds the markdown for each section of example

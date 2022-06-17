@@ -26,10 +26,10 @@ const PreviewRenderer = (props: any) => {
 export default class CodePlayground extends React.PureComponent<Props> {
 
     render() {
-        const {source} = this.props;
+        const { source } = this.props;
         const ComponentLibrary = (window as any).__ComponentLibrary || [];
 
-        if(!ComponentLibrary || ComponentLibrary.length === 0)  {
+        if (!ComponentLibrary || ComponentLibrary.length === 0) {
             // this is read only mode
             return <code>{source}</code>
         }
@@ -40,7 +40,7 @@ export default class CodePlayground extends React.PureComponent<Props> {
             </PreviewWrapper>
             <LiveError />
             <CodeWrapper>
-                <LiveEditor />
+                <LiveEditor style={{ fontSize: '16px', lineHeight: '22px' }} />
             </CodeWrapper>
         </LiveProvider>
     }

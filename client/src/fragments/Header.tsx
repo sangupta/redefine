@@ -22,8 +22,9 @@ const Nav = styled.nav`
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    background-color: rgb(33, 37, 41);
+    background-color: var(--redefine-bg);
     height: 40px;
+    border-bottom: 1px solid var(--redefine-border-color);
 `;
 
 const Container = styled.div`
@@ -33,7 +34,7 @@ const Container = styled.div`
 `;
 
 const BrandLink = styled.a`
-    color: #fff;
+    color: var(--redefine-alt-color);
     white-space: nowrap;
     text-decoration: none;
     font-size: 20px;
@@ -47,9 +48,22 @@ export default class Header extends React.Component<HeaderProps> {
     render() {
         return <Nav>
             <Container>
-                <BrandLink href="#">{this.props.title || 'Redefine'}</BrandLink>
+                <BrandLink href="#">{this.props.title || ''}</BrandLink>
+                <Redefine href='https://redefine.sangupta.com' target='_blank'>redefined</Redefine>
             </Container>
         </Nav>
     }
 
 }
+
+const Redefine = styled.a`
+    color: #aaa;
+    font-style: italic;
+    border-left: 1px solid #aaa;
+    padding-left: 20px;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: none;
+    }
+`;

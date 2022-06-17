@@ -114,6 +114,7 @@ export default class ComponentPlayground extends React.Component<ComponentPlaygr
         return <>
             {this.renderPropsFields()}
             <CodePlayground key={updatedCode.length} source={updatedCode} />
+            <br /><br /><br />
         </>
     }
 

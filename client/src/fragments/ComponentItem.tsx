@@ -21,7 +21,6 @@ interface ComponentItemProps {
 
 const ComponentLink = styled.a`
     padding: 8px;
-    border: 1px solid #00000020;
     color: #212529;
     cursor: pointer;
     text-decoration: none;
@@ -70,8 +69,6 @@ interface ExampleItemProps {
 
 const ExampleLink = styled.a`
     color: #212529;
-    background-color: #fff;
-    border: 1px solid #00000020;
     padding: 8px;
     padding-left: 16px;
     text-decoration: none;
