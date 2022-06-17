@@ -20,7 +20,7 @@ interface ContentPaneProps {
     example?: ComponentExample;
 }
 
-class ContentPane extends React.Component<ContentPaneProps> {
+export default class ContentPane extends React.Component<ContentPaneProps> {
 
     renderDetails() {
         const { component, example } = this.props;
@@ -32,14 +32,15 @@ class ContentPane extends React.Component<ContentPaneProps> {
     }
 
     render() {
-        return <main className={'content-pane w-100 ' + this.props.className}>
+        return <Main>
             {this.renderDetails()}
-        </main>
+        </Main>
     }
 
 }
 
-export default styled(ContentPane)`
+const Main = styled.main`
     padding: 20px;
     overflow-y: scroll;
+    width: 100%;
 `;

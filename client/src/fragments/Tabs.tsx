@@ -51,16 +51,22 @@ export default class TabContainer extends React.Component<TabContainerProps, Tab
 
         // render tab list
         return <>
-            <ul className="nav nav-tabs">
+            <TabNav>
                 {tabs.map((item, index) => {
                     return <StyledTab key={item.name || 'tab-index-' + index} index={index} selected={selected} title={item.name} onSelect={this.handleSelect} />
                 })}
-            </ul>
+            </TabNav>
             {(tabs[selected] || {}).component}
         </>
     }
 
 }
+
+const TabNav = styled.ul`
+    display: flex;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid #dee2e6;
+`;
 
 interface TabProps {
     index: number;
@@ -90,6 +96,8 @@ class Tab extends React.Component<TabProps> {
 }
 
 const StyledTab = styled(Tab)`
+    list-style: none;
+
     & a {
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;

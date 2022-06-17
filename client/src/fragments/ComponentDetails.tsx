@@ -105,7 +105,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
 
         return <>
             <h5>Props</h5>
-            <table className='table table-striped table-bordered props-table'>
+            <Table>
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -118,7 +118,7 @@ export default class ComponentDetails extends React.Component<ComponentDetailsPr
                 <tbody>
                     {rows}
                 </tbody>
-            </table>
+            </Table>
         </>
     }
 
@@ -207,4 +207,37 @@ const ComponentSourceFile = styled.pre`
     direction: ltr;
     unicode-bidi: bidi-override;
     overflow: auto;
+`;
+
+const Table = styled.table`
+    width: 100%;
+    color: #212529;
+    border-color: #dee2e6;
+    margin-bottom: 16px;
+
+    & > thead {
+        vertical-align: bottom;
+    }
+
+    & > :not(caption) > * {
+        border-width: 1px 0;
+    }
+
+    & > :not(caption) > * > * {
+        border-width: 0 1px;
+        padding: 8px;
+        box-shadow: inset 0 0 0 9999px transparent;
+    }
+
+    & > :not(:first-child) {
+        border-top: 2px solid;
+    }
+
+    & tbody {
+        vertical-align: inherit;
+    }
+
+    & > tbody > tr:nth-of-type(2n+1) > * {
+        color: rgb(33, 37, 41);
+    }
 `;
