@@ -32,6 +32,11 @@ export default class ContentPane extends React.Component<ContentPaneProps> {
                 return <StyledMarkdown>{meta.libDocs}</StyledMarkdown>
             }
 
+            const keys = Object.keys(meta);
+            if(keys.length === 0) {
+                return null;
+            }
+
             let kids: string = '';
             kids += '# ' + (meta.title + '');
             kids += '\n';
@@ -61,8 +66,6 @@ export default class ContentPane extends React.Component<ContentPaneProps> {
 
                 kids += 'Author: ' + author + (meta.author.email ? ` at [${meta.author.email}](mailto:${meta.author.email})` : '');
             }
-
-            console.log(kids);
 
             return <StyledMarkdown>{kids}</StyledMarkdown>
         }
