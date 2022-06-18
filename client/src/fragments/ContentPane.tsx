@@ -13,19 +13,58 @@
 import React from 'react';
 import styled from 'styled-components';
 import ComponentDisplay from './ComponentDisplay';
+import StyledMarkdown from './StyledMarkdown';
 
 interface ContentPaneProps {
     className?: string;
     component?: ComponentDef;
     example?: ComponentExample;
+    meta: RedefinePayload;
 }
 
 export default class ContentPane extends React.Component<ContentPaneProps> {
 
     renderDetails() {
-        const { component, example } = this.props;
+        const { component, example, meta } = this.props;
         if (!component) {
-            return "Content Pane"
+            // check what to display
+            if (meta.libDocs) {
+                return <StyledMarkdown>{meta.libDocs}</StyledMarkdown>
+            }
+
+            let kids: string = '';
+            kids += '# ' + (meta.title + '');
+            kids += '\n';
+            if(meta.version) {
+                kids += 'Version: ' + meta.version;
+                kids += '\n\n';
+            }
+            
+            if(meta.license) {
+                kids += 'License: ' + meta.version;
+                kids += '\n\n';
+            }
+
+            if(meta.homePage) {
+                kids += 'Home: ' + `[${meta.homePage}](${meta.homePage})`
+                kids += '\n\n';
+            }
+
+            kids += (meta.description || '');
+            kids += '\n\n';
+
+            if (meta.author && meta.author.name) {
+                let author = meta.author.name;
+                if(meta.author.url) {
+                    author = `[${meta.author.name}](${meta.author.url})`
+                }
+
+                kids += 'Author: ' + author + (meta.author.email ? ` at [${meta.author.email}](mailto:${meta.author.email})` : '');
+            }
+
+            console.log(kids);
+
+            return <StyledMarkdown>{kids}</StyledMarkdown>
         }
 
         return <ComponentDisplay key={component.sourcePath} component={component} example={example} />

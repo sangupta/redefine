@@ -50,7 +50,7 @@ export function propsSorter(a: PropDef, b: PropDef) {
  */
 export function processComponentInfo(components: Array<ComponentDef>): Array<ComponentDef> {
     if (!components || components.length === 0) {
-        return components;
+        return [];
     }
 
     for (let index = 0; index < components.length; index++) {

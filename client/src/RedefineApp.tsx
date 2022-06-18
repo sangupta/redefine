@@ -27,18 +27,9 @@ interface AppState {
     components: Array<ComponentDef>;
     selectedComponent?: ComponentDef;
     selectedExample?: ComponentExample;
-    title: string;
+    meta: RedefinePayload;
     error: boolean;
 }
-
-/**
- * Styled `footer` HTML element.
- */
-const Footer = styled.footer`
-    font-size: 11px;
-    color: white;
-    line-height: 36px;
-`;
 
 /**
  * The main Redefine client application.
@@ -57,7 +48,7 @@ class App extends React.Component<NoProps, AppState> {
 
         this.state = {
             components: [],
-            title: '',
+            meta: {},
             error: false
         }
     }
@@ -69,8 +60,12 @@ class App extends React.Component<NoProps, AppState> {
     componentDidMount = async () => {
         try {
             const response = await fetch('http://localhost:1309/components.json')
-            const data = await response.json();
-            this.setState({ title: data.title, components: processComponentInfo(data.components) });
+            const data: RedefinePayload = await response.json();
+
+            const { components } = data;
+            delete data['components'];
+
+            this.setState({ meta: data, components: processComponentInfo(components || []) });
         } catch (e) {
             this.setState({ error: true });
         }
@@ -91,20 +86,20 @@ class App extends React.Component<NoProps, AppState> {
      * @returns 
      */
     render(): React.ReactNode {
-        const { error } = this.state;
+        const { error, meta, components, selectedComponent, selectedExample } = this.state;
         if (error) {
             return <>
-                <Header title={this.state.title} />
+                <Header title={meta.title || ''} />
                 <BodyContainer>
                     <Alert>Unable to load component definition file.</Alert>
                 </BodyContainer>
             </>
         }
         return <>
-            <Header title={this.state.title} />
+            <Header title={meta.title || ''} />
             <BodyContainer>
-                <Sidebar components={this.state.components} onComponentSelect={this.handleComponentSelect} />
-                <ContentPane component={this.state.selectedComponent} example={this.state.selectedExample} />
+                <Sidebar components={components} onComponentSelect={this.handleComponentSelect} />
+                <ContentPane meta={meta} component={selectedComponent} example={selectedExample} />
             </BodyContainer>
         </>
     }

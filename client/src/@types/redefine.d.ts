@@ -58,3 +58,20 @@ interface ComponentDef {
     examples: Array<ComponentExample>; // holds the markdown for each section of example
     playground: string; // the code block that defines the playground
 }
+
+interface Author {
+    name?: string;
+    email?: string;
+    url?: string;
+}
+
+interface RedefinePayload {
+    title?: string;
+    version?: string;
+    license?: string;
+    libDocs?: string;
+    homePage?: string;
+    description?: string;
+    author?: Author;
+    components?: Array<ComponentDef>;
+}
