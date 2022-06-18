@@ -48,6 +48,8 @@ type RedefineConfig struct {
 	// the published URL of the library to use when loading the UI
 	LibraryUrl string `json:"libraryUrl"`
 
+	IndexFile string `json:"indexFile"`
+
 	PackageJson *PackageJson
 }
 

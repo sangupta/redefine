@@ -41,6 +41,7 @@ type jsonPayload struct {
 	Title string `json:"title"`
 
 	Description string        `json:"description"`
+	LibDocs     string        `json:"libDocs"`
 	Version     string        `json:"version"`
 	HomePage    string        `json:"homePage"`
 	Author      PackageAuthor `json:"author"`
@@ -111,6 +112,7 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 // Function responsible to write the final components.json
 // file to where it needs to be
 func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
+	// basic sanity
 	config := app.Config
 	pkgJson := config.PackageJson
 	if pkgJson == nil {
@@ -118,11 +120,19 @@ func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
 		pkgJson = &pj
 	}
 
+	// read index.md file if it exists
+	indexMdPath := path.Join(config.DocsFolder, "index.md")
+	var libDocs []byte
+	if FileExists(indexMdPath) {
+		libDocs, _ = ioutil.ReadFile(indexMdPath)
+	}
+
 	// write the JSON file
 	payload := jsonPayload{
 		Title:       config.Title,
 		Components:  components,
 		Description: pkgJson.Description,
+		LibDocs:     string(libDocs),
 		HomePage:    pkgJson.HomePage,
 		Version:     pkgJson.Version,
 		Author:      pkgJson.Author,
