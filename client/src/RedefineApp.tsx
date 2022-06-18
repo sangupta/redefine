@@ -62,9 +62,18 @@ class App extends React.Component<NoProps, AppState> {
             const response = await fetch('http://localhost:1309/components.json')
             const data: RedefinePayload = await response.json();
 
+            // read components
             const { components } = data;
+
+            // retain all metadata except components
             delete data['components'];
 
+            // set the window title to the one given in JSON
+            if(data.title) {
+                window.document.title = data.title;
+            }
+
+            // set all data
             this.setState({ meta: data, components: processComponentInfo(components || []) });
         } catch (e) {
             this.setState({ error: true });
