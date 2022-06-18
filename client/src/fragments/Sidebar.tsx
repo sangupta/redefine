@@ -55,12 +55,10 @@ export default class Sidebar extends React.Component<SidebarProps, SidebarState>
 
         filtered.sort(componentSorter);
 
-        for (let index = 0; index < filtered.length; index++) {
-            const component = filtered[index];
-            result.push(<ComponentItem key={component.name} component={component} onSelect={this.handleComponentSelect} />)
-        }
         return <ComponentContainer>
-            {result}
+            {filtered.map(component => {
+                return <ComponentItem key={component.name} component={component} onSelect={this.handleComponentSelect} />
+            })}
         </ComponentContainer>
     }
 
@@ -77,7 +75,9 @@ export default class Sidebar extends React.Component<SidebarProps, SidebarState>
 
         return <SidebarContainer>
             <SearchContainer>
-                <input type='text' placeholder='Find...' onChange={this.handleFilterChange} />
+                <InputGroupTextLeft>S</InputGroupTextLeft>
+                <StyledInput type='text' placeholder='Find...' onChange={this.handleFilterChange} />
+                <InputGroupTextRight>/</InputGroupTextRight>
             </SearchContainer>
 
             {this.renderComponents()}
@@ -98,12 +98,6 @@ const SidebarContainer = styled.div`
     max-width: var(--redefine-sidebar-width);
 `;
 
-const SearchContainer = styled.div`
-    color: #212529;
-    padding: .5rem;
-    text-decoration: none;
-`;
-
 const ComponentContainer = styled.div`
     flex-direction: column;
     margin-bottom: 0;
@@ -112,3 +106,38 @@ const ComponentContainer = styled.div`
     overflow-y: auto;
     line-height: 22px;
 `;
+
+const SearchContainer = styled.div`
+    color: #212529;
+    padding: .5rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+
+    border: 1px solid black;
+    margin: 8px;
+    border-radius: 8px;
+
+    &:focus-within {
+        border: 1px solid #0d6efd;
+    }
+`;
+
+const InputGroupTextLeft = styled.span`
+    padding: 0 8px;
+`;
+
+const StyledInput = styled.input`
+    width: 100%;
+    border: none;
+
+    &:focus {
+        outline: none;
+    }
+`;
+
+const InputGroupTextRight = styled.span`
+    padding: 0 8px;
+`;
+
