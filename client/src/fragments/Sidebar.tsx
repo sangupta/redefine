@@ -10,7 +10,7 @@
  * 
  **/
 
-import React from 'react';
+import React, { KeyboardEvent } from 'react';
 import styled from 'styled-components';
 
 import { componentSorter } from './../Utils';
@@ -28,9 +28,12 @@ interface SidebarState {
 
 export default class Sidebar extends React.Component<SidebarProps, SidebarState> {
 
+    inputBox: React.RefObject<HTMLInputElement>;
+
     constructor(props: SidebarProps) {
         super(props);
 
+        this.inputBox = React.createRef();
         this.state = {
             filter: ''
         }
@@ -38,6 +41,20 @@ export default class Sidebar extends React.Component<SidebarProps, SidebarState>
 
     handleComponentSelect = (def: ComponentDef, example?: ComponentExample) => {
         this.props.onComponentSelect(def, example);
+    }
+
+    componentDidMount() {
+        document.addEventListener('keyup', this.handleKeyboard);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keyup', this.handleKeyboard);
+    }
+
+    handleKeyboard = (e: any) => {
+        if (e && e.key === '/') {
+            this.inputBox.current?.focus();
+        }
     }
 
     renderComponents() {
@@ -76,7 +93,7 @@ export default class Sidebar extends React.Component<SidebarProps, SidebarState>
         return <SidebarContainer>
             <SearchContainer>
                 <InputGroupTextLeft>S</InputGroupTextLeft>
-                <StyledInput type='text' placeholder='Find...' onChange={this.handleFilterChange} />
+                <StyledInput ref={this.inputBox} type='text' placeholder='Find...' onChange={this.handleFilterChange} />
                 <InputGroupTextRight>/</InputGroupTextRight>
             </SearchContainer>
 
