@@ -21,6 +21,11 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 1 {
+		printHelp()
+		return
+	}
+
 	start := time.Now()
 
 	app := parseOsArguments()
@@ -68,4 +73,19 @@ func parseOsArguments() *core.RedefineApp {
 	}
 
 	return &app
+}
+
+func printHelp() {
+	fmt.Println("Redefine: UI component documentation")
+	fmt.Println("usage: $ redefine <action> <folder>")
+	fmt.Println()
+	fmt.Println("    <action>  (optional) specify non-default actions:")
+	fmt.Println("              `serve`: run local server to serve documentation")
+	fmt.Println("              `build`: export all doc files to an output folder")
+	fmt.Println()
+	fmt.Println("    <folder>  Root folder where either `package.json` or")
+	fmt.Println("              `redefine.config.json` exists.")
+	fmt.Println()
+	fmt.Println("Detailed instructions at https://redefine.sangupta.com")
+	fmt.Println()
 }
