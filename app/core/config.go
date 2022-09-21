@@ -22,6 +22,16 @@ import (
 	"path/filepath"
 )
 
+type ConfigTemplate struct {
+	FavIcon string `json:"favIcon"`
+
+	CssFiles []string `json:"cssFiles"`
+
+	JsBeforeLib []string `json:"jsBeforeLib"`
+
+	JsAfterLib []string `json:"jsAfterLib"`
+}
+
 // The user provided configuration as to where
 // to look for components, the type to detect,
 // and other user supplied configuration when
@@ -36,9 +46,6 @@ type RedefineConfig struct {
 	// folder from where docs are to be read
 	DocsFolder string `json:"docsFolder"`
 
-	// the documentation mode to use
-	DocMode string `json:"docMode"`
-
 	// the title to use when emitting the components.json file
 	Title string `json:"title"`
 
@@ -48,7 +55,11 @@ type RedefineConfig struct {
 	// the published URL of the library to use when loading the UI
 	LibraryUrl string `json:"libraryUrl"`
 
+	// load the content for home page
 	IndexFile string `json:"indexFile"`
+
+	// the config template
+	Template ConfigTemplate `json:"template"`
 
 	PackageJson *PackageJson
 }
