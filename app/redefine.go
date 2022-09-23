@@ -17,7 +17,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	core "sangupta.com/redefine/core"
@@ -33,12 +32,11 @@ func main() {
 		return
 	}
 
-	start := time.Now()
-
 	// parse OS arguments to fetch action and path
 	app := parseOsArguments()
 
-	// read configuration
+	// read configuration, measuring overall time
+	start := time.Now()
 	config := core.GetRedefineConfig(app.BaseFolder)
 
 	// `nil` config comes in case when we have an error
@@ -55,25 +53,27 @@ func main() {
 
 	// run extraction
 	jsonBytes, err := app.ExtractAndWriteComponents()
-
 	duration := time.Since(start)
 
+	// error?
 	if err != nil {
 		fmt.Println("Ran into issues when extracting components")
 		log.Fatal(err)
 		return
 	}
 
+	// emit time taken in generation
 	fmt.Println("Done in " + duration.String())
 	fmt.Println()
 
+	// if there was nothing produced, exit quietly
 	if jsonBytes == nil {
 		return
 	}
 
-	componentsJson = jsonBytes
-	if len(app.RunMode) > 0 && strings.ToLower(app.RunMode) == "build" {
-		// we need to serve the files as well
+	// if we are in serve mode, start HTTP server
+	if app.IsServeMode() {
+		componentsJson = jsonBytes
 		serveBuildOverHttp()
 	}
 }
@@ -114,11 +114,6 @@ func httpHandler(writer http.ResponseWriter, request *http.Request) {
 
 	writer.WriteHeader(http.StatusNotFound)
 	writer.Write([]byte("Not found"))
-	// 	return
-	// }
-
-	// fmt.Println("Serving file from: " + absPath)
-	// serveFile(writer, request, absPath)
 }
 
 func parseOsArguments() *core.RedefineApp {
@@ -145,12 +140,6 @@ func parseOsArguments() *core.RedefineApp {
 
 	default:
 		return nil
-	}
-
-	if numArgs == 1 {
-
-	} else {
-		// we will pick the current folder
 	}
 
 	app := core.RedefineApp{

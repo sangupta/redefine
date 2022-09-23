@@ -15,7 +15,6 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -71,7 +70,7 @@ func GetRedefineConfig(baseFolder string) *RedefineConfig {
 	// read package.json file
 	var packageJson PackageJson
 	if packageJsonExists {
-		packageJsonFileContents, err := ioutil.ReadFile(packageJsonFilePath)
+		packageJsonFileContents, err := os.ReadFile(packageJsonFilePath)
 
 		// error is eaten as we can work on defaults
 		if err == nil {
@@ -117,7 +116,7 @@ func readRedefineConfig(baseFolder string) *RedefineConfig {
 	if configFile {
 		fmt.Println("Found redefine.config.json at: " + configFilePath)
 		// read the JSON file and populate the structure
-		configFileContents, err := ioutil.ReadFile(configFilePath)
+		configFileContents, err := os.ReadFile(configFilePath)
 		if err != nil {
 			fmt.Println("redefine.config.json file present, unable to read file.")
 			return nil
@@ -270,7 +269,7 @@ func (config *RedefineConfig) scanFolder() ([]string, error) {
 func (config *RedefineConfig) PrintInfo() {
 	fmt.Println("\nUsing following configuration:")
 	fmt.Println("    Src folder: " + config.SrcFolder.Root)
-	fmt.Println("    Src includes: %v", config.SrcFolder.Includes)
+	fmt.Printf("    Src includes: %v\n", config.SrcFolder.Includes)
 	fmt.Println("    Docs folder: " + config.DocsFolder.Root)
 	fmt.Println("    Docs index: " + config.DocsFolder.Index)
 	fmt.Println()

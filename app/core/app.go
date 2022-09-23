@@ -15,7 +15,7 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"sort"
 	"strings"
@@ -30,6 +30,18 @@ type RedefineApp struct {
 	RunMode    string
 	Config     *RedefineConfig
 	BaseFolder string
+}
+
+func (app *RedefineApp) IsBuildMode() bool {
+	return strings.EqualFold("build", app.RunMode)
+}
+
+func (app *RedefineApp) IsPublishMode() bool {
+	return strings.EqualFold("publish", app.RunMode)
+}
+
+func (app *RedefineApp) IsServeMode() bool {
+	return !(app.IsBuildMode() || app.IsPublishMode())
 }
 
 // Value object to define how the component JSON
@@ -91,7 +103,7 @@ func (app *RedefineApp) ExtractAndWriteComponents() ([]byte, error) {
 			}
 
 			// read the doc file
-			mdFile, err := ioutil.ReadFile(docFile)
+			mdFile, err := os.ReadFile(docFile)
 			if err != nil {
 				panic(err)
 			}
@@ -100,14 +112,14 @@ func (app *RedefineApp) ExtractAndWriteComponents() ([]byte, error) {
 		}
 	}
 
-	return writeFinalJsonFile(app, components)
+	return app.writeFinalJsonFile(components)
 }
 
 // Function responsible to write the final components.json
 // file to where it needs to be.
 //
 // This method also returns the generated JSON string back.
-func writeFinalJsonFile(app *RedefineApp, components []model.Component) ([]byte, error) {
+func (app *RedefineApp) writeFinalJsonFile(components []model.Component) ([]byte, error) {
 	// basic sanity
 	config := app.Config
 	pkgJson := config.packageJson
@@ -120,7 +132,7 @@ func writeFinalJsonFile(app *RedefineApp, components []model.Component) ([]byte,
 	indexMdPath := config.DocsFolder.Index
 	var libDocs []byte
 	if FileExists(indexMdPath) {
-		libDocs, _ = ioutil.ReadFile(indexMdPath)
+		libDocs, _ = os.ReadFile(indexMdPath)
 	}
 
 	// write the JSON file
@@ -143,18 +155,21 @@ func writeFinalJsonFile(app *RedefineApp, components []model.Component) ([]byte,
 	}
 
 	// find the output folder
-	var outFolder string
-	if pkgJson.MainFile != "" {
-		outFolder = path.Dir(pkgJson.MainFile)
-		outFolder = path.Join(app.BaseFolder, outFolder)
-	} else {
-		outFolder = app.BaseFolder
-	}
+	if app.IsBuildMode() {
+		// only write the file when we are in build mode
+		var outFolder string
+		if pkgJson.MainFile != "" {
+			outFolder = path.Dir(pkgJson.MainFile)
+			outFolder = path.Join(app.BaseFolder, outFolder)
+		} else {
+			outFolder = app.BaseFolder
+		}
 
-	// write the file to disk
-	jsonFile := path.Join(outFolder, "components.json")
-	fmt.Println("Components JSON written to: " + jsonFile)
-	ioutil.WriteFile(jsonFile, jsonStr, 0644)
+		// write the file to disk
+		jsonFile := path.Join(outFolder, "components.json")
+		fmt.Println("Components JSON written to: " + jsonFile)
+		os.WriteFile(jsonFile, jsonStr, 0644)
+	}
 
 	return jsonStr, nil
 }
