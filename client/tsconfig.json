@@ -1,8 +1,7 @@
 {
     "compilerOptions": {
         "moduleResolution": "node",
-        "jsx": "react-jsx",
-        "jsxImportSource": "react",
+        "jsx": "react",
         "target": "esnext",
         "module": "System",
         "strict": true,

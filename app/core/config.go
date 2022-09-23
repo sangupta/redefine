@@ -19,6 +19,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+
+	"github.com/google/uuid"
 )
 
 // Structure format for the folder configuration
@@ -40,6 +42,7 @@ type BuildConfig struct {
 	Dist     string   `json:"dist"`    // where json is written during build action
 	Publish  string   `json:"publish"` // where final published files are written
 	CssFiles []string `json:"css"`     // css files to load
+	Lib      string   `json:"lib"`     // the actual component library to be used
 }
 
 // The user provided configuration as to where
@@ -47,12 +50,31 @@ type BuildConfig struct {
 // and other user supplied configuration when
 // invoking the redefine app.
 type RedefineConfig struct {
-	baseFolder  string          // the folder where redefine was run
-	packageJson *PackageJson    // the final package json that is read
-	SrcFolder   *ConfigFolder   `json:"src"`      // the base folder from where all components are read
-	DocsFolder  *ConfigFolder   `json:"docs"`     // folder from where docs are to be read
-	Build       *BuildConfig    `json:"build"`    // folder where output is written
-	Template    *ConfigTemplate `json:"template"` // template configuration for view page
+	baseFolder  string            // the folder where redefine was run
+	packageJson *PackageJson      // the final package json that is read
+	libraryMap  map[string]string // map which stores the final library paths
+	SrcFolder   *ConfigFolder     `json:"src"`      // the base folder from where all components are read
+	DocsFolder  *ConfigFolder     `json:"docs"`     // folder from where docs are to be read
+	Build       *BuildConfig      `json:"build"`    // folder where output is written
+	Template    *ConfigTemplate   `json:"template"` // template configuration for view page
+}
+
+func (config *RedefineConfig) GetLibraryBytes(id string) []byte {
+	if id == "" {
+		return nil
+	}
+
+	val := config.libraryMap[id]
+	if val == "" {
+		return nil
+	}
+
+	bytes, err := os.ReadFile(val)
+	if err != nil {
+		return nil
+	}
+
+	return bytes
 }
 
 // Extract redefine configuration params using the
@@ -200,6 +222,21 @@ func normalizeConfiguration(config *RedefineConfig, packageJson *PackageJson) {
 	if config.Build.CssFiles == nil {
 		config.Build.CssFiles = []string{}
 	}
+	if len(config.Build.CssFiles) > 0 {
+		for index, css := range config.Build.CssFiles {
+			config.Build.CssFiles[index] = normalizeFolderPath(config.baseFolder, css)
+		}
+	}
+	if config.Build.Lib == "" {
+		config.Build.Lib = packageJson.MainFile
+	}
+	if config.Build.Lib != "" {
+		config.libraryMap = make(map[string]string)
+		uuid := uuid.New().String() + ".js"
+
+		config.libraryMap[uuid] = normalizeFolderPath(config.baseFolder, config.Build.Lib)
+		config.Build.Lib = uuid
+	}
 
 	// -----------------------------------------------
 	// normalize template details
@@ -270,6 +307,7 @@ func (config *RedefineConfig) PrintInfo() {
 	fmt.Println("\nUsing following configuration:")
 	fmt.Println("    Src folder: " + config.SrcFolder.Root)
 	fmt.Printf("    Src includes: %v\n", config.SrcFolder.Includes)
+	fmt.Println("    Lib file: " + config.Build.Lib)
 	fmt.Println("    Docs folder: " + config.DocsFolder.Root)
 	fmt.Println("    Docs index: " + config.DocsFolder.Index)
 	fmt.Println()

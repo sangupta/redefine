@@ -22,10 +22,6 @@ import (
 	core "sangupta.com/redefine/core"
 )
 
-// the generated components.json file represented
-// as bytes
-var componentsJson []byte
-
 func main() {
 	if len(os.Args) == 1 {
 		printHelp()
@@ -73,16 +69,18 @@ func main() {
 
 	// if we are in serve mode, start HTTP server
 	if app.IsServeMode() {
-		componentsJson = jsonBytes
-		serveBuildOverHttp()
+		serveBuildOverHttp(jsonBytes, config)
 	}
 }
 
 // This method serves the generated components.json over
 // HTTP. Optionally, any built files that are defined
 // in package.json (including any folder) are also served
-func serveBuildOverHttp() {
-	http.HandleFunc("/", httpHandler)
+func serveBuildOverHttp(jsonBytes []byte, config *core.RedefineConfig) {
+	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		doHttpRequest(writer, request, jsonBytes, config)
+	})
+
 	fmt.Println("Starting HTTP server on http://localhost:1309 ...")
 	err := http.ListenAndServe(":1309", nil)
 	if err != nil {
@@ -91,7 +89,7 @@ func serveBuildOverHttp() {
 }
 
 // use basic http handler to serve all files
-func httpHandler(writer http.ResponseWriter, request *http.Request) {
+func doHttpRequest(writer http.ResponseWriter, request *http.Request, jsonBytes []byte, config *core.RedefineConfig) {
 	uriPath := request.URL.Path
 
 	if uriPath == "/" {
@@ -105,13 +103,32 @@ func httpHandler(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Add("Access-Control-Allow-Methods", "GET")
 		writer.Header().Add("Access-Control-Max-Age", "86400")
 		writer.WriteHeader(http.StatusOK)
-		writer.Write(componentsJson)
+		writer.Write(jsonBytes)
 		return
 	}
 
 	// if the request was not served, find the file as was
 	// created in the dist folder for the library
+	uriNoSlash := uriPath[1:]
+	if uriNoSlash == config.Build.Lib {
+		jsFile := config.GetLibraryBytes(uriNoSlash)
+		if jsFile == nil {
+			writer.WriteHeader(http.StatusBadRequest)
+			writer.Write([]byte("No such library found"))
+			return
+		}
 
+		// file was read
+		writer.Header().Add("Content-Type", "text/javascript")
+		writer.Header().Add("Access-Control-Allow-Origin", "*")
+		writer.Header().Add("Access-Control-Allow-Methods", "GET")
+		writer.Header().Add("Access-Control-Max-Age", "86400")
+		writer.WriteHeader(http.StatusOK)
+		writer.Write(jsFile)
+		return
+	}
+
+	// nothing was found
 	writer.WriteHeader(http.StatusNotFound)
 	writer.Write([]byte("Not found"))
 }
@@ -121,7 +138,7 @@ func parseOsArguments() *core.RedefineApp {
 
 	// check for os arguments
 	numArgs := len(os.Args)
-	runMode := "build"
+	runMode := "serve"
 	switch numArgs {
 	case 1:
 		cwd, err := os.Getwd()

@@ -3,6 +3,7 @@ module sangupta.com/redefine
 go 1.18
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/quickjs-go/quickjs-go v0.0.0-20220113024216-b0ec36d46b2b
 	github.com/stretchr/testify v1.7.1
 )

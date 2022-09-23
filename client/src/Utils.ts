@@ -10,6 +10,8 @@
  * 
  **/
 
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 /**
  * Method to sort components on name.
  * 

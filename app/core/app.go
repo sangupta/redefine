@@ -47,15 +47,17 @@ func (app *RedefineApp) IsServeMode() bool {
 // Value object to define how the component JSON
 // should be written to disk and/or served for client
 type jsonPayload struct {
-	Title       string            `json:"title"` // the title that is recognized from the package.json file or a user supplied string
-	Favicon     string            `json:"favicon"`
-	Description string            `json:"description"`
-	Index       string            `json:"libDocs"`
-	Version     string            `json:"version"`
-	HomePage    string            `json:"homePage"`
-	Author      PackageAuthor     `json:"author"`
-	License     string            `json:"license"`
-	Components  []model.Component `json:"components"` // the extracted components
+	Title       string            `json:"title"`       // the title that is recognized from the package.json file or a user supplied string
+	Favicon     string            `json:"favicon"`     // favicon defined in redefine config
+	Description string            `json:"description"` // description read from package.json file
+	Index       string            `json:"libDocs"`     // index file as defined in docs folder
+	Version     string            `json:"version"`     // version read from package.json file
+	HomePage    string            `json:"homePage"`    // home page read from package.json file
+	Author      PackageAuthor     `json:"author"`      // author read from package.json file
+	License     string            `json:"license"`     // license read from package.json file
+	Components  []model.Component `json:"components"`  // the extracted components
+	CustomCss   string            `json:"customCSS"`   // custom css that needs to be included in page
+	Lib         string            `json:"library"`     // the actual component library JS
 }
 
 func (app *RedefineApp) ExtractAndWriteComponents() ([]byte, error) {
@@ -135,6 +137,21 @@ func (app *RedefineApp) writeFinalJsonFile(components []model.Component) ([]byte
 		libDocs, _ = os.ReadFile(indexMdPath)
 	}
 
+	// read all custom css files
+	var builder strings.Builder
+	if len(config.Build.CssFiles) > 0 {
+		for _, css := range config.Build.CssFiles {
+			fmt.Println("Reading custom CSS file from: " + css)
+			cssData, err := os.ReadFile(css)
+			if err != nil {
+				continue
+			}
+
+			builder.WriteString(string(cssData))
+			builder.WriteRune('\n')
+		}
+	}
+
 	// write the JSON file
 	payload := jsonPayload{
 		Title:       config.Template.Title,
@@ -146,6 +163,8 @@ func (app *RedefineApp) writeFinalJsonFile(components []model.Component) ([]byte
 		Version:     pkgJson.Version,
 		Author:      pkgJson.Author,
 		License:     pkgJson.License,
+		CustomCss:   builder.String(),
+		Lib:         config.Build.Lib,
 	}
 
 	// create JSON byte array

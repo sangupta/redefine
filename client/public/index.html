@@ -12,6 +12,7 @@
             --redefine-border-color: #d0d7de;
             --redefine-sidebar-width: 230px;
         }
+
         html,
         body {
             padding: 0;
@@ -48,15 +49,25 @@
         }
     </script>
     <script type="module">
-        const script = document.createElement('script');
-        script.src = "https://sangupta.com/hosted/js/dynamic-import-with-react.js";
-        script.type = "module"
-        script.onload = function () {
-            window.__import__('http://localhost:1309/bedrock.js').then(lib => {
-                window.__ComponentLibrary = lib;
+        window.__isReady = false;
+
+        window.__loadComponentLibrary = function (url) {
+            return new Promise((resolve, reject) => {
+                window.__import__(url).then(lib => {
+                    resolve(lib)
+                }).catch(e => {
+                    reject(e)
+                })
             });
         }
 
+        // load the basic import function using scripting
+        const script = document.createElement('script');
+        script.src = "https://sangupta.com/hosted/js/dynamic-import-with-react.js";
+        script.type = "module";
+        script.onload = function() {
+            window.__isReady = true;
+        }
         document.body.appendChild(script);
     </script>
     <script type='module' src='../src/RedefineApp.tsx'></script>

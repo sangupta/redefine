@@ -14,7 +14,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 
-import { processComponentInfo } from './Utils';
+import { sleep, processComponentInfo } from './Utils';
 
 import Header from './fragments/Header';
 import Sidebar from './fragments/Sidebar';
@@ -59,6 +59,7 @@ class App extends React.Component<NoProps, AppState> {
      */
     componentDidMount = async () => {
         try {
+            const win = window as any;
             const response = await fetch('http://localhost:1309/components.json')
             const data: RedefinePayload = await response.json();
 
@@ -69,12 +70,32 @@ class App extends React.Component<NoProps, AppState> {
             delete data['components'];
 
             // set the window title to the one given in JSON
-            if(data.title) {
+            if (data.title) {
                 window.document.title = data.title;
+            }
+
+            if (data.library && win.__loadComponentLibrary) {
+                try {
+                    for (let index = 0; index < 5; index++) {
+                        if (win.__isReady) {
+                            break;
+                        }
+
+                        await sleep(250);
+                    }
+
+                    const libraryComponents = await win.__loadComponentLibrary('http://localhost:1309/' + data.library);
+                    if (libraryComponents) {
+                        win.__ComponentLibrary = libraryComponents;
+                    }
+                } catch (e) {
+                    console.error('error loading component library', e);
+                }
             }
 
             // set all data
             this.setState({ meta: data, components: processComponentInfo(components || []) });
+
         } catch (e) {
             this.setState({ error: true });
         }

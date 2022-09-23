@@ -67,11 +67,14 @@ interface Author {
 
 interface RedefinePayload {
     title?: string;
-    version?: string;
-    license?: string;
-    libDocs?: string;
-    homePage?: string;
+    favicon?:string;
     description?: string;
+    libDocs?: string;
+    version?: string;
+    homePage?: string;
     author?: Author;
+    license?: string;
     components?: Array<ComponentDef>;
+    customCSS?:string;
+    library?:string;
 }
