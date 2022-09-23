@@ -16,7 +16,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"path"
 	"sort"
 	"strings"
@@ -28,6 +27,7 @@ import (
 // Simple struct that acts as a wrapper for various
 // ways the application can be invoked
 type RedefineApp struct {
+	RunMode    string
 	Config     *RedefineConfig
 	BaseFolder string
 }
@@ -35,30 +35,24 @@ type RedefineApp struct {
 // Value object to define how the component JSON
 // should be written to disk and/or served for client
 type jsonPayload struct {
-
-	// the title that is recognized from the package.json
-	// file or a user supplied string
-	Title string `json:"title"`
-
-	Description string        `json:"description"`
-	LibDocs     string        `json:"libDocs"`
-	Version     string        `json:"version"`
-	HomePage    string        `json:"homePage"`
-	Author      PackageAuthor `json:"author"`
-	License     string        `json:"license"`
-
-	// the extracted components
-	Components []model.Component `json:"components"`
+	Title       string            `json:"title"` // the title that is recognized from the package.json file or a user supplied string
+	Favicon     string            `json:"favicon"`
+	Description string            `json:"description"`
+	Index       string            `json:"libDocs"`
+	Version     string            `json:"version"`
+	HomePage    string            `json:"homePage"`
+	Author      PackageAuthor     `json:"author"`
+	License     string            `json:"license"`
+	Components  []model.Component `json:"components"` // the extracted components
 }
 
-func (app *RedefineApp) ExtractAndWriteComponents() {
+func (app *RedefineApp) ExtractAndWriteComponents() ([]byte, error) {
 	config := app.Config
 
 	// scan the base folder for all files present
 	files, err := config.scanFolder()
 	if err != nil {
-		log.Fatal(err)
-		return
+		return nil, err
 	}
 
 	// parse AST for each file
@@ -74,20 +68,20 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 
 	// fix source path in components
 	if len(components) > 0 {
-		baseLen := len(config.SrcFolder)
+		baseLen := len(config.SrcFolder.Root)
 
 		for index := range components {
-			if strings.HasPrefix(components[index].SourcePath, config.SrcFolder) {
+			if strings.HasPrefix(components[index].SourcePath, config.SrcFolder.Root) {
 				components[index].SourcePath = components[index].SourcePath[baseLen+1:]
 			}
 		}
 	}
 
 	// add documentation if available to component
-	if config.DocsFolder != "" {
+	if config.DocsFolder != nil && config.DocsFolder.Root != "" {
 		for index := range components {
 			// build path to doc file
-			docFile := path.Join(config.DocsFolder, components[index].SourcePath, components[index].Name)
+			docFile := path.Join(config.DocsFolder.Root, components[index].SourcePath, components[index].Name)
 			ext := path.Ext(docFile)
 			docFile = docFile[0:len(docFile)-len(ext)] + ".md"
 
@@ -106,22 +100,24 @@ func (app *RedefineApp) ExtractAndWriteComponents() {
 		}
 	}
 
-	writeFinalJsonFile(app, components)
+	return writeFinalJsonFile(app, components)
 }
 
 // Function responsible to write the final components.json
-// file to where it needs to be
-func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
+// file to where it needs to be.
+//
+// This method also returns the generated JSON string back.
+func writeFinalJsonFile(app *RedefineApp, components []model.Component) ([]byte, error) {
 	// basic sanity
 	config := app.Config
-	pkgJson := config.PackageJson
+	pkgJson := config.packageJson
 	if pkgJson == nil {
 		pj := PackageJson{}
 		pkgJson = &pj
 	}
 
 	// read index.md file if it exists
-	indexMdPath := path.Join(config.DocsFolder, "index.md")
+	indexMdPath := config.DocsFolder.Index
 	var libDocs []byte
 	if FileExists(indexMdPath) {
 		libDocs, _ = ioutil.ReadFile(indexMdPath)
@@ -129,20 +125,21 @@ func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
 
 	// write the JSON file
 	payload := jsonPayload{
-		Title:       config.Title,
+		Title:       config.Template.Title,
+		Favicon:     config.Template.FavIcon,
+		Index:       string(libDocs),
 		Components:  components,
 		Description: pkgJson.Description,
-		LibDocs:     string(libDocs),
 		HomePage:    pkgJson.HomePage,
 		Version:     pkgJson.Version,
 		Author:      pkgJson.Author,
+		License:     pkgJson.License,
 	}
 
 	// create JSON byte array
 	jsonStr, err := json.MarshalIndent(payload, "", "  ")
 	if err != nil {
-		log.Fatal(err)
-		return
+		return nil, err
 	}
 
 	// find the output folder
@@ -158,6 +155,8 @@ func writeFinalJsonFile(app *RedefineApp, components []model.Component) {
 	jsonFile := path.Join(outFolder, "components.json")
 	fmt.Println("Components JSON written to: " + jsonFile)
 	ioutil.WriteFile(jsonFile, jsonStr, 0644)
+
+	return jsonStr, nil
 }
 
 func (app *RedefineApp) PrintComponentsFromSingleFile(absoluteFilePath string) {

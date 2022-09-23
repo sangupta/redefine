@@ -22,14 +22,25 @@ import (
 	"path/filepath"
 )
 
+// Structure format for the folder configuration
+// Same struct is used for source, docs, dist etc
+type ConfigFolder struct {
+	Root     string   `json:"root"`     // root folder relative to base folder
+	Includes []string `json:"includes"` // what files are included
+	Index    string   `json:"index"`    // the index file, if applicable
+}
+
+// Attributes that the developer can customize to
+// be displayed in the redefine UI
 type ConfigTemplate struct {
-	FavIcon string `json:"favIcon"`
+	Title   string `json:"title"`   // title of the page
+	FavIcon string `json:"favicon"` // favicon to be displayed
+}
 
-	CssFiles []string `json:"cssFiles"`
-
-	JsBeforeLib []string `json:"jsBeforeLib"`
-
-	JsAfterLib []string `json:"jsAfterLib"`
+type BuildConfig struct {
+	Dist     string   `json:"dist"`    // where json is written during build action
+	Publish  string   `json:"publish"` // where final published files are written
+	CssFiles []string `json:"css"`     // css files to load
 }
 
 // The user provided configuration as to where
@@ -37,31 +48,12 @@ type ConfigTemplate struct {
 // and other user supplied configuration when
 // invoking the redefine app.
 type RedefineConfig struct {
-	// the base folder from where all components are read
-	SrcFolder string `json:"srcFolder"`
-
-	// type of files to include
-	Includes []string `json:"includes"`
-
-	// folder from where docs are to be read
-	DocsFolder string `json:"docsFolder"`
-
-	// the title to use when emitting the components.json file
-	Title string `json:"title"`
-
-	// the path of the library to use from disk when loading in UI
-	LibraryPath string `json:"libraryPath"`
-
-	// the published URL of the library to use when loading the UI
-	LibraryUrl string `json:"libraryUrl"`
-
-	// load the content for home page
-	IndexFile string `json:"indexFile"`
-
-	// the config template
-	Template ConfigTemplate `json:"template"`
-
-	PackageJson *PackageJson
+	baseFolder  string          // the folder where redefine was run
+	packageJson *PackageJson    // the final package json that is read
+	SrcFolder   *ConfigFolder   `json:"src"`      // the base folder from where all components are read
+	DocsFolder  *ConfigFolder   `json:"docs"`     // folder from where docs are to be read
+	Build       *BuildConfig    `json:"build"`    // folder where output is written
+	Template    *ConfigTemplate `json:"template"` // template configuration for view page
 }
 
 // Extract redefine configuration params using the
@@ -70,28 +62,60 @@ type RedefineConfig struct {
 func GetRedefineConfig(baseFolder string) *RedefineConfig {
 	// check if we have a package.json file in there
 	packageJsonFilePath := path.Join(baseFolder, "package.json")
+	fmt.Println("Reading package.json from: " + packageJsonFilePath)
 	packageJsonExists := FileExists(packageJsonFilePath)
+
+	// this is where we store all our configuration
+	var config *RedefineConfig
 
 	// read package.json file
 	var packageJson PackageJson
 	if packageJsonExists {
 		packageJsonFileContents, err := ioutil.ReadFile(packageJsonFilePath)
+
+		// error is eaten as we can work on defaults
 		if err == nil {
 			json.Unmarshal(packageJsonFileContents, &packageJson)
+
+			// read redefine configuration from here
+			config = packageJson.Redefine
 		}
 	}
+
+	// if nothing is present in package.json file
+	// let's check if we have `redefine.config.json` file
+	if config == nil {
+		config = readRedefineConfig(baseFolder)
+	}
+
+	// will this happen?
+	if config == nil {
+		fmt.Println("No configuration available, will use defaults")
+		config = &RedefineConfig{}
+	}
+
+	// setup base folder
+	config.packageJson = &packageJson
+	config.baseFolder = baseFolder
+
+	// normalize configuration
+	normalizeConfiguration(config, &packageJson)
+
+	// all done
+	return config
+}
+
+func readRedefineConfig(baseFolder string) *RedefineConfig {
+	fmt.Println("No redefine config was found inside package.json, looking for redefine.config.json...")
+	config := RedefineConfig{}
 
 	// check if the path passed is to a folder containing redefine.config.json
 	// file or to the place that we need to scan
 	configFilePath := path.Join(baseFolder, "redefine.config.json")
 	configFile := FileExists(configFilePath)
 
-	// create the app config object
-	config := RedefineConfig{
-		PackageJson: &packageJson,
-	}
-
 	if configFile {
+		fmt.Println("Found redefine.config.json at: " + configFilePath)
 		// read the JSON file and populate the structure
 		configFileContents, err := ioutil.ReadFile(configFilePath)
 		if err != nil {
@@ -102,60 +126,100 @@ func GetRedefineConfig(baseFolder string) *RedefineConfig {
 		// unmarshal the file
 		fmt.Println("Init using redefine.config.json...")
 		json.Unmarshal(configFileContents, &config)
-
-		config.SrcFolder = normalizeFolderPath(baseFolder, config.SrcFolder)   // normalize the base folder path
-		config.DocsFolder = normalizeFolderPath(baseFolder, config.DocsFolder) // normalize the docs folder path
 	}
 
-	// setup defaults
-	// for includes
-	if len(config.Includes) == 0 {
-		config.Includes = []string{"*.ts", "*.tsx", "*.js", "*.jsx"}
-	}
-
-	// for title
-	if config.Title == "" {
-		config.Title = packageJson.Name
-
-		if config.Title == "" {
-			config.Title = filepath.Base(config.SrcFolder)
-		}
-	}
-
-	// for docs folder
-	if config.DocsFolder == "" {
-		config.DocsFolder = normalizeFolderPath(baseFolder, "docs")
-	}
-
-	// for src folder
-	if config.SrcFolder == "" {
-		folder := normalizeFolderPath(baseFolder, "src")
-		if FileExists(folder) {
-			config.SrcFolder = folder
-		}
-	}
-	if config.SrcFolder == "" {
-		folder := normalizeFolderPath(baseFolder, "lib")
-		if FileExists(folder) {
-			config.SrcFolder = folder
-		}
-	}
-	if config.SrcFolder == "" {
-		folder := normalizeFolderPath(baseFolder, "packages")
-		if FileExists(folder) {
-			config.SrcFolder = folder
-		} else {
-			config.SrcFolder = baseFolder
-		}
-	}
-
-	// all done
 	return &config
+}
+
+// this method normalizes configuration based
+// on values specified in the package.json or redefine.config.json
+// TL;DR: setup defaults
+func normalizeConfiguration(config *RedefineConfig, packageJson *PackageJson) {
+	// -----------------------------------------------
+	// details about src folder
+	if config.SrcFolder == nil {
+		config.SrcFolder = &ConfigFolder{}
+	}
+
+	// normalize the base folder path
+	if config.SrcFolder.Root == "" {
+		// see if we have 'src', 'lib', or 'packages' folder existing
+		// if yes, we will default to it
+		if FileExists(normalizeFolderPath(config.baseFolder, "src")) {
+			config.SrcFolder.Root = "src"
+		} else if FileExists(normalizeFolderPath(config.baseFolder, "lib")) {
+			config.SrcFolder.Root = "src"
+		} else if FileExists(normalizeFolderPath(config.baseFolder, "packages")) {
+			config.SrcFolder.Root = "src"
+		}
+	}
+	config.SrcFolder.Root = normalizeFolderPath(config.baseFolder, config.SrcFolder.Root)
+
+	// for includes
+	if len(config.SrcFolder.Includes) == 0 {
+		config.SrcFolder.Includes = []string{"*.ts", "*.tsx", "*.js", "*.jsx"}
+	}
+
+	// -----------------------------------------------
+	// normalize the docs folder path
+	if config.DocsFolder == nil {
+		config.DocsFolder = &ConfigFolder{}
+	}
+	if config.DocsFolder.Root == "" {
+		config.DocsFolder.Root = "docs"
+	}
+
+	// base path
+	config.DocsFolder.Root = normalizeFolderPath(config.baseFolder, config.DocsFolder.Root)
+
+	// the index file
+	if config.DocsFolder.Index == "" {
+		config.DocsFolder.Index = "index.md"
+	}
+
+	// what constitutes documentation file
+	if len(config.DocsFolder.Includes) == 0 {
+		config.DocsFolder.Includes = []string{"*.md"}
+	}
+
+	// -----------------------------------------------
+	// normalize build folder
+	if config.Build == nil {
+		config.Build = &BuildConfig{}
+	}
+
+	if config.Build.Dist == "" {
+		config.Build.Dist = "dist"
+	}
+	config.Build.Dist = normalizeFolderPath(config.baseFolder, config.Build.Dist)
+
+	if config.Build.Publish == "" {
+		config.Build.Publish = "publish"
+	}
+	config.Build.Publish = normalizeFolderPath(config.baseFolder, config.Build.Publish)
+
+	if config.Build.CssFiles == nil {
+		config.Build.CssFiles = []string{}
+	}
+
+	// -----------------------------------------------
+	// normalize template details
+	if config.Template == nil {
+		config.Template = &ConfigTemplate{}
+	}
+
+	if config.Template.Title == "" {
+		config.Template.Title = packageJson.Name
+
+		if config.Template.Title == "" {
+			config.Template.Title = filepath.Base(config.SrcFolder.Root)
+		}
+	}
 }
 
 func normalizeFolderPath(baseFolder string, configPath string) string {
 	if configPath == "" {
-		return ""
+		return baseFolder
 	}
 
 	folder := path.Join(baseFolder, configPath)
@@ -170,11 +234,10 @@ func normalizeFolderPath(baseFolder string, configPath string) string {
 // @param baseFolder the base location that needs to be scanned
 //
 // @param includes an array of wildcard patterns that select files
-//
 func (config *RedefineConfig) scanFolder() ([]string, error) {
 	totalFiles := []string{}
 
-	filepath.Walk(config.SrcFolder, func(path string, fileInfo os.FileInfo, err error) error {
+	filepath.Walk(config.SrcFolder.Root, func(path string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatal("Unable to read files from path: " + path)
 			return nil
@@ -192,7 +255,7 @@ func (config *RedefineConfig) scanFolder() ([]string, error) {
 		}
 
 		// check if the file is included or not
-		if !isFileIncluded(absPath, config.Includes) {
+		if !isFileIncluded(absPath, config.SrcFolder.Includes) {
 			return nil
 		}
 
@@ -202,4 +265,13 @@ func (config *RedefineConfig) scanFolder() ([]string, error) {
 	})
 
 	return totalFiles, nil
+}
+
+func (config *RedefineConfig) PrintInfo() {
+	fmt.Println("\nUsing following configuration:")
+	fmt.Println("    Src folder: " + config.SrcFolder.Root)
+	fmt.Println("    Src includes: %v", config.SrcFolder.Includes)
+	fmt.Println("    Docs folder: " + config.DocsFolder.Root)
+	fmt.Println("    Docs index: " + config.DocsFolder.Index)
+	fmt.Println()
 }
