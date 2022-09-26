@@ -58,6 +58,7 @@ type jsonPayload struct {
 	Components  []model.Component `json:"components"`  // the extracted components
 	CustomCss   string            `json:"customCSS"`   // custom css that needs to be included in page
 	Lib         string            `json:"library"`     // the actual component library JS
+	Fonts       []string          `json:"fonts"`       // the fonts that need to be loaded
 }
 
 func (app *RedefineApp) ExtractAndWriteComponents() ([]byte, error) {
@@ -165,6 +166,7 @@ func (app *RedefineApp) writeFinalJsonFile(components []model.Component) ([]byte
 		License:     pkgJson.License,
 		CustomCss:   builder.String(),
 		Lib:         config.Build.Lib,
+		Fonts:       config.Build.FontFiles,
 	}
 
 	// create JSON byte array

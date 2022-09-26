@@ -38,6 +38,8 @@ interface AppState {
  */
 class App extends React.Component<NoProps, AppState> {
 
+    styleElement?: HTMLStyleElement;
+
     /**
      * Constructor.
      * 
@@ -72,6 +74,27 @@ class App extends React.Component<NoProps, AppState> {
             // set the window title to the one given in JSON
             if (data.title) {
                 window.document.title = data.title;
+            }
+
+            // if there is custom CSS available, just load it in the
+            // page, replacing any previously set
+            if (data.customCSS) {
+                if (!this.styleElement) {
+                    this.styleElement = document.createElement('style');
+                    document.head.appendChild(this.styleElement);
+                }
+                this.styleElement.innerHTML = data.customCSS;
+            }
+
+            if (data.fonts) {
+                data.fonts.forEach(font => {
+                    const link = document.createElement('link');
+                    link.rel = "stylesheet";
+                    link.type = "text/css";
+                    link.href = font;
+    
+                    document.head.appendChild(link);    
+                });
             }
 
             if (data.library && win.__loadComponentLibrary) {

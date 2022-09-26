@@ -66,15 +66,39 @@ interface Author {
 }
 
 interface RedefinePayload {
+    // library title
     title?: string;
-    favicon?:string;
+
+    // the favicon to use
+    favicon?: string;
+
+    // description for the library
     description?: string;
+
+    // markdown for index page
     libDocs?: string;
+
+    // library version
     version?: string;
+
+    // the home page information for library
     homePage?: string;
+
+    // Author information
     author?: Author;
+
+    // the license being sued
     license?: string;
+
+    // list of all component definitions
     components?: Array<ComponentDef>;
-    customCSS?:string;
-    library?:string;
+    
+    // the custom CSS that needs to be loaded in the page
+    customCSS?: string;
+    
+    // the fonts that need to be loaded
+    fonts?: Array<string>
+
+    // the final library path
+    library?: string;
 }

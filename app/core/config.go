@@ -39,10 +39,11 @@ type ConfigTemplate struct {
 }
 
 type BuildConfig struct {
-	Dist     string   `json:"dist"`    // where json is written during build action
-	Publish  string   `json:"publish"` // where final published files are written
-	CssFiles []string `json:"css"`     // css files to load
-	Lib      string   `json:"lib"`     // the actual component library to be used
+	Dist      string   `json:"dist"`    // where json is written during build action
+	Publish   string   `json:"publish"` // where final published files are written
+	CssFiles  []string `json:"css"`     // css files to load
+	FontFiles []string `json:"fonts"`   // the font files to be loaded
+	Lib       string   `json:"lib"`     // the actual component library to be used
 }
 
 // The user provided configuration as to where
