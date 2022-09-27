@@ -92,13 +92,16 @@ interface RedefinePayload {
 
     // list of all component definitions
     components?: Array<ComponentDef>;
-    
+
     // the custom CSS that needs to be loaded in the page
     customCSS?: string;
-    
+
     // the fonts that need to be loaded
     fonts?: Array<string>
 
     // the final library path
     library?: string;
+
+    // list of JS files to load before starting the library module
+    js?: Array<string>;
 }

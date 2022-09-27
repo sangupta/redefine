@@ -19,6 +19,7 @@ type Component struct {
 	Description   string        `json:"description"`
 	Props         []PropDef     `json:"props"`
 	Docs          string        `json:"docs"`
+	DocFileName   string        `json:"docFileName"`
 }
 
 type PropDef struct {

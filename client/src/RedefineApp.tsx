@@ -86,6 +86,7 @@ class App extends React.Component<NoProps, AppState> {
                 this.styleElement.innerHTML = data.customCSS;
             }
 
+            // load the fonts
             if (data.fonts) {
                 data.fonts.forEach(font => {
                     const link = document.createElement('link');
@@ -93,7 +94,18 @@ class App extends React.Component<NoProps, AppState> {
                     link.type = "text/css";
                     link.href = font;
     
-                    document.head.appendChild(link);    
+                    document.head.appendChild(link);
+                });
+            }
+
+            // load all scripts
+            if (data.js) {
+                data.js.forEach(jsFile => {
+                    const script = document.createElement('script');
+                    script.type = "module";
+                    script.src = 'http://localhost:1309/' + jsFile;
+
+                    document.head.appendChild(script);
                 });
             }
 

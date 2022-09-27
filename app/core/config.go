@@ -26,9 +26,10 @@ import (
 // Structure format for the folder configuration
 // Same struct is used for source, docs, dist etc
 type ConfigFolder struct {
-	Root     string   `json:"root"`     // root folder relative to base folder
-	Includes []string `json:"includes"` // what files are included
-	Index    string   `json:"index"`    // the index file, if applicable
+	Root           string   `json:"root"`           // root folder relative to base folder
+	Includes       []string `json:"includes"`       // what files are included
+	Index          string   `json:"index"`          // the index file, if applicable
+	HasFrontMatter bool     `json:"hasFrontMatter"` // whether the documentation has front matter or not
 }
 
 // Attributes that the developer can customize to
@@ -39,11 +40,12 @@ type ConfigTemplate struct {
 }
 
 type BuildConfig struct {
-	Dist      string   `json:"dist"`    // where json is written during build action
-	Publish   string   `json:"publish"` // where final published files are written
-	CssFiles  []string `json:"css"`     // css files to load
-	FontFiles []string `json:"fonts"`   // the font files to be loaded
-	Lib       string   `json:"lib"`     // the actual component library to be used
+	Dist      string   `json:"dist"`          // where json is written during build action
+	Publish   string   `json:"publishFolder"` // where final published files are written
+	CssFiles  []string `json:"css"`           // css files to load
+	FontFiles []string `json:"fonts"`         // the font files to be loaded
+	JsFiles   []string `json:"js"`            // the JS files to be loaded before we start the app
+	Lib       string   `json:"lib"`           // the actual component library to be used
 }
 
 // The user provided configuration as to where
@@ -58,6 +60,12 @@ type RedefineConfig struct {
 	DocsFolder  *ConfigFolder     `json:"docs"`     // folder from where docs are to be read
 	Build       *BuildConfig      `json:"build"`    // folder where output is written
 	Template    *ConfigTemplate   `json:"template"` // template configuration for view page
+}
+
+func (config *RedefineConfig) HasLibraryFile(id string) bool {
+	_, exists := config.libraryMap[id]
+
+	return exists
 }
 
 func (config *RedefineConfig) GetLibraryBytes(id string) []byte {
@@ -127,6 +135,10 @@ func GetRedefineConfig(baseFolder string) *RedefineConfig {
 	return config
 }
 
+// Read `redefine.config.json` from the given folder, if present.
+// If file is not present, return a simple default structure so
+// that we can populate same with package.json and other sensible
+// defaults.
 func readRedefineConfig(baseFolder string) *RedefineConfig {
 	fmt.Println("No redefine config was found inside package.json, looking for redefine.config.json...")
 	config := RedefineConfig{}
@@ -167,15 +179,15 @@ func normalizeConfiguration(config *RedefineConfig, packageJson *PackageJson) {
 	if config.SrcFolder.Root == "" {
 		// see if we have 'src', 'lib', or 'packages' folder existing
 		// if yes, we will default to it
-		if FileExists(normalizeFolderPath(config.baseFolder, "src")) {
+		if FileExists(config.NormalizeFolderPath("src")) {
 			config.SrcFolder.Root = "src"
-		} else if FileExists(normalizeFolderPath(config.baseFolder, "lib")) {
+		} else if FileExists(config.NormalizeFolderPath("lib")) {
 			config.SrcFolder.Root = "src"
-		} else if FileExists(normalizeFolderPath(config.baseFolder, "packages")) {
+		} else if FileExists(config.NormalizeFolderPath("packages")) {
 			config.SrcFolder.Root = "src"
 		}
 	}
-	config.SrcFolder.Root = normalizeFolderPath(config.baseFolder, config.SrcFolder.Root)
+	config.SrcFolder.Root = config.NormalizeFolderPath(config.SrcFolder.Root)
 
 	// for includes
 	if len(config.SrcFolder.Includes) == 0 {
@@ -185,14 +197,16 @@ func normalizeConfiguration(config *RedefineConfig, packageJson *PackageJson) {
 	// -----------------------------------------------
 	// normalize the docs folder path
 	if config.DocsFolder == nil {
-		config.DocsFolder = &ConfigFolder{}
+		config.DocsFolder = &ConfigFolder{
+			HasFrontMatter: true,
+		}
 	}
 	if config.DocsFolder.Root == "" {
 		config.DocsFolder.Root = "docs"
 	}
 
 	// base path
-	config.DocsFolder.Root = normalizeFolderPath(config.baseFolder, config.DocsFolder.Root)
+	config.DocsFolder.Root = config.NormalizeFolderPath(config.DocsFolder.Root)
 
 	// the index file
 	if config.DocsFolder.Index == "" {
@@ -213,21 +227,30 @@ func normalizeConfiguration(config *RedefineConfig, packageJson *PackageJson) {
 	if config.Build.Dist == "" {
 		config.Build.Dist = "dist"
 	}
-	config.Build.Dist = normalizeFolderPath(config.baseFolder, config.Build.Dist)
+	config.Build.Dist = config.NormalizeFolderPath(config.Build.Dist)
 
 	if config.Build.Publish == "" {
 		config.Build.Publish = "publish"
 	}
-	config.Build.Publish = normalizeFolderPath(config.baseFolder, config.Build.Publish)
+	config.Build.Publish = config.NormalizeFolderPath(config.Build.Publish)
 
+	// normalize css files
 	if config.Build.CssFiles == nil {
 		config.Build.CssFiles = []string{}
 	}
 	if len(config.Build.CssFiles) > 0 {
 		for index, css := range config.Build.CssFiles {
-			config.Build.CssFiles[index] = normalizeFolderPath(config.baseFolder, css)
+			config.Build.CssFiles[index] = config.NormalizeFolderPath(css)
 		}
 	}
+
+	// normalize js files
+	// JS file paths need not be normalized
+	if config.Build.JsFiles == nil {
+		config.Build.JsFiles = []string{}
+	}
+
+	// normalize the library by replacing the JS name with a UUID
 	if config.Build.Lib == "" {
 		config.Build.Lib = packageJson.MainFile
 	}
@@ -235,8 +258,15 @@ func normalizeConfiguration(config *RedefineConfig, packageJson *PackageJson) {
 		config.libraryMap = make(map[string]string)
 		uuid := uuid.New().String() + ".js"
 
-		config.libraryMap[uuid] = normalizeFolderPath(config.baseFolder, config.Build.Lib)
+		fullJsPath := config.NormalizeFolderPath(config.Build.Lib)
+		config.libraryMap[uuid] = fullJsPath
 		config.Build.Lib = uuid
+
+		// let's also add the JS map file
+		fullMapPath := fullJsPath + ".map"
+		if FileExists(fullMapPath) {
+			config.libraryMap[filepath.Base(fullMapPath)] = fullMapPath
+		}
 	}
 
 	// -----------------------------------------------
@@ -254,12 +284,15 @@ func normalizeConfiguration(config *RedefineConfig, packageJson *PackageJson) {
 	}
 }
 
-func normalizeFolderPath(baseFolder string, configPath string) string {
-	if configPath == "" {
-		return baseFolder
+// Function to normalize a folder path by prefixing
+// the base folder path and joining if with the given
+// child path
+func (config *RedefineConfig) NormalizeFolderPath(childPath string) string {
+	if childPath == "" {
+		return config.baseFolder
 	}
 
-	folder := path.Join(baseFolder, configPath)
+	folder := path.Join(config.baseFolder, childPath)
 	folder, _ = filepath.Abs(folder)
 	return folder
 }
@@ -304,6 +337,8 @@ func (config *RedefineConfig) scanFolder() ([]string, error) {
 	return totalFiles, nil
 }
 
+// Simple debug function to print information
+// regarding what is being used
 func (config *RedefineConfig) PrintInfo() {
 	fmt.Println("\nUsing following configuration:")
 	fmt.Println("    Src folder: " + config.SrcFolder.Root)

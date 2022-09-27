@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -59,6 +60,7 @@ type jsonPayload struct {
 	CustomCss   string            `json:"customCSS"`   // custom css that needs to be included in page
 	Lib         string            `json:"library"`     // the actual component library JS
 	Fonts       []string          `json:"fonts"`       // the fonts that need to be loaded
+	JsFiles     []string          `json:"js"`          // JS files to be loaded inside
 }
 
 func (app *RedefineApp) ExtractAndWriteComponents() ([]byte, error) {
@@ -98,30 +100,49 @@ func (app *RedefineApp) ExtractAndWriteComponents() ([]byte, error) {
 			// build path to doc file
 			docFile := path.Join(config.DocsFolder.Root, components[index].SourcePath, components[index].Name)
 			ext := path.Ext(docFile)
-			docFile = docFile[0:len(docFile)-len(ext)] + ".md"
+			fileNameWithoutExt := docFile[0 : len(docFile)-len(ext)]
 
-			// see if file exists
-			if !FileExists(docFile) {
+			mdExists, mdFile := readFileWithExtension(fileNameWithoutExt, ".md")
+			if mdExists {
+				components[index].Docs = mdFile
+				components[index].DocFileName = filepath.Base(fileNameWithoutExt + ".md")
 				continue
 			}
 
-			// read the doc file
-			mdFile, err := os.ReadFile(docFile)
-			if err != nil {
-				panic(err)
+			txtExists, txtFile := readFileWithExtension(fileNameWithoutExt, ".txt")
+			if txtExists {
+				components[index].Docs = txtFile
+				components[index].DocFileName = filepath.Base(fileNameWithoutExt + ".txt")
 			}
-
-			components[index].Docs = string(mdFile)
 		}
 	}
 
 	return app.writeFinalJsonFile(components)
 }
 
+func readFileWithExtension(fileNameWithoutExt string, extension string) (bool, string) {
+	docFile := fileNameWithoutExt + extension
+
+	// see if file exists
+	if !FileExists(docFile) {
+		return false, ""
+	}
+
+	// read the doc file
+	fileContents, err := os.ReadFile(docFile)
+	if err != nil {
+		panic(err)
+	}
+
+	return true, string(fileContents)
+}
+
 // Function responsible to write the final components.json
-// file to where it needs to be.
+// file to where it needs to be. Note, the actual file on
+// disk will only be written if we are in build mode.
 //
-// This method also returns the generated JSON string back.
+// This method also returns the generated JSON string back
+// or the error, if any, encountered during writing the file
 func (app *RedefineApp) writeFinalJsonFile(components []model.Component) ([]byte, error) {
 	// basic sanity
 	config := app.Config
@@ -167,6 +188,7 @@ func (app *RedefineApp) writeFinalJsonFile(components []model.Component) ([]byte
 		CustomCss:   builder.String(),
 		Lib:         config.Build.Lib,
 		Fonts:       config.Build.FontFiles,
+		JsFiles:     config.Build.JsFiles,
 	}
 
 	// create JSON byte array
