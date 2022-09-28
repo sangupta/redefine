@@ -117,6 +117,19 @@ func serveBuildOverHttp(jsonBytes []byte, config *core.RedefineConfig) {
 func sendFile(uri string, writer http.ResponseWriter, bytes []byte) {
 	if strings.HasSuffix(uri, ".js") {
 		writer.Header().Add("Content-Type", "text/javascript")
+
+		// strip off any import statements that contain '.css";'
+		content := string(bytes)
+		lines := strings.Split(content, "\n")
+
+		for index, line := range lines {
+			if strings.HasPrefix(line, "import \"") && strings.HasSuffix(line, ".css\";") {
+				lines[index] = ""
+			}
+		}
+
+		content = strings.Join(lines, "\n")
+		bytes = []byte(content)
 	}
 
 	if strings.HasSuffix(uri, ".css") {
