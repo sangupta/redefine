@@ -13,6 +13,7 @@
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 import CodePlayground from './CodePlayground';
+import { default as Jsx2Json } from 'simplified-jsx-to-json';
 
 const ExampleDisplay = styled.div`
     margin: 20px 0;
@@ -31,8 +32,13 @@ export default function ComponentExamples({ component, example }: { component: C
             <h3>{example?.name}</h3>
             <ReactMarkdown className='markdown-docs' components={{
                 code({ node, inline, className, children, ...props }) {
-                    const match = /language-(\w+)/.exec(className || '')
-                    const sourceCode = '<>\n' + String(children).trim() + '\n</>'
+                    const match = /language-(\w+)/.exec(className || '');
+
+                    // wrap up in fragment if there are multiple children
+                    const code = String(children).trim();
+                    const json = Jsx2Json(code);
+                    const multiple = json && json.length > 1;
+                    const sourceCode = multiple ? '<>\n' + code + '\n</>' : code;
 
                     return (!inline && match)
                         ? <CodePlayground source={sourceCode} />
