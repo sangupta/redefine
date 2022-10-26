@@ -1,9 +1,22 @@
 # redefine
 
 `redefine` is a simple documentation tool for UI components. It currently
-supports React components written in Typescript.
+supports React components written in Typescript. It differs from [StoryBook]
+(https://storybook.js.org/) and others in the following ways:
+
+* No compiler/bundler specific changes required
+* Allows realtime editing of demo code
+* Generates playground (like knobs) with a single line of code
+* Generates a JSON file as docs, allowing you to fully customize your own docs UI
+* Super-fast
 
 **Work in progress**
+
+## TODO
+
+* Better functional component detection
+* Enhance UI playground with various knobs
+* UI sleekness
 
 ## Usage
 
@@ -27,7 +40,8 @@ are available below.
 ### Available actions
 
 * `serve`: Starts a local server to serve the documentation files, and
- optionally the built component library.
+ optionally the built component library. The server can be accessed at
+ http://localhost:1309.
 
 * `build`: Exports all documentation files into a folder, so that they can
 be deployed on a static file server, like Github pages or Netlify, to be
@@ -35,46 +49,49 @@ served for public consumption.
 
 ## Redefine Config
 
+The following `redefine` section can be added to your `package.json` file
+(using `redefine` as the key) or written directly to `redefine.config.json` file.
+
 ```json
 {
-	// the root folder under which scanning for components shall happen
-	// the default values are `src`, `lib`, and `packages` in that order
-	"srcFolder": "src",
-
-	// an array of wildcard strings, that represent which files to include in scanning
-	// the default values are listed below
-	"includes": [ "*.js", "*.jsx", "*.ts", "*.tsx" ],
-
-	// the folder relative to this file where markdown docs can be found
-	// the default value is `docs` and shall be used if no value is specified
-	"docsFolder": "docs",
-
-	// the title to use in documentation.
-	// if not present, the `name` value from package.json shall be used
-	// if package.json cannot be found, the name of the root folder shall be used
-	"title": "",
-
-	// the path where the built library is available
-	// this is the final binary path
-	// if not value is specified, we use the `main` attribute from package.json
-	"libraryPath": "",
-
-	// the URL where the hosted version of the library can be found
-	// this file is loaded dynamically in the Redefine UI 
-	"libraryUrl": "",
-
-	// specify the file which represents the contents to display on the home
-	// page for the documentation. The default value is shown below, so you
-	// skip specifying it. If the file is not present, a default home page is
-	// built using the information from the `package.json` file
-	"indexFile": "docs/index.md"
+	"src": {
+		"root": "src",
+		"includes": [
+			"*.ts",
+			"*.tsx"
+		]
+	},
+	"docs": {
+		"root": "docs",
+		"includes": [
+			"*.md"
+		],
+		"hasFrontMatter": true,
+		"index": "index.md"
+	},
+	"build": {
+		"dist": "dist",
+		"publishFolder": "publish",
+		"css": [
+			"https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+		],
+		"fonts": [
+			"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+		],
+		"js": [
+			"demo/dist/bedrock-demo.js"
+		]
+	},
+	"template": {
+		"title": "My Component Library",
+		"favicon": "myfavicon.png"
+	}
 }
 ```
 
 # Author
 
 * [Sandeep Gupta](https://sangupta.com)
-
 
 # License
 
