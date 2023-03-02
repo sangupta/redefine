@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "UI client for Redefine documentation server.",
     "scripts": {
-        "watch": "parcel serve public/index.html",
+        "watch": "parcel serve public/index.html --no-cache",
         "build": "parcel build public/index.html",
         "tsc": "tsc --noEmit"
     },
