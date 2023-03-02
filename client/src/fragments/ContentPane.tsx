@@ -46,7 +46,7 @@ export default class ContentPane extends React.Component<ContentPaneProps> {
             }
             
             if(meta.license) {
-                kids += 'License: ' + meta.version;
+                kids += 'License: ' + meta.license;
                 kids += '\n\n';
             }
 
