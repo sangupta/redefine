@@ -31,6 +31,9 @@ const Container = styled.div`
     width: 100%;
     padding-left: 12px;
     padding-right: 12px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 `;
 
 const BrandLink = styled.a`
@@ -74,10 +77,19 @@ export default class Header extends React.Component<HeaderProps> {
 
         return <Nav>
             <Container>
-                <BrandLink href="#">{title || ''}</BrandLink>
-                {title
-                    ? <Redefine href={url} target='_blank'>redefined</Redefine>
-                    : <Title href={url} target='_blank'>redefine component documentation</Title>}
+                <div style={{ flexGrow: 1 }}>
+                    <BrandLink href="#">{title || ''}</BrandLink>
+                    {title
+                        ? <Redefine href={url} target='_blank'>redefined</Redefine>
+                        : <Title href={url} target='_blank'>redefine component documentation</Title>}
+                </div>
+                <div>
+                    <a href='#'>List/Tree view</a>
+                    &nbsp;|&nbsp;
+                    <a href='#'>Tabbed style</a>
+                    &nbsp;|&nbsp;
+                    <a href='#'>Light/Dark mode</a>
+                </div>
             </Container>
         </Nav>
     }
